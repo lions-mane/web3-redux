@@ -1,0 +1,357 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>@lions-mane/web3-redux - v0.1.0-beta.1</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<ul class="results-priority" style="display:none">
+					</ul>
+					<a href="index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.1</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+			</ul>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-3 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation outline primary">
+				<a style="margin-left:0em" href="globals.html">Globals</a>
+				<ul style="display:none">
+					{&quot;Web3Redux&quot;:{&quot;actions&quot;:&quot;actions&quot;,&quot;sagas&quot;:&quot;saga&quot;,&quot;store&quot;:&quot;store&quot;,&quot;orm&quot;:&quot;orm&quot;},&quot;Block&quot;:{&quot;model&quot;:&quot;block_model&quot;,&quot;actions&quot;:&quot;block_actions&quot;,&quot;selector&quot;:&quot;block_selector&quot;,&quot;reducer&quot;:&quot;block_reducer&quot;,&quot;sagas&quot;:&quot;block_sagas&quot;},&quot;Transaction&quot;:{&quot;model&quot;:&quot;transaction_model&quot;,&quot;actions&quot;:&quot;transaction_actions&quot;,&quot;selector&quot;:&quot;transaction_selector&quot;,&quot;reducer&quot;:&quot;transaction_reducer&quot;,&quot;sagas&quot;:&quot;transaction_sagas&quot;},&quot;Network&quot;:{&quot;model&quot;:&quot;network_model&quot;,&quot;actions&quot;:&quot;network_actions&quot;,&quot;selector&quot;:&quot;network_selector&quot;,&quot;reducer&quot;:&quot;network_reducer&quot;},&quot;Contract&quot;:{&quot;model&quot;:&quot;contract_model&quot;,&quot;actions&quot;:&quot;contract_actions&quot;,&quot;selector&quot;:&quot;contract_selector&quot;,&quot;reducer&quot;:&quot;contract_reducer&quot;,&quot;sagas&quot;:&quot;contract_sagas&quot;}}
+				</ul>
+			</nav>
+		</div>
+		<div class="col-7 offset-3 col-content">
+			<h1>@lions-mane/web3-redux - v0.1.0-beta.1</h1>
+			<div class="tsd-panel tsd-typography">
+				<a href="#web3-redux" id="web3-redux" style="color: inherit; text-decoration: none;">
+					<h1>Web3 Redux</h1>
+				</a>
+				<p>Web3 Redux Library.</p>
+				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
+					<h2>Table of Contents</h2>
+				</a>
+				<ul>
+					<li>  <a href="#installing">Installing</a></li>
+					<li><a href="#getting-started">Getting Started</a><ul>
+							<li>  <a href="#initialize-the-redux-store">Initialize the Redux Store</a></li>
+							<li>  <a href="#configure-web3-providers">Configure Web3 Providers</a></li>
+							<li>  <a href="#start-a-block-subscription">Start a block subscription</a></li>
+						</ul>
+					</li>
+					<li>  <a href="#displaying-react-components">Displaying React Components</a></li>
+					<li><a href="#syncing">Syncing</a><ul>
+							<li>  <a href="#block-header-sync">Block Header Sync</a></li>
+							<li>  <a href="#event-sync">Event Sync</a></li>
+							<li>  <a href="#contract-call-sync">Contract Call Sync</a></li>
+						</ul>
+					</li>
+					<li>  <a href="#selectors">Selectors</a></li>
+					<li>  <a href="#redux-state">Redux State</a></li>
+					<li><a href="#advanced">Advanced</a><ul>
+							<li>  <a href="#optimizing-contract-call-sync">Optimizing Contract Call Sync</a></li>
+							<li>  <a href="#custom-contract-call-sync">Custom Contract Call Sync</a></li>
+						</ul>
+					</li>
+					<li>  <a href="#additional-documentation">Additional Documentation</a></li>
+					<li>  <a href="#built-with">Built with</a></li>
+					<li>  <a href="#license">License</a></li>
+				</ul>
+				<a href="#installing" id="installing" style="color: inherit; text-decoration: none;">
+					<h2>Installing</h2>
+				</a>
+				<pre><code><span style="color: #001080">npm</span><span style="color: #000000"> </span><span style="color: #001080">install</span><span style="color: #000000"> @</span><span style="color: #001080">lions</span><span style="color: #000000">-</span><span style="color: #001080">mane</span><span style="color: #000000">/</span><span style="color: #001080">web3</span><span style="color: #000000">-</span><span style="color: #001080">redux</span>
+</code></pre>
+				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+					<h2>Getting Started</h2>
+				</a>
+				<a href="#initialize-the-redux-store" id="initialize-the-redux-store" style="color: inherit; text-decoration: none;">
+					<h3>Initialize the Redux Store</h3>
+				</a>
+				<p>web3-redux can be added to your existing Redux store. The web3Reducer MUST be stored at the <code>web3Redux</code> key in your store.</p>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">combineReducers</span><span style="color: #000000">, </span><span style="color: #001080">createStore</span><span style="color: #000000">, </span><span style="color: #001080">applyMiddleware</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;redux&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">createSagaMiddleware</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;redux-saga&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">web3Reducer</span><span style="color: #000000">, </span><span style="color: #001080">web3Saga</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@lions-mane/web3-redux&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">reducers</span><span style="color: #000000"> = </span><span style="color: #795E26">combineReducers</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">web3Redux:</span><span style="color: #000000"> </span><span style="color: #001080">web3Reducer</span><span style="color: #000000">,</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">sagaMiddleware</span><span style="color: #000000"> = </span><span style="color: #795E26">createSagaMiddleware</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">store</span><span style="color: #000000"> = </span><span style="color: #795E26">createStore</span><span style="color: #000000">(</span><span style="color: #001080">reducers</span><span style="color: #000000">, </span><span style="color: #795E26">applyMiddleware</span><span style="color: #000000">(</span><span style="color: #001080">sagaMiddleware</span><span style="color: #000000">));</span>
+<span style="color: #001080">sagaMiddleware</span><span style="color: #000000">.</span><span style="color: #795E26">run</span><span style="color: #000000">(</span><span style="color: #001080">web3Saga</span><span style="color: #000000">);</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #001080">store</span><span style="color: #000000">;</span>
+</code></pre>
+				<a href="#configure-web3-providers" id="configure-web3-providers" style="color: inherit; text-decoration: none;">
+					<h3>Configure Web3 providers</h3>
+				</a>
+				<p>All entities in the web3-redux stored are indexed by networkId. web3-redux let&#39;s you sync multiple networks concurrently (eg. sync Mainnet &amp; Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">NetworkActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">web3</span><span style="color: #000000"> }));</span>
+</code></pre>
+				<p>Alternatively, you can dispatch a <code>WEB3_REDUX/INITIALIZE</code> action to initialize multiple networks. The networks will only be initialized if an environment variable with the rpc endpoint value is set. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
+				The following networks are supported:</p>
+				<ul>
+					<li>  Local: <code>LOCAL_RPC</code> (eg. <code>ws://localhost:8545</code>)</li>
+					<li>  Mainnet: <code>MAINNET_RPC</code> (eg. <code>wss://mainnet.infura.io/ws/v3/&lt;API_KEY&gt;</code>)</li>
+					<li>  Ropsten: <code>ROPSTEN_RPC</code></li>
+					<li>  Kovan: <code>KOVAN_RPC</code></li>
+					<li>  Rinkeby: <code>RINKEBY_RPC</code></li>
+					<li>  Goerli: <code>GOERLI_RPC</code></li>
+				</ul>
+				<p>The environment variables are also supported with the prefixes <code>REACT_APP_*</code> and <code>NEXT_PUBLIC_*</code>.</p>
+				<p>The following action will automatically add networks and their ids if the rpc environment variable is set.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Web3ReduxActions</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">());</span>
+</code></pre>
+				<a href="#start-a-block-subscription" id="start-a-block-subscription" style="color: inherit; text-decoration: none;">
+					<h3>Start a block subscription</h3>
+				</a>
+				<p>To sync with on-chain events, it&#39;s a good idea to start a block subscription as it can be used as a reference point to keep data fresh. This is recommended but not required as some apps might use a different refresh mechanism.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">BlockActions</span><span style="color: #000000">.</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000"> }));</span>
+</code></pre>
+				<a href="#add-a-contract" id="add-a-contract" style="color: inherit; text-decoration: none;">
+					<h3>Add a contract</h3>
+				</a>
+				<p>One you&#39;ve started the block sync, add a contract and make a call.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">ContractActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">address:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;0x000...&#039;</span><span style="color: #000000">, </span><span style="color: #001080">abi:</span><span style="color: #000000"> </span><span style="color: #0070C1">ERC20ABI</span><span style="color: #000000"> }));</span>
+<span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">ContractActions</span><span style="color: #000000">.</span><span style="color: #795E26">call</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">address:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;0x000...&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">method:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;balanceOf&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #001080">args:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;0x111...&#039;</span><span style="color: #000000">],</span>
+<span style="color: #000000">}));</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">balance</span><span style="color: #000000"> = </span><span style="color: #001080">ContractSelector</span><span style="color: #000000">.</span><span style="color: #795E26">selectContractCall</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;1-0x000...&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;balanceOf&#039;</span><span style="color: #000000">, { </span><span style="color: #001080">args:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;0x0111...&#039;</span><span style="color: #000000">, </span><span style="color: #001080">from</span><span style="color: #000000">: </span><span style="color: #001080">web3</span><span style="color: #000000">.</span><span style="color: #001080">eth</span><span style="color: #000000">.</span><span style="color: #001080">defaultAccount</span><span style="color: #000000"> ]})</span>
+
+<span style="color: #008000">//Alternatively, fetch things manually</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">contract</span><span style="color: #000000"> = </span><span style="color: #001080">ContractSelector</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;1-0x000...&#039;</span><span style="color: #000000">)</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">balanceOf</span><span style="color: #000000"> = </span><span style="color: #001080">contract</span><span style="color: #000000">.</span><span style="color: #001080">methods</span><span style="color: #000000">.</span><span style="color: #001080">balanceOf</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">argsHash</span><span style="color: #000000"> = </span><span style="color: #795E26">callArgsHash</span><span style="color: #000000">({ </span><span style="color: #001080">args:</span><span style="color: #000000"> [</span><span style="color: #A31515">&#039;0x111...&#039;</span><span style="color: #000000">] }) </span><span style="color: #008000">//([0x111...]).call(latest,web3.eth.defaultAccount)</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">value</span><span style="color: #000000"> = </span><span style="color: #001080">balanceOf</span><span style="color: #000000">[</span><span style="color: #A31515">&#039;([0x111...]).call(latest,0x222...)&#039;</span><span style="color: #000000">].</span><span style="color: #001080">value</span>
+</code></pre>
+				<a href="#displaying-react-components" id="displaying-react-components" style="color: inherit; text-decoration: none;">
+					<h2>Displaying React Components</h2>
+				</a>
+				<p>To display web3-redux data in your React components, you can either parse the raw state or use web3-redux&#39;s state selectors (recommended). See <a href="#selectors">Selectors</a> section for a description of all web3-redux selectors.</p>
+				<p>Below a short example component using the BlockSelector to display all blocks.</p>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">React</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;react&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">useSelector</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;react-redux&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Block</span><span style="color: #000000">, </span><span style="color: #001080">BlockSelector</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@lions-mane/web3-redux&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">Blocks</span><span style="color: #000000">() {</span>
+<span style="color: #000000">    </span><span style="color: #008000">//@ts-ignore</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">blocks</span><span style="color: #000000">: </span><span style="color: #267F99">Block</span><span style="color: #000000">[] = </span><span style="color: #795E26">useSelector</span><span style="color: #000000">(</span><span style="color: #001080">BlockSelector</span><span style="color: #000000">.</span><span style="color: #001080">select</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> (</span>
+<span style="color: #000000">        &lt;</span><span style="color: #267F99">div</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">            &lt;</span><span style="color: #267F99">h1</span><span style="color: #000000">&gt;</span><span style="color: #001080">Blocks</span><span style="color: #000000">&lt;/</span><span style="color: #001080">h1</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">            &lt;</span><span style="color: #267F99">div</span><span style="color: #000000">&gt;{JSON.stringify(blocks)}&lt;/</span><span style="color: #001080">div</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">        &lt;/</span><span style="color: #001080">div</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">    );</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>For a more complete example React app checkout <a href="https://github.com/lions-mane/web3-redux-react-example">web3-redux-react-example</a>.</p>
+				<a href="#syncing" id="syncing" style="color: inherit; text-decoration: none;">
+					<h2>Syncing</h2>
+				</a>
+				<p>web3-redux comes with a built-in sync features.</p>
+				<a href="#block-header-sync" id="block-header-sync" style="color: inherit; text-decoration: none;">
+					<h3>Block Header Sync</h3>
+				</a>
+				<p>This uses <a href="https://web3js.readthedocs.io/en/v1.3.0/web3-eth-subscribe.html#subscribe-newblockheaders">web3.eth.subscribe(&quot;newBlockHeaders&quot;)</a>. Your web3 provider MUST support websocket subscriptions.</p>
+				<p>Dispatch a <code>Block/SUBSCRIBE</code> action to start a block sync. Only one active block sync per networkId is allowed, and duplicate actions will be ignored. Unsubscribe with a <code>Block/UNSUBSCRIBE</code> action.</p>
+				<pre><code class="language-typescript"><span style="color: #008000">//Subscribe blocks</span>
+<span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">BlockActions</span><span style="color: #000000">.</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({ </span><span style="color: #001080">networkId</span><span style="color: #000000"> }));</span>
+<span style="color: #008000">//Unsubscribe blocks</span>
+<span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">BlockActions</span><span style="color: #000000">.</span><span style="color: #795E26">unsubscribe</span><span style="color: #000000">({ </span><span style="color: #001080">networkId</span><span style="color: #000000"> }));</span>
+</code></pre>
+				<a href="#event-sync" id="event-sync" style="color: inherit; text-decoration: none;">
+					<h3>Event Sync</h3>
+				</a>
+				<p>This uses <a href="https://web3js.readthedocs.io/en/v1.3.0/web3-eth-contract.html#contract-events">web3.eth.Contract.events.MyEvent()</a>. Your web3 provider MUST support websocket subscriptions.</p>
+				<p>Before intiating an event sync you must first create a contract with a <code>Contract/CREATE</code> action:</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">ContractActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId</span><span style="color: #000000">, </span><span style="color: #001080">address</span><span style="color: #000000">, </span><span style="color: #001080">abi</span><span style="color: #000000">});</span>
+</code></pre>
+				<p>Dispatch a <code>Contract/EVENT_SUBSCRIBE</code> action to start an event sync. Event syncs are unique by contract address and event name. Duplicate actions will be ignored. Unsubscribe with a <code>Contract/EVENT_UNSUBSCRIBE</code> action.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">ContractActions</span><span style="color: #000000">.</span><span style="color: #795E26">eventSubscribe</span><span style="color: #000000">({ </span><span style="color: #001080">networkId</span><span style="color: #000000">, </span><span style="color: #001080">address</span><span style="color: #000000">, </span><span style="color: #001080">eventName</span><span style="color: #000000"> }));</span>
+</code></pre>
+				<a href="#contract-call-sync" id="contract-call-sync" style="color: inherit; text-decoration: none;">
+					<h3>Contract Call Sync</h3>
+				</a>
+				<p>web3-redux offers enhanced customizability of contract call syncing to avoid unecessary rpc calls. Contract call syncing is achieved by refreshing contract calls based on a set of parameters. To initiate contract call syncing, one must first dispatch a ContractCallAction.</p>
+				<p>There are 3 types of contract call syncing:</p>
+				<ul>
+					<li>  No sync: Call contract method once</li>
+					<li>  Block sync (<code>Contract/CALL_BLOCK_SYNC</code>): Call contract and refresh every block.</li>
+					<li>  Transaction sync (<code>Contract/CALL_TRANSACTION_SYNC</code>): Call contract and refresh every time a block includes a transaction to the contract.</li>
+				</ul>
+				<p>Note: Both block sync and transaction sync require an existing block subscription to be first created.</p>
+				<p>By default we use Transaction syncing. See <a href="#custom-contract-call-syncing">Advanced/Optimising Contract Call Sync</a> for more info.</p>
+				<a href="#selectors" id="selectors" style="color: inherit; text-decoration: none;">
+					<h2>Selectors</h2>
+				</a>
+				<p>web3-redux exports a set of <a href="https://github.com/reduxjs/reselect">reselect</a> selectors to let you easily read data from the store.</p>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">BlockSelector</span><span style="color: #000000">, </span><span style="color: #001080">TransactionSelector</span><span style="color: #000000">, </span><span style="color: #001080">ContractSelector</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@lions-mane/web3-redux&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">store</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./store.ts&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">state</span><span style="color: #000000"> = </span><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">getState</span><span style="color: #000000">();</span>
+
+<span style="color: #008000">//Default Redux-ORM selectors</span>
+<span style="color: #008000">//Select full collections</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">blocks</span><span style="color: #000000">: </span><span style="color: #267F99">BlockHeader</span><span style="color: #000000">[] = </span><span style="color: #001080">BlockSelector</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">transactions</span><span style="color: #000000">: </span><span style="color: #267F99">Transaction</span><span style="color: #000000">[] = </span><span style="color: #001080">TransactionSelector</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">contracts</span><span style="color: #000000">: </span><span style="color: #267F99">Contract</span><span style="color: #000000">[] = </span><span style="color: #001080">ContractSelector</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">//Select single instance by id</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">networkId</span><span style="color: #000000"> = </span><span style="color: #098658">1</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">block42</span><span style="color: #000000">: </span><span style="color: #267F99">Block</span><span style="color: #000000"> = </span><span style="color: #001080">BlockSelector</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">, [</span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">networkId</span><span style="color: #0000FF">}</span><span style="color: #A31515">-42`</span><span style="color: #000000">]); </span><span style="color: #008000">//block 42 on networkId 1</span>
+
+<span style="color: #008000">//Select multiple instances by id</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">networkId</span><span style="color: #000000"> = </span><span style="color: #098658">1</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> [</span><span style="color: #0070C1">block43</span><span style="color: #000000">, </span><span style="color: #0070C1">block44</span><span style="color: #000000">]: [</span><span style="color: #267F99">BlockHeader</span><span style="color: #000000">, </span><span style="color: #267F99">BlockHeader</span><span style="color: #000000">] = </span><span style="color: #001080">BlockSelector</span><span style="color: #000000">.</span><span style="color: #795E26">select</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">, [</span>
+<span style="color: #000000">    </span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">networkId</span><span style="color: #0000FF">}</span><span style="color: #A31515">-43`</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #001080">networkId</span><span style="color: #0000FF">}</span><span style="color: #A31515">-44`</span><span style="color: #000000">,</span>
+<span style="color: #000000">]);</span>
+
+<span style="color: #008000">//Custom selectors</span>
+<span style="color: #008000">//Select blocks with transactions (also works with id/[id] filtering)</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">blocksWithTransactions</span><span style="color: #000000">: </span><span style="color: #267F99">BlockTransactionObject</span><span style="color: #000000">[] = </span><span style="color: #001080">BlockSelector</span><span style="color: #000000">.</span><span style="color: #795E26">selectBlockTransaction</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">);</span>
+</code></pre>
+				<a href="#redux-state" id="redux-state" style="color: inherit; text-decoration: none;">
+					<h2>Redux State</h2>
+				</a>
+				<pre><code class="language-typescript"><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">Web3ReduxStore</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">Block</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #001080">itemsById</span><span style="color: #000000">: {</span>
+<span style="color: #000000">            [</span><span style="color: #001080">id</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">]: </span><span style="color: #267F99">BlockHeader</span><span style="color: #000000">; </span><span style="color: #008000">//`${networkId}-${number}`</span>
+<span style="color: #000000">        };</span>
+<span style="color: #000000">    };</span>
+<span style="color: #000000">    </span><span style="color: #001080">Transaction</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #001080">itemsById</span><span style="color: #000000">: {</span>
+<span style="color: #000000">            [</span><span style="color: #001080">id</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">]: </span><span style="color: #267F99">Transaction</span><span style="color: #000000">; </span><span style="color: #008000">//`${networkId}-${hash}`</span>
+<span style="color: #000000">        };</span>
+<span style="color: #000000">    };</span>
+<span style="color: #000000">    </span><span style="color: #001080">Contract</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #001080">itemsById</span><span style="color: #000000">: {</span>
+<span style="color: #000000">            [</span><span style="color: #001080">id</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000">]: </span><span style="color: #267F99">Contract</span><span style="color: #000000">; </span><span style="color: #008000">//`${networkId}-${address}`</span>
+<span style="color: #000000">        };</span>
+<span style="color: #000000">    };</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<a href="#advanced" id="advanced" style="color: inherit; text-decoration: none;">
+					<h2>Advanced</h2>
+				</a>
+				<a href="#optimizing-contract-call-sync" id="optimizing-contract-call-sync" style="color: inherit; text-decoration: none;">
+					<h3>Optimizing Contract Call Sync</h3>
+				</a>
+				<p>By default, contracts use Transaction syncing but this can be customized for each specific contract call. This is can be a sub-optimal or even incorrect sync strategy.</p>
+				<p>Transaction syncing can be sub-optimal if a call&#39;s return value never changes. For example, an ERC20 token&#39;s name or symbol. In this case simply disable syncing with <code>sync: false</code>.</p>
+				<p>Transaction syncing assumes that the contract call values are only dependent on your contract&#39;s state and that this state is only changed by direct transactions to your contract. The basic logic for Transaction syncing is as follows: For each transaction in a new block, update contract call if <code>tx.to == contract.address</code>.
+				Examples of cases where this assumption might be incorrect include:</p>
+				<ul>
+					<li>  Contract call return value depends on block number</li>
+					<li>  Contract state can be changed by a call to some proxy contract</li>
+				</ul>
+				<p>In these cases we recommend switching to Block syncing, which will poll the contract call at every block. For even better optimization, it might be interesting in some cases to use a custom block or transaction sync.</p>
+				<a href="#custom-contract-call-sync" id="custom-contract-call-sync" style="color: inherit; text-decoration: none;">
+					<h3>Custom Contract Call Sync</h3>
+				</a>
+				<p>The interface of ContractCallBlockSync and ContractCallTransactionSync use a filter function returning whether a contract call should update. Customizing the filter function can help you create more optimized syncing depending on your use case.</p>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">ContractCallBlockSync</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">type</span><span style="color: #000000">: </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #0070C1">CALL_BLOCK_SYNC</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #795E26">filter</span><span style="color: #000000">: (</span><span style="color: #001080">block</span><span style="color: #000000">: </span><span style="color: #267F99">BlockHeader</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">boolean</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">ContractCallTransactionSync</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">type</span><span style="color: #000000">: </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #0070C1">CALL_TRANSACTION_SYNC</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #795E26">filter</span><span style="color: #000000">: (</span><span style="color: #001080">transaction</span><span style="color: #000000">: </span><span style="color: #267F99">Transaction</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">boolean</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>Example sync strategies:</p>
+				<ul>
+					<li>  Sync every 5 blocks: <code>(block) =&gt; block.number % 5 == 0</code></li>
+					<li>  Sync for transactions to contract or proxy: <code>(tx) =&gt; tx.to === contract.address || tx.to === proxy.address</code></li>
+				</ul>
+				<a href="#additional-documentation" id="additional-documentation" style="color: inherit; text-decoration: none;">
+					<h2>Additional Documentation</h2>
+				</a>
+				<p>Additional documentation is available at <a href="https://lions-mane.github.io/web3-redux">lions-mane.github.io/web3-redux</a></p>
+				<a href="#built-with" id="built-with" style="color: inherit; text-decoration: none;">
+					<h2>Built with</h2>
+				</a>
+				<ul>
+					<li>  <a href="https://github.com/reduxjs/reselect">reselect</a></li>
+					<li>  <a href="https://github.com/redux-orm/redux-orm">redux-orm</a></li>
+					<li>  <a href="https://web3js.readthedocs.io/en/v1.3.0/">web3.js</a></li>
+				</ul>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h2>License</h2>
+				</a>
+				<p>2020 Lionsmane Development
+				MIT License.</p>
+			</div>
+			<!--{&quot;options&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;tsconfig&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;entryPoints&quot;:[&quot;src&quot;],&quot;exclude&quot;:[],&quot;externalPattern&quot;:[&quot;**/node_modules/**&quot;],&quot;excludeExternals&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludeInternal&quot;:false,&quot;excludePrivate&quot;:false,&quot;excludeProtected&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;watch&quot;:false,&quot;preserveWatchOutput&quot;:false,&quot;emit&quot;:false,&quot;out&quot;:&quot;docs&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;./node_modules/typedoc-neo-theme/bin/default&quot;,&quot;highlightTheme&quot;:&quot;light-plus&quot;,&quot;name&quot;:&quot;&quot;,&quot;includeVersion&quot;:true,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;showConfig&quot;:false,&quot;plugin&quot;:[&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;logLevel&quot;:1,&quot;listInvalidSymbolLinks&quot;:false,&quot;outline&quot;:[{&quot;Web3Redux&quot;:{&quot;actions&quot;:&quot;actions&quot;,&quot;sagas&quot;:&quot;saga&quot;,&quot;store&quot;:&quot;store&quot;,&quot;orm&quot;:&quot;orm&quot;},&quot;Block&quot;:{&quot;model&quot;:&quot;block_model&quot;,&quot;actions&quot;:&quot;block_actions&quot;,&quot;selector&quot;:&quot;block_selector&quot;,&quot;reducer&quot;:&quot;block_reducer&quot;,&quot;sagas&quot;:&quot;block_sagas&quot;},&quot;Transaction&quot;:{&quot;model&quot;:&quot;transaction_model&quot;,&quot;actions&quot;:&quot;transaction_actions&quot;,&quot;selector&quot;:&quot;transaction_selector&quot;,&quot;reducer&quot;:&quot;transaction_reducer&quot;,&quot;sagas&quot;:&quot;transaction_sagas&quot;},&quot;Network&quot;:{&quot;model&quot;:&quot;network_model&quot;,&quot;actions&quot;:&quot;network_actions&quot;,&quot;selector&quot;:&quot;network_selector&quot;,&quot;reducer&quot;:&quot;network_reducer&quot;},&quot;Contract&quot;:{&quot;model&quot;:&quot;contract_model&quot;,&quot;actions&quot;:&quot;contract_actions&quot;,&quot;selector&quot;:&quot;contract_selector&quot;,&quot;reducer&quot;:&quot;contract_reducer&quot;,&quot;sagas&quot;:&quot;contract_sagas&quot;}}]}-->
+		</div>
+		<div class="col-2 col-menu secondary-menu">
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
