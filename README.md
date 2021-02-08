@@ -1,6 +1,6 @@
-# Redux Starter Project
+# Web3 Redux
 
-Redux starter project.
+Web3 Redux Library.
 
 ## Getting Started
 
@@ -17,10 +17,10 @@ pnpmp install
 To clone this starter repo and add it as an upstream folow below:
 
 ```
-git clone https://github.com/leovigna/redux-starter.git myproject
+git clone https://github.com/lions-mane/web3-redux.git myproject
 cd myproject
-git remote set-url origin https://github.com/leovigna/myproject.git
-git remote add upstream https://github.com/leovigna/redux-starter.git
+git remote set-url origin https://github.com/lions-mane/myproject.git
+git remote add upstream https://github.com/lions-mane/web3-redux.git
 git push origin master
 git push --all
 ```

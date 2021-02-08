@@ -1,12 +1,12 @@
 {
-    "name": "@leovigna/redux-starter",
+    "name": "@lions-mane/web3-redux",
     "version": "0.1.0",
     "private": false,
     "repository": {
         "type": "git",
-        "url": "https://github.com/leovigna/redux-starter.git"
+        "url": "https://github.com/lions-mane/web3-redux.git"
     },
-    "homepage": "https://leovigna.github.io/redux-starter",
+    "homepage": "https://lions-mane.github.io/web3-redux",
     "copyright": "Copyright 2020 Leo Vigna",
     "license": "MIT",
     "scripts": {
