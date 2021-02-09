@@ -10,7 +10,7 @@ import * as BlockSagas from './block/sagas';
 import * as BlockSelector from './block/selector';
 //import * as TransactionSelector from './transaction/selector';
 import { createStore } from './store';
-import { Block, BlockTransaction } from './block/model';
+import { Block } from './block/model';
 
 function sleep(ms: number) {
     return new Promise(resolve => {
@@ -35,7 +35,8 @@ describe('sagas', () => {
 
     it('fetch', async () => {
         const gen = BlockSagas.fetch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
-        const expectedBlock: Block = await web3.eth.getBlock('latest');
+        const block = await web3.eth.getBlock('latest');
+        const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
         const expectedPutBlockAction = put(BlockActions.create(expectedBlock));
 
         gen.next();
@@ -47,7 +48,8 @@ describe('sagas', () => {
         const gen = BlockSagas.fetch(
             BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: true }),
         );
-        const expectedBlock: BlockTransaction = await web3.eth.getBlock('latest', true);
+        const block = await web3.eth.getBlock('latest', true);
+        const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
         const expectedPutBlockAction = put(BlockActions.create(expectedBlock));
 
         gen.next();
@@ -57,13 +59,14 @@ describe('sagas', () => {
 
     it('fetch', async () => {
         store.dispatch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
-        const expectedBlock: BlockTransaction = await web3.eth.getBlock('latest');
+        const block = await web3.eth.getBlock('latest');
+        const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
 
         await sleep(100);
 
         const state = store.getState();
         const expectedBlockState = {
-            [expectedBlock.number]: expectedBlock,
+            [expectedBlock.id!]: expectedBlock,
         };
         const expectedBlockSelected = [expectedBlock];
         assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');

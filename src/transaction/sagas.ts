@@ -7,7 +7,7 @@ export function* fetch(action: FetchAction) {
     const web3 = web3ForNetworkId(action.payload.networkId);
     const { payload } = action;
     const transaction: Transaction = yield call(web3.eth.getTransaction, payload.hash);
-    yield put(create({ ...transaction }));
+    yield put(create({ ...transaction, networkId: payload.networkId }));
 }
 
 export function* saga() {

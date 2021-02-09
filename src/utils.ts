@@ -11,10 +11,11 @@ export function actionCreator<ActionType, ActionInput>(type: ActionType) {
     };
 }
 
-const web3 = new Web3(process.env.ETH_RPC);
+const web3ForNetworkIdCache: { [key: string]: Web3 } = {
+    '1337': new Web3(process.env.ETH_RPC),
+};
 export function web3ForNetworkId(networkId: string) {
-    console.debug(networkId);
-    return web3;
+    return web3ForNetworkIdCache[networkId];
 }
 
 export function isNumbers(array: number[] | any[]): array is number[] {

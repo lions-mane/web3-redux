@@ -7,7 +7,10 @@ import * as TransactionSelector from './transaction/selector';
 import { Block } from './block/model';
 import { Transaction } from './transaction/model';
 
+const networkId = '1337';
 const block: Block = {
+    id: `${networkId}-${42}`,
+    networkId,
     number: 42,
     hash: '',
     parentHash: '',
@@ -29,10 +32,13 @@ const block: Block = {
 };
 
 const transaction: Transaction = {
+    id: `${networkId}-0x4242`,
+    networkId,
     hash: '0x4242',
     nonce: 0,
     blockHash: '',
     blockNumber: 42,
+    blockId: block.id!,
     transactionIndex: 0,
     from: '',
     to: '',
@@ -56,7 +62,7 @@ describe('redux-orm', () => {
         const state = store.getState();
 
         const expectedBlockState = {
-            [expectedBlock.number]: expectedBlock,
+            [expectedBlock.id!]: expectedBlock,
         };
         const expectedBlockSelected = [expectedBlock];
         const expectedBlockTransactionsSelected = [[expectedTransaction]];
@@ -69,7 +75,7 @@ describe('redux-orm', () => {
         );
 
         const expectedTransactionState = {
-            [transaction.hash]: expectedTransaction,
+            [transaction.id!]: expectedTransaction,
         };
         const expectedTransactionSelected = [expectedTransaction];
         assert.deepEqual(

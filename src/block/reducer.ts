@@ -1,31 +1,22 @@
-import { Action, CREATE, UPDATE, REMOVE, FETCH, CreateAction, UpdateAction, RemoveAction } from './actions';
-import { isBlockTransactionObject, isBlockTransactionString } from './model';
+import { ReducerAction, isCreateAction, isUpdateAction, isRemoveAction } from './actions';
+import { Model, isBlockTransactionObject, isBlockTransactionString } from './model';
 
-export function reducer(sess: any, action: Action) {
+export function reducer(sess: any, action: ReducerAction) {
     const { Block, Transaction } = sess;
-    switch (action.type) {
-        case CREATE:
-            const createPayload = (action as CreateAction).payload;
-            Block.create(createPayload);
-            if (isBlockTransactionString(createPayload)) {
-                createPayload.transactions.forEach((hash: string) => {
-                    Transaction.create({ hash });
-                });
-            } else if (isBlockTransactionObject(createPayload)) {
-                createPayload.transactions.forEach(tx => {
-                    Transaction.create({ ...tx });
-                });
-            }
-            break;
-        case UPDATE:
-            Block.withId((action as UpdateAction).payload).update((action as UpdateAction).payload);
-            break;
-        case REMOVE:
-            Block.withId((action as RemoveAction).payload).delete();
-            break;
-        case FETCH:
-            break;
-    }
+    const id = Model.toId(action.payload);
+    if (isCreateAction(action)) {
+        Block.create({ ...action.payload, id });
+        if (isBlockTransactionString(action.payload)) {
+            action.payload.transactions.forEach((hash: string) => {
+                Transaction.create({ hash, networkId: action.payload.networkId, blockNumber: action.payload.number });
+            });
+        } else if (isBlockTransactionObject(action.payload)) {
+            action.payload.transactions.forEach(tx => {
+                Transaction.create({ ...tx, networkId: action.payload.networkId });
+            });
+        }
+    } else if (isUpdateAction(action)) Block.withId(id).update({ ...action.payload, id });
+    else if (isRemoveAction(action)) Block.withId(id).delete();
 
     return sess;
 }

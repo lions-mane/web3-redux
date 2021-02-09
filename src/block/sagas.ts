@@ -11,7 +11,7 @@ export function* fetch(action: FetchAction) {
         payload.blockHashOrBlockNumber,
         payload.returnTransactionObjects ?? false,
     );
-    yield put(create(block));
+    yield put(create({ ...block, networkId: payload.networkId }));
 }
 
 export function* saga() {

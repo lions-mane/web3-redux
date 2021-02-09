@@ -17,16 +17,12 @@ export const initializeState = (orm: any) => {
     return state;
 };
 
-type Action = {
-    type: string;
-    payload: any;
-    [key: string]: any;
-};
+type Action = BlockActions.Action | TransactionActions.Action;
 
 export function reducer(state: any, action: Action) {
     const sess = orm.session(state || initializeState(orm));
-    if (BlockActions.isAction(action)) blockReducer(sess, action as BlockActions.Action);
-    if (TransactionActions.isAction(action)) transactionReducer(sess, action as TransactionActions.Action);
+    if (BlockActions.isReducerAction(action)) blockReducer(sess, action);
+    else if (TransactionActions.isReducerAction(action)) transactionReducer(sess, action);
 
     return sess.state;
 }

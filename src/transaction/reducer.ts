@@ -1,18 +1,12 @@
-import { Action, CREATE, UPDATE, REMOVE, CreateAction, UpdateAction, RemoveAction } from './actions';
+import { ReducerAction, isCreateAction, isUpdateAction, isRemoveAction } from './actions';
 
-export function reducer(sess: any, action: Action) {
+export function reducer(sess: any, action: ReducerAction) {
     const Model = sess.Transaction;
-    switch (action.type) {
-        case CREATE:
-            Model.create((action as CreateAction).payload);
-            break;
-        case UPDATE:
-            Model.withId((action as UpdateAction).payload.hash).update((action as UpdateAction).payload);
-            break;
-        case REMOVE:
-            Model.withId((action as RemoveAction).payload).delete();
-            break;
-    }
+    const id = Model.toId(action.payload);
+    const blockId = Model.toBlockId(action.payload);
+    if (isCreateAction(action)) Model.create({ ...action.payload });
+    else if (isUpdateAction(action)) Model.withId(id).update({ ...action.payload, id, blockId });
+    else if (isRemoveAction(action)) Model.withId(id).delete();
 
     return sess;
 }
