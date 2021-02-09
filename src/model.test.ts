@@ -1,9 +1,46 @@
 import { assert } from 'chai';
 import { createStore } from './store';
-import * as AuthorActions from './author/actions';
-import * as BookActions from './book/actions';
-import * as AuthorSelector from './author/selector';
-import * as BookSelector from './book/selector';
+import * as BlockActions from './block/actions';
+import * as TransactionActions from './transaction/actions';
+import * as BlockSelector from './block/selector';
+import * as TransactionSelector from './transaction/selector';
+import { Block } from './block/model';
+import { Transaction } from './transaction/model';
+
+const block: Block = {
+    number: 42,
+    hash: '',
+    parentHash: '',
+    nonce: '',
+    sha3Uncles: '',
+    logsBloom: '',
+    transactionRoot: '',
+    receiptRoot: '',
+    stateRoot: '',
+    miner: '',
+    extraData: '',
+    gasLimit: 0,
+    gasUsed: 0,
+    timestamp: 0,
+    size: 0,
+    difficulty: 0,
+    totalDifficulty: 0,
+    uncles: [],
+};
+
+const transaction: Transaction = {
+    hash: '0x4242',
+    nonce: 0,
+    blockHash: '',
+    blockNumber: 42,
+    transactionIndex: 0,
+    from: '',
+    to: '',
+    value: '',
+    gasPrice: '',
+    gas: 0,
+    input: '',
+};
 
 describe('redux-orm', () => {
     let store: ReturnType<typeof createStore>;
@@ -11,25 +48,39 @@ describe('redux-orm', () => {
         store = createStore();
     });
     it('create', async () => {
-        store.dispatch(AuthorActions.create({ name: 'Shakespeare' }));
-        store.dispatch(BookActions.create({ name: 'Romeo & Juliet', authorId: 0 }));
+        store.dispatch(BlockActions.create(block));
+        store.dispatch(TransactionActions.create(transaction));
 
+        const expectedBlock = { ...block };
+        const expectedTransaction = { ...transaction };
         const state = store.getState();
 
-        const expectedAuthorState = {
-            0: { id: 0, name: 'Shakespeare' },
+        const expectedBlockState = {
+            [expectedBlock.number]: expectedBlock,
         };
-        const expectedAuthorSelected = [{ id: 0, name: 'Shakespeare' }];
-        const expectedAuthorBooksSelected = [[{ id: 0, name: 'Romeo & Juliet', authorId: 0 }]];
-        assert.deepEqual(state.orm['Author'].itemsById, expectedAuthorState, 'state.orm.Author.itemsById');
-        assert.deepEqual(AuthorSelector.selectWithId(state), expectedAuthorSelected, 'Author.selectWithId');
-        assert.deepEqual(AuthorSelector.selectBooks(state), expectedAuthorBooksSelected, 'Author.selectBooks');
+        const expectedBlockSelected = [expectedBlock];
+        const expectedBlockTransactionsSelected = [[expectedTransaction]];
+        assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');
+        assert.deepEqual(BlockSelector.selectWithId(state), expectedBlockSelected, 'Block.selectWithId');
+        assert.deepEqual(
+            BlockSelector.selectTransactions(state),
+            expectedBlockTransactionsSelected,
+            'Block.selectTransactions',
+        );
 
-        const expectedBookState = {
-            0: { id: 0, name: 'Romeo & Juliet', authorId: 0 },
+        const expectedTransactionState = {
+            [transaction.hash]: expectedTransaction,
         };
-        const expectedBookSelected = [{ id: 0, name: 'Romeo & Juliet', authorId: 0 }];
-        assert.deepEqual(state.orm['Book'].itemsById, expectedBookState, 'state.orm.Book.itemsById');
-        assert.deepEqual(BookSelector.selectWithId(state), expectedBookSelected, 'Book.selectWithId');
+        const expectedTransactionSelected = [expectedTransaction];
+        assert.deepEqual(
+            state.orm['Transaction'].itemsById,
+            expectedTransactionState,
+            'state.orm.Transaction.itemsById',
+        );
+        assert.deepEqual(
+            TransactionSelector.selectWithId(state),
+            expectedTransactionSelected,
+            'Transaction.selectWithId',
+        );
     });
 });
