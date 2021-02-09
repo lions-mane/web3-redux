@@ -73,21 +73,29 @@ describe('redux-orm', () => {
 
         //Polymorphic selectors
         //Block.select
-        //@ts-ignore
-        assert.deepEqual(BlockSelector.select(state, expectedBlock.id!), expectedBlock, 'Block.select(id)');
-        //@ts-ignore
-        assert.deepEqual(BlockSelector.select(state, [expectedBlock.id!]), [expectedBlock], 'Block.select([id])');
+        assert.deepEqual(
+            //@ts-ignore
+            BlockSelector.select(state, expectedBlock.id!),
+            expectedBlock,
+            'Block.select(id)',
+        );
+        assert.deepEqual(
+            //@ts-ignore
+            BlockSelector.select(state, [expectedBlock.id!]),
+            [expectedBlock],
+            'Block.select([id])',
+        );
         assert.deepEqual(BlockSelector.select(state), [expectedBlock], 'Block.select()');
 
         //Block.selectTransactions
-        //@ts-ignore
         assert.deepEqual(
+            //@ts-ignore
             BlockSelector.selectTransactions(state, expectedBlock.id!),
             [expectedTransaction],
             'Block.selectTransactions(id)',
         );
-        //@ts-ignore
         assert.deepEqual(
+            //@ts-ignore
             BlockSelector.selectTransactions(state, [expectedBlock.id!]),
             [[expectedTransaction]],
             'Block.selectTransactions([id])',
@@ -99,14 +107,14 @@ describe('redux-orm', () => {
         );
 
         //Block.selectTransactions
-        //@ts-ignore
         assert.deepEqual(
+            //@ts-ignore
             BlockSelector.selectBlockTransaction(state, expectedBlock.id!),
             { ...expectedBlock, transactions: [expectedTransaction] },
             'Block.selectBlockTransaction(id)',
         );
-        //@ts-ignore
         assert.deepEqual(
+            //@ts-ignore
             BlockSelector.selectBlockTransaction(state, [expectedBlock.id!]),
             [{ ...expectedBlock, transactions: [expectedTransaction] }],
             'Block.selectBlockTransaction([id])',
@@ -118,14 +126,14 @@ describe('redux-orm', () => {
         );
 
         //Transaction.select
-        //@ts-ignore
         assert.deepEqual(
+            //@ts-ignore
             TransactionSelector.select(state, expectedTransaction.id!),
             expectedTransaction,
             'Transaction.select(id)',
         );
-        //@ts-ignore
         assert.deepEqual(
+            //@ts-ignore
             TransactionSelector.select(state, [expectedTransaction.id!]),
             [expectedTransaction],
             'Transaction.select([id])',
