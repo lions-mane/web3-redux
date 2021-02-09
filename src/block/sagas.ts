@@ -15,8 +15,8 @@ import { BlockHeader, BlockTransaction } from './model';
 import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
 
 export function* fetch(action: FetchAction) {
-    const web3 = web3ForNetworkId(action.payload.networkId);
     const { payload } = action;
+    const web3 = web3ForNetworkId(payload.networkId);
     const block: BlockTransaction = yield call(
         web3.eth.getBlock,
         payload.blockHashOrBlockNumber,

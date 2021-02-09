@@ -2,10 +2,13 @@ import { assert } from 'chai';
 import { createStore } from './store';
 import * as BlockActions from './block/actions';
 import * as TransactionActions from './transaction/actions';
+import * as ContractActions from './contract/actions';
 import * as BlockSelector from './block/selector';
 import * as TransactionSelector from './transaction/selector';
+import * as ContractSelector from './contract/selector';
 import { Block } from './block/model';
 import { Transaction } from './transaction/model';
+import { Contract } from './contract/model';
 
 const networkId = '1337';
 const block: Block = {
@@ -48,44 +51,101 @@ const transaction: Transaction = {
     input: '',
 };
 
+const contract: Contract = {
+    id: `${networkId}-0x1111`,
+    networkId,
+    address: '0x1111',
+    abi: [],
+};
+
 describe('redux-orm', () => {
     let store: ReturnType<typeof createStore>;
     beforeEach(() => {
         store = createStore();
     });
-    it('create', async () => {
-        store.dispatch(BlockActions.create(block));
-        store.dispatch(TransactionActions.create(transaction));
 
-        const expectedBlock = { ...block };
-        const expectedTransaction = { ...transaction };
+    it('BlockActions.create', async () => {
+        store.dispatch(BlockActions.create({ ...block, id: '' }));
+        const expected = { ...block };
         const state = store.getState();
 
-        const expectedBlockState = { [expectedBlock.id!]: expectedBlock };
-        assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');
+        //State
+        const expectedState = { [expected.id!]: expected };
+        assert.deepEqual(state.orm['Block'].itemsById, expectedState, 'state.orm.Block.itemsById');
 
-        const expectedTransactionState = { [transaction.id!]: expectedTransaction };
-        assert.deepEqual(
-            state.orm['Transaction'].itemsById,
-            expectedTransactionState,
-            'state.orm.Transaction.itemsById',
-        );
-
-        //Polymorphic selectors
         //Block.select
         assert.deepEqual(
             //@ts-ignore
-            BlockSelector.select(state, expectedBlock.id!),
-            expectedBlock,
+            BlockSelector.select(state, expected.id!),
+            expected,
             'Block.select(id)',
         );
         assert.deepEqual(
             //@ts-ignore
-            BlockSelector.select(state, [expectedBlock.id!]),
-            [expectedBlock],
+            BlockSelector.select(state, [expected.id!]),
+            [expected],
             'Block.select([id])',
         );
-        assert.deepEqual(BlockSelector.select(state), [expectedBlock], 'Block.select()');
+        assert.deepEqual(BlockSelector.select(state), [expected], 'Block.select()');
+    });
+
+    it('TransactionActions.create', async () => {
+        store.dispatch(TransactionActions.create({ ...transaction, id: '' }));
+        const expected = { ...transaction };
+        const state = store.getState();
+
+        //State
+        const expectedState = { [expected.id!]: expected };
+        assert.deepEqual(state.orm['Transaction'].itemsById, expectedState, 'state.orm.Transaction.itemsById');
+
+        //Transaction.select
+        assert.deepEqual(
+            //@ts-ignore
+            TransactionSelector.select(state, expected.id!),
+            expected,
+            'Transaction.select(id)',
+        );
+        assert.deepEqual(
+            //@ts-ignore
+            TransactionSelector.select(state, [expected.id!]),
+            [expected],
+            'Transaction.select([id])',
+        );
+        assert.deepEqual(TransactionSelector.select(state), [expected], 'Transaction.select()');
+    });
+
+    it('ContractActions.create', async () => {
+        store.dispatch(ContractActions.create({ ...contract, id: '' }));
+        const expected = { ...contract };
+        const state = store.getState();
+
+        //State
+        const expectedState = { [expected.id!]: expected };
+        assert.deepEqual(state.orm['Contract'].itemsById, expectedState, 'state.orm.Contract.itemsById');
+
+        //Transaction.select
+        assert.deepEqual(
+            //@ts-ignore
+            ContractSelector.select(state, expected.id!),
+            expected,
+            'Contract.select(id)',
+        );
+        assert.deepEqual(
+            //@ts-ignore
+            ContractSelector.select(state, [expected.id!]),
+            [expected],
+            'Contract.select([id])',
+        );
+        assert.deepEqual(ContractSelector.select(state), [expected], 'Contract.select()');
+    });
+
+    it('Block.transactions', async () => {
+        store.dispatch(BlockActions.create({ ...block, id: '' }));
+        store.dispatch(TransactionActions.create({ ...transaction, id: '' }));
+
+        const expectedBlock = { ...block };
+        const expectedTransaction = { ...transaction };
+        const state = store.getState();
 
         //Block.selectTransactions
         assert.deepEqual(
@@ -106,7 +166,7 @@ describe('redux-orm', () => {
             'Block.selectTransactions()',
         );
 
-        //Block.selectTransactions
+        //Block.selectBlockTransaction
         assert.deepEqual(
             //@ts-ignore
             BlockSelector.selectBlockTransaction(state, expectedBlock.id!),
@@ -124,20 +184,5 @@ describe('redux-orm', () => {
             [{ ...expectedBlock, transactions: [expectedTransaction] }],
             'Block.selectBlockTransaction()',
         );
-
-        //Transaction.select
-        assert.deepEqual(
-            //@ts-ignore
-            TransactionSelector.select(state, expectedTransaction.id!),
-            expectedTransaction,
-            'Transaction.select(id)',
-        );
-        assert.deepEqual(
-            //@ts-ignore
-            TransactionSelector.select(state, [expectedTransaction.id!]),
-            [expectedTransaction],
-            'Transaction.select([id])',
-        );
-        assert.deepEqual(TransactionSelector.select(state), [expectedTransaction], 'Transaction.select()');
     });
 });

@@ -1,4 +1,3 @@
-import { NetworkId } from '../network/model';
 import { actionCreator } from '../utils';
 import { Transaction, TransactionId } from './model';
 
@@ -12,11 +11,7 @@ export const FETCH = `${name}/FETCH`;
 export const create = actionCreator<typeof CREATE, Transaction>(CREATE);
 export const update = actionCreator<typeof UPDATE, Transaction>(UPDATE);
 export const remove = actionCreator<typeof REMOVE, TransactionId>(REMOVE);
-
-interface FetchActionInput extends NetworkId {
-    hash: string;
-}
-export const fetch = actionCreator<typeof FETCH, FetchActionInput>(FETCH);
+export const fetch = actionCreator<typeof FETCH, TransactionId>(FETCH);
 
 export type CreateAction = ReturnType<typeof create>;
 export function isCreateAction(action: { type: string }): action is CreateAction {

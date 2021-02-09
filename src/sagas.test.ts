@@ -3,14 +3,18 @@ import { before } from 'mocha';
 import { put } from 'redux-saga/effects';
 import Web3 from 'web3';
 import dotenv from 'dotenv';
+import ERC20 from './abis/ERC20.json';
 
 import * as BlockActions from './block/actions';
+import * as ContractActions from './contract/actions';
 import * as BlockSagas from './block/sagas';
 //import * as TransactionActions from './transaction/actions';
 import * as BlockSelector from './block/selector';
 //import * as TransactionSelector from './transaction/selector';
 import { createStore } from './store';
 import { Block, BlockHeader, BlockTransactionObject, BlockTransactionString } from './block/model';
+import { web3ForNetworkId } from './utils';
+import { AbiItem } from 'web3-utils';
 
 function sleep(ms: number) {
     return new Promise(resolve => {
@@ -33,7 +37,7 @@ describe('sagas', () => {
         store = createStore();
     });
 
-    it('fetch({returnTransactionObjects:false})', async () => {
+    it('BlockSagas.fetch({returnTransactionObjects:false})', async () => {
         const gen = BlockSagas.fetch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
         const block = await web3.eth.getBlock('latest');
         const expectedBlock: BlockTransactionString = { ...block, networkId, id: `${networkId}-${block.number}` };
@@ -44,7 +48,7 @@ describe('sagas', () => {
         assert.deepEqual(putBlock, expectedPutBlockAction);
     });
 
-    it('fetch({returnTransactionObjects:true})', async () => {
+    it('BlockSagas.fetch({returnTransactionObjects:true})', async () => {
         const gen = BlockSagas.fetch(
             BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: true }),
         );
@@ -137,5 +141,27 @@ describe('sagas', () => {
         subscription2.unsubscribe();
         state = store.getState();
         assert.deepEqual(state.orm['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
+    });
+
+    it('store.dispatch(ContractSagas.call())', async () => {
+        const web3 = web3ForNetworkId(networkId);
+        const accounts = await web3.eth.getAccounts();
+        web3.eth.defaultAccount = accounts[0];
+        const tx = new web3.eth.Contract(ERC20.abi as AbiItem[]).deploy({
+            data: ERC20.bytecode,
+            arguments: ['Test Token', 'TEST'],
+        });
+        const gas = await tx.estimateGas();
+        const token = await tx.send({ from: accounts[0], gas, gasPrice: '10000' });
+
+        store.dispatch(
+            ContractActions.create({ networkId, address: token.options.address, abi: ERC20.abi as AbiItem[] }),
+        );
+        await sleep(2000);
+
+        console.debug(store.getState().orm['Contract'].itemsById);
+
+        store.dispatch(ContractActions.call({ networkId, address: token.options.address, method: 'symbol' }));
+        await sleep(2000);
     });
 });

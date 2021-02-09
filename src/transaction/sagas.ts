@@ -4,8 +4,8 @@ import { create, FETCH, FetchAction } from './actions';
 import { web3ForNetworkId } from '../utils';
 
 export function* fetch(action: FetchAction) {
-    const web3 = web3ForNetworkId(action.payload.networkId);
     const { payload } = action;
+    const web3 = web3ForNetworkId(payload.networkId);
     const transaction: Transaction = yield call(web3.eth.getTransaction, payload.hash);
     yield put(create({ ...transaction, networkId: payload.networkId }));
 }
