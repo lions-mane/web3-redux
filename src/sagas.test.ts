@@ -10,7 +10,7 @@ import * as BlockSagas from './block/sagas';
 import * as BlockSelector from './block/selector';
 //import * as TransactionSelector from './transaction/selector';
 import { createStore } from './store';
-import { Block } from './block/model';
+import { Block, BlockHeader, BlockTransactionObject, BlockTransactionString } from './block/model';
 
 function sleep(ms: number) {
     return new Promise(resolve => {
@@ -33,10 +33,10 @@ describe('sagas', () => {
         store = createStore();
     });
 
-    it('fetch', async () => {
+    it('fetch({returnTransactionObjects:false})', async () => {
         const gen = BlockSagas.fetch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
         const block = await web3.eth.getBlock('latest');
-        const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
+        const expectedBlock: BlockTransactionString = { ...block, networkId, id: `${networkId}-${block.number}` };
         const expectedPutBlockAction = put(BlockActions.create(expectedBlock));
 
         gen.next();
@@ -44,12 +44,13 @@ describe('sagas', () => {
         assert.deepEqual(putBlock, expectedPutBlockAction);
     });
 
-    it('fetch', async () => {
+    it('fetch({returnTransactionObjects:true})', async () => {
         const gen = BlockSagas.fetch(
             BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: true }),
         );
         const block = await web3.eth.getBlock('latest', true);
-        const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
+        //@ts-ignore
+        const expectedBlock: BlockTransactionObject = { ...block, networkId, id: `${networkId}-${block.number}` };
         const expectedPutBlockAction = put(BlockActions.create(expectedBlock));
 
         gen.next();
@@ -57,7 +58,7 @@ describe('sagas', () => {
         assert.deepEqual(putBlock, expectedPutBlockAction);
     });
 
-    it('fetch', async () => {
+    it('store.dispatch(fetch({returnTransactionObjects:false}))', async () => {
         store.dispatch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
         const block = await web3.eth.getBlock('latest');
         const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
@@ -72,5 +73,20 @@ describe('sagas', () => {
         assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');
         assert.deepEqual(BlockSelector.selectWithId(state), expectedBlockSelected, 'Block.selectWithId');
         //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
+    });
+
+    it('store.dispatch(subscribe())', async () => {
+        store.dispatch(BlockActions.subscribe({ networkId }));
+
+        const expectedBlocks: { [key: string]: BlockHeader } = {};
+        web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
+            const id = `${networkId}-${block.number}`;
+            expectedBlocks[id] = { ...block, networkId, id };
+        });
+
+        await sleep(2000);
+
+        const state = store.getState();
+        assert.deepEqual(state.orm['Block'].itemsById, expectedBlocks);
     });
 });
