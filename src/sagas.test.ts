@@ -89,4 +89,53 @@ describe('sagas', () => {
         const state = store.getState();
         assert.deepEqual(state.orm['Block'].itemsById, expectedBlocks);
     });
+
+    it('store.dispatch(unsubscribe())', async () => {
+        store.dispatch(BlockActions.subscribe({ networkId }));
+
+        const expectedBlocks: { [key: string]: BlockHeader } = {};
+        const subscription = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
+            const id = `${networkId}-${block.number}`;
+            expectedBlocks[id] = { ...block, networkId, id };
+        });
+
+        await sleep(2000);
+        store.dispatch(BlockActions.unsubscribe({ networkId }));
+        subscription.unsubscribe();
+        await sleep(2000);
+
+        const state = store.getState();
+        assert.deepEqual(state.orm['Block'].itemsById, expectedBlocks);
+    });
+
+    it('store.dispatch(unsubscribe()) - multiple networks', async () => {
+        const network1 = '1';
+        const network2 = '2';
+        store.dispatch(BlockActions.subscribe({ networkId: network1 }));
+        store.dispatch(BlockActions.subscribe({ networkId: network2 }));
+
+        const expectedBlocks1: { [key: string]: BlockHeader } = {};
+        const subscription1 = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
+            const id = `${network1}-${block.number}`;
+            expectedBlocks1[id] = { ...block, networkId: network1, id };
+        });
+
+        const expectedBlocks2: { [key: string]: BlockHeader } = {};
+        const subscription2 = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
+            const id = `${network2}-${block.number}`;
+            expectedBlocks2[id] = { ...block, networkId: network2, id };
+        });
+
+        await sleep(2000);
+        store.dispatch(BlockActions.unsubscribe({ networkId: network1 }));
+        subscription1.unsubscribe();
+        let state = store.getState();
+        assert.deepEqual(state.orm['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
+
+        await sleep(2000);
+        store.dispatch(BlockActions.unsubscribe({ networkId: network2 }));
+        subscription2.unsubscribe();
+        state = store.getState();
+        assert.deepEqual(state.orm['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
+    });
 });

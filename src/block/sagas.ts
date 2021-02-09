@@ -1,5 +1,15 @@
-import { put, call, takeEvery, take, all } from 'redux-saga/effects';
-import { create, FETCH, FetchAction, SubscribeAction, SUBSCRIBE, update } from './actions';
+import { put, call, takeEvery, take, all, cancel, fork } from 'redux-saga/effects';
+import {
+    create,
+    FETCH,
+    FetchAction,
+    SubscribeAction,
+    SUBSCRIBE,
+    update,
+    isSubscribeAction,
+    isUnsubscribeAction,
+    UnsubscribeAction,
+} from './actions';
 import { web3ForNetworkId } from '../utils';
 import { BlockHeader, BlockTransaction } from './model';
 import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
@@ -75,6 +85,39 @@ export function* subscribe(action: SubscribeAction) {
     }
 }
 
+export function* subscribeLoop() {
+    const subscribed: { [key: string]: boolean } = {};
+    const tasks: { [key: string]: any } = {};
+
+    function* subscribeLoopStart() {
+        while (true) {
+            const subscribePattern = (action: { type: string }) => {
+                if (!isSubscribeAction(action)) return false;
+                if (subscribed[action.payload.networkId]) return false;
+                subscribed[action.payload.networkId] = true;
+                return true;
+            };
+            const action: SubscribeAction = yield take(subscribePattern);
+            tasks[action.payload.networkId] = yield fork(subscribe, action);
+        }
+    }
+
+    function* subscribeLoopEnd() {
+        while (true) {
+            const unsubscribePattern = (action: { type: string }) => {
+                if (!isUnsubscribeAction(action)) return false;
+                if (!subscribed[action.payload.networkId]) return false;
+                subscribed[action.payload.networkId] = false;
+                return true;
+            };
+            const action: UnsubscribeAction = yield take(unsubscribePattern);
+            yield cancel(tasks[action.payload.networkId]);
+        }
+    }
+
+    yield all([subscribeLoopStart(), subscribeLoopEnd()]);
+}
+
 export function* saga() {
-    yield all([takeEvery(FETCH, fetch), takeEvery(SUBSCRIBE, subscribe)]);
+    yield all([takeEvery(FETCH, fetch), subscribeLoop()]);
 }
