@@ -61,32 +61,75 @@ describe('redux-orm', () => {
         const expectedTransaction = { ...transaction };
         const state = store.getState();
 
-        const expectedBlockState = {
-            [expectedBlock.id!]: expectedBlock,
-        };
-        const expectedBlockSelected = [expectedBlock];
-        const expectedBlockTransactionsSelected = [[expectedTransaction]];
+        const expectedBlockState = { [expectedBlock.id!]: expectedBlock };
         assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');
-        assert.deepEqual(BlockSelector.selectWithId(state), expectedBlockSelected, 'Block.selectWithId');
-        assert.deepEqual(
-            BlockSelector.selectTransactions(state),
-            expectedBlockTransactionsSelected,
-            'Block.selectTransactions',
-        );
 
-        const expectedTransactionState = {
-            [transaction.id!]: expectedTransaction,
-        };
-        const expectedTransactionSelected = [expectedTransaction];
+        const expectedTransactionState = { [transaction.id!]: expectedTransaction };
         assert.deepEqual(
             state.orm['Transaction'].itemsById,
             expectedTransactionState,
             'state.orm.Transaction.itemsById',
         );
+
+        //Polymorphic selectors
+        //Block.select
+        //@ts-ignore
+        assert.deepEqual(BlockSelector.select(state, expectedBlock.id!), expectedBlock, 'Block.select(id)');
+        //@ts-ignore
+        assert.deepEqual(BlockSelector.select(state, [expectedBlock.id!]), [expectedBlock], 'Block.select([id])');
+        assert.deepEqual(BlockSelector.select(state), [expectedBlock], 'Block.select()');
+
+        //Block.selectTransactions
+        //@ts-ignore
         assert.deepEqual(
-            TransactionSelector.selectWithId(state),
-            expectedTransactionSelected,
-            'Transaction.selectWithId',
+            BlockSelector.selectTransactions(state, expectedBlock.id!),
+            [expectedTransaction],
+            'Block.selectTransactions(id)',
         );
+        //@ts-ignore
+        assert.deepEqual(
+            BlockSelector.selectTransactions(state, [expectedBlock.id!]),
+            [[expectedTransaction]],
+            'Block.selectTransactions([id])',
+        );
+        assert.deepEqual(
+            BlockSelector.selectTransactions(state),
+            [[expectedTransaction]],
+            'Block.selectTransactions()',
+        );
+
+        //Block.selectTransactions
+        //@ts-ignore
+        assert.deepEqual(
+            BlockSelector.selectBlockTransaction(state, expectedBlock.id!),
+            { ...expectedBlock, transactions: [expectedTransaction] },
+            'Block.selectBlockTransaction(id)',
+        );
+        //@ts-ignore
+        assert.deepEqual(
+            BlockSelector.selectBlockTransaction(state, [expectedBlock.id!]),
+            [{ ...expectedBlock, transactions: [expectedTransaction] }],
+            'Block.selectBlockTransaction([id])',
+        );
+        assert.deepEqual(
+            BlockSelector.selectBlockTransaction(state),
+            [{ ...expectedBlock, transactions: [expectedTransaction] }],
+            'Block.selectBlockTransaction()',
+        );
+
+        //Transaction.select
+        //@ts-ignore
+        assert.deepEqual(
+            TransactionSelector.select(state, expectedTransaction.id!),
+            expectedTransaction,
+            'Transaction.select(id)',
+        );
+        //@ts-ignore
+        assert.deepEqual(
+            TransactionSelector.select(state, [expectedTransaction.id!]),
+            [expectedTransaction],
+            'Transaction.select([id])',
+        );
+        assert.deepEqual(TransactionSelector.select(state), [expectedTransaction], 'Transaction.select()');
     });
 });

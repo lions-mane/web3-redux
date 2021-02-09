@@ -39,7 +39,13 @@ export type ReducerAction = CreateAction | UpdateAction | RemoveAction;
 export function isReducerAction(action: { type: string }): action is ReducerAction {
     return isCreateAction(action) || isUpdateAction(action) || isRemoveAction(action);
 }
-export type Action = ReducerAction | FetchAction;
+
+export type SagaAction = FetchAction;
+export function isSagaAction(action: { type: string }): action is SagaAction {
+    return isFetchAction(action);
+}
+
+export type Action = ReducerAction | SagaAction;
 export function isAction(action: { type: string }): action is Action {
-    return isReducerAction(action) || isFetchAction(action);
+    return isReducerAction(action) || isSagaAction(action);
 }

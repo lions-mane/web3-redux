@@ -7,11 +7,11 @@ import { isStrings } from '../utils';
 export interface BlockHeader extends Web3BlockHeader, NetworkId {
     id?: string;
 }
-interface BlockTransactionBase extends BlockHeader {
-    size: number;
-    difficulty: number;
-    totalDifficulty: number;
-    uncles: string[];
+export interface BlockTransactionBase extends BlockHeader {
+    size?: number;
+    difficulty?: number;
+    totalDifficulty?: number;
+    uncles?: string[];
 }
 export interface BlockTransactionString extends BlockTransactionBase {
     transactions: string[];

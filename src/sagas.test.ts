@@ -71,7 +71,7 @@ describe('sagas', () => {
         };
         const expectedBlockSelected = [expectedBlock];
         assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');
-        assert.deepEqual(BlockSelector.selectWithId(state), expectedBlockSelected, 'Block.selectWithId');
+        assert.deepEqual(BlockSelector.select(state), expectedBlockSelected, 'Block.selectWithId');
         //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
     });
 
