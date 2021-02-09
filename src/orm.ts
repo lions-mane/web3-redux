@@ -25,17 +25,8 @@ type Action = {
 
 export function reducer(state: any, action: Action) {
     const sess = orm.session(state || initializeState(orm));
-
-    switch (action.type) {
-        case BlockActions.CREATE:
-        case BlockActions.UPDATE:
-        case BlockActions.REMOVE:
-            blockReducer(sess, action as BlockActions.Action);
-        case TransactionActions.CREATE:
-        case TransactionActions.UPDATE:
-        case TransactionActions.REMOVE:
-            transactionReducer(sess, action as TransactionActions.Action);
-    }
+    if (BlockActions.isAction(action)) blockReducer(sess, action as BlockActions.Action);
+    if (TransactionActions.isAction(action)) transactionReducer(sess, action as TransactionActions.Action);
 
     return sess.state;
 }

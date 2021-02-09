@@ -26,3 +26,6 @@ export type RemoveAction = ReturnType<typeof remove>;
 export type FetchAction = ReturnType<typeof fetch>;
 
 export type Action = CreateAction | UpdateAction | RemoveAction | FetchAction;
+export function isAction(action: { type: string }): action is Action {
+    return action.type === CREATE || action.type === UPDATE || action.type === REMOVE || action.type === FETCH;
+}
