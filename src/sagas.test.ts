@@ -3,13 +3,14 @@ import { before } from 'mocha';
 import { put } from 'redux-saga/effects';
 import Web3 from 'web3';
 import dotenv from 'dotenv';
-import ERC20 from './abis/ERC20.json';
+import BlockNumber from './abis/BlockNumber.json';
 
 import * as BlockActions from './block/actions';
 import * as ContractActions from './contract/actions';
-import * as BlockSagas from './block/sagas';
 //import * as TransactionActions from './transaction/actions';
+import * as BlockSagas from './block/sagas';
 import * as BlockSelector from './block/selector';
+import * as ContractSelector from './contract/selector';
 //import * as TransactionSelector from './transaction/selector';
 import { createStore } from './store';
 import { Block, BlockHeader, BlockTransactionObject, BlockTransactionString } from './block/model';
@@ -144,26 +145,76 @@ describe('sagas', () => {
     });
 
     it('store.dispatch(ContractSagas.call())', async () => {
+        //Block subsciption used for updates
+        store.dispatch(BlockActions.subscribe({ networkId }));
         const web3 = web3ForNetworkId(networkId);
         const accounts = await web3.eth.getAccounts();
         web3.eth.defaultAccount = accounts[0];
-        const tx = new web3.eth.Contract(ERC20.abi as AbiItem[]).deploy({
-            data: ERC20.bytecode,
-            arguments: ['Test Token', 'TEST'],
+        const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
+            data: BlockNumber.bytecode,
         });
         const gas = await tx.estimateGas();
-        const token = await tx.send({ from: accounts[0], gas, gasPrice: '10000' });
+        const contract = await tx.send({ from: accounts[0], gas, gasPrice: '10000' });
 
         store.dispatch(
-            ContractActions.create({ networkId, address: token.options.address, abi: ERC20.abi as AbiItem[] }),
+            ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
+        );
+        store.dispatch(
+            ContractActions.call({
+                networkId,
+                address: contract.options.address,
+                method: 'blockNumber',
+                sync: false,
+            }),
         );
         await sleep(2000);
 
-        store.dispatch(ContractActions.call({ networkId, address: token.options.address, method: 'symbol' }));
+        //@ts-ignore
+        const contractSel: Contract = ContractSelector.select(
+            store.getState(),
+            `${networkId}-${contract.options.address}`,
+        );
+        const blockNumberKey = `().call(latest,{"from":"${accounts[0]}"})`;
+        const blockNumber1 = contractSel.methods.blockNumber[blockNumberKey].value;
+        await sleep(2000);
+        const blockNumber2 = contractSel.methods.blockNumber[blockNumberKey].value;
+        assert.equal(blockNumber1, blockNumber2);
+    });
+
+    it('store.dispatch(ContractSagas.call({sync:true}))', async () => {
+        //Block subsciption used for updates
+        store.dispatch(BlockActions.subscribe({ networkId }));
+        const web3 = web3ForNetworkId(networkId);
+        const accounts = await web3.eth.getAccounts();
+        web3.eth.defaultAccount = accounts[0];
+        const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
+            data: BlockNumber.bytecode,
+        });
+        const gas = await tx.estimateGas();
+        const contract = await tx.send({ from: accounts[0], gas, gasPrice: '10000' });
+
+        store.dispatch(
+            ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
+        );
+        store.dispatch(
+            ContractActions.call({
+                networkId,
+                address: contract.options.address,
+                method: 'blockNumber',
+                sync: true,
+            }),
+        );
         await sleep(2000);
 
-        console.debug(
-            store.getState().orm['Contract'].itemsById[`${networkId}-${token.options.address}`].methods.symbol,
+        //@ts-ignore
+        const contractSel: Contract = ContractSelector.select(
+            store.getState(),
+            `${networkId}-${contract.options.address}`,
         );
+        const blockNumberKey = `().call(latest,{"from":"${accounts[0]}"})`;
+        const blockNumber1 = contractSel.methods.blockNumber[blockNumberKey].value;
+        await sleep(2000);
+        const blockNumber2 = contractSel.methods.blockNumber[blockNumberKey].value;
+        assert.notEqual(blockNumber1, blockNumber2);
     });
 });

@@ -1,4 +1,6 @@
-import { put, call, takeEvery, take, all, cancel, fork } from 'redux-saga/effects';
+import { put, call, takeEvery, take, all, cancel, fork, select } from 'redux-saga/effects';
+import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
+
 import {
     create,
     FETCH,
@@ -12,7 +14,9 @@ import {
 } from './actions';
 import { web3ForNetworkId } from '../utils';
 import { BlockHeader, BlockTransaction } from './model';
-import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
+import * as ContractSelector from '../contract/selector';
+import * as ContractActions from '../contract/actions';
+import { isContractCallBlockSync, Contract } from '../contract/model';
 
 export function* fetch(action: FetchAction) {
     const { payload } = action;
@@ -61,7 +65,39 @@ function subscribeChannel(networkId: string): EventChannel<ChannelMessage> {
     });
 }
 
-export function* subscribe(action: SubscribeAction) {
+function* handleBlockUpdate(block: BlockHeader) {
+    const contracts: Contract[] = yield select(ContractSelector.select);
+    const putContractCall: any[] = [];
+    contracts
+        .filter(contract => contract.networkId === block.networkId)
+        .map(contract => {
+            Object.entries(contract.methods ?? {}).map(([methodName, method]) => {
+                Object.values(method).map(contractCall => {
+                    if (
+                        !!contractCall.sync &&
+                        typeof contractCall.sync !== 'boolean' &&
+                        isContractCallBlockSync(contractCall.sync) &&
+                        contractCall.sync.filter(block)
+                    ) {
+                        putContractCall.push(
+                            put(
+                                ContractActions.call({
+                                    address: contract.address,
+                                    networkId: contract.networkId,
+                                    method: methodName,
+                                    ...contractCall,
+                                }),
+                            ),
+                        );
+                    }
+                });
+            });
+        });
+
+    yield all(putContractCall);
+}
+
+function* subscribe(action: SubscribeAction) {
     while (true) {
         const channel: TakeableChannel<ChannelMessage> = yield call(subscribeChannel, action.payload.networkId);
 
@@ -70,11 +106,17 @@ export function* subscribe(action: SubscribeAction) {
                 const message: ChannelMessage = yield take(channel);
                 const { type, block, error } = message;
                 if (type === SUBSCRIBE_DATA) {
-                    yield put(create({ ...block!, networkId: action.payload.networkId }));
+                    const newBlock = { ...block!, networkId: action.payload.networkId };
+                    yield put(create(newBlock));
+                    //@ts-ignore
+                    yield fork(handleBlockUpdate, newBlock);
                 } else if (type === SUBSCRIBE_ERROR) {
                     yield put({ type: SUBSCRIBE_ERROR, error });
                 } else if (type === SUBSCRIBE_CHANGED) {
-                    yield put(update({ ...block!, networkId: action.payload.networkId }));
+                    const newBlock = { ...block!, networkId: action.payload.networkId };
+                    yield put(update(newBlock));
+                    //@ts-ignore
+                    yield fork(handleBlockUpdate, newBlock);
                 }
             }
         } catch (error) {
@@ -85,7 +127,7 @@ export function* subscribe(action: SubscribeAction) {
     }
 }
 
-export function* subscribeLoop() {
+function* subscribeLoop() {
     const subscribed: { [key: string]: boolean } = {};
     const tasks: { [key: string]: any } = {};
 

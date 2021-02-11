@@ -19,7 +19,7 @@
         "dev": "ts-node-dev --respawn src/index",
         "pretest": "npm-run-all clean build",
         "prepublishOnly": "npm run test",
-        "ganache": "ganache-cli"
+        "ganache": "ganache-cli --blockTime 1"
     },
     "devDependencies": {
         "@types/chai": "^4.2.14",

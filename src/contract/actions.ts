@@ -1,13 +1,15 @@
 import { CallOptions, SendOptions } from 'web3-eth-contract';
 import { actionCreator } from '../utils';
-import { Contract, ContractId } from './model';
+import { ContractCallSync, Contract, ContractId } from './model';
 
 const name = 'Contract';
 
 export const CREATE = `${name}/CREATE`;
 export const UPDATE = `${name}/UPDATE`;
 export const REMOVE = `${name}/DELETE`;
+
 export const CALL = `${name}/CALL`;
+
 export const SEND = `${name}/SEND`;
 
 export const create = actionCreator<typeof CREATE, Contract>(CREATE);
@@ -19,6 +21,7 @@ interface CallActionInput extends ContractId {
     args?: any[];
     options?: CallOptions;
     defaultBlock?: number | string;
+    sync?: ContractCallSync;
 }
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
 

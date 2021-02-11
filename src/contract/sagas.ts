@@ -1,6 +1,6 @@
 import { put, call, select, takeEvery } from 'redux-saga/effects';
 import { web3ForNetworkId } from '../utils';
-import { Contract, Model } from './model';
+import { Contract, Model, CALL_BLOCK_SYNC, ContractCallSync } from './model';
 import { CALL, CallAction, update } from './actions';
 import * as ContractSelector from './selector';
 import { ContractSendMethod } from 'web3-eth-contract';
@@ -21,23 +21,39 @@ export function* contractCall(action: CallAction) {
     const contract: Contract = yield select(ContractSelector.select, id);
     const web3Contract = new web3.eth.Contract(contract.abi, contract.address);
     const defaultBlock = payload.defaultBlock ?? 'latest';
-    const from: string = payload.options?.from || web3.eth.defaultAccount!;
+    //No sync if block isn't set to "latest"
+    let sync: ContractCallSync;
+    if (defaultBlock != 'latest') {
+        sync = false;
+    } else {
+        const defaultSync = contract.defaultCallSync ?? {
+            type: CALL_BLOCK_SYNC,
+            filter: () => true,
+        };
+        if (payload.sync === true) {
+            sync = defaultSync;
+        } else {
+            sync = payload.sync ?? defaultSync;
+        }
+    }
+
+    const from: string = payload.options?.from ?? web3.eth.defaultAccount!;
     const gasPrice = payload.options?.gasPrice ?? 0;
 
     if (!payload.args || payload.args.length == 0) {
         const tx: ContractSendMethod = web3Contract.methods[payload.method]();
         //@ts-ignore
-        const gas = payload.options?.gas || (yield call(tx.estimateGas, { from }));
+        const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
         const key = argsHash({ from, defaultBlock });
         //@ts-ignore
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
-        contract.methods![payload.method][key] = { value, defaultBlock };
+        contract.methods![payload.method][key] = { value, sync, defaultBlock };
     } else {
         const tx: ContractSendMethod = web3Contract.methods[payload.method](payload.args);
         const key = argsHash({ from, defaultBlock, args: payload.args });
         //@ts-ignore
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
-        contract.methods![payload.method][key] = { value, defaultBlock, args: payload.args };
+        contract.methods![payload.method][key] = { value, defaultBlock, sync, args: payload.args };
     }
 
     yield put(update({ ...contract }));
