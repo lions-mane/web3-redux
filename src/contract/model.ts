@@ -42,6 +42,11 @@ export interface Contract extends NetworkId {
             [argsHash: string]: ContractCall;
         };
     };
+    events?: {
+        [eventName: string]: {
+            [eventId: string]: any;
+        };
+    };
 }
 
 export interface ContractId extends NetworkId {

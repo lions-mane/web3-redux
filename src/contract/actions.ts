@@ -9,8 +9,10 @@ export const UPDATE = `${name}/UPDATE`;
 export const REMOVE = `${name}/DELETE`;
 
 export const CALL = `${name}/CALL`;
-
 export const SEND = `${name}/SEND`;
+
+export const EVENT_SUBSCRIBE = `${name}/EVENT_SUBSCRIBE`;
+export const EVENT_UNSUBSCRIBE = `${name}/EVENT_UNSUBSCRIBE`;
 
 export const create = actionCreator<typeof CREATE, Contract>(CREATE);
 export const update = actionCreator<typeof UPDATE, Contract>(UPDATE);
@@ -25,12 +27,25 @@ interface CallActionInput extends ContractId {
 }
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
 
+//TODO
 interface SendActionInput extends ContractId {
     method: string;
     args?: any[];
     options?: SendOptions;
 }
 export const send = actionCreator<typeof SEND, SendActionInput>(SEND);
+
+interface EventSubscribeActionInput extends ContractId {
+    eventName: string;
+    filter: { [key: string]: any };
+    fromBlock?: number | string;
+}
+export const eventSubscribe = actionCreator<typeof EVENT_SUBSCRIBE, EventSubscribeActionInput>(EVENT_SUBSCRIBE);
+
+interface EventUnsubscribeActionInput extends ContractId {
+    eventName: string;
+}
+export const eventUnsubscribe = actionCreator<typeof EVENT_UNSUBSCRIBE, EventUnsubscribeActionInput>(EVENT_UNSUBSCRIBE);
 
 export type CreateAction = ReturnType<typeof create>;
 export function isCreateAction(action: { type: string }): action is CreateAction {
@@ -48,9 +63,21 @@ export type CallAction = ReturnType<typeof call>;
 export function isCallAction(action: { type: string }): action is CallAction {
     return action.type === CALL;
 }
+
+//TODO
 export type SendAction = ReturnType<typeof send>;
 export function isSendAction(action: { type: string }): action is SendAction {
     return action.type === SEND;
+}
+
+export type EventSubscribeAction = ReturnType<typeof eventSubscribe>;
+export function isEventSubscribeAction(action: { type: string }): action is EventSubscribeAction {
+    return action.type === EVENT_SUBSCRIBE;
+}
+
+export type EventUnsubscribeAction = ReturnType<typeof eventUnsubscribe>;
+export function isEventUnsubscribeAction(action: { type: string }): action is EventUnsubscribeAction {
+    return action.type === EVENT_UNSUBSCRIBE;
 }
 
 export type ReducerAction = CreateAction | UpdateAction | RemoveAction;
