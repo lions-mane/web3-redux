@@ -116,7 +116,7 @@ describe('redux-orm', () => {
 
     it('ContractActions.create', async () => {
         store.dispatch(ContractActions.create({ ...contract, id: '' }));
-        const expected = { ...contract };
+        const expected = { ...contract, methods: {} };
         const state = store.getState();
 
         //State

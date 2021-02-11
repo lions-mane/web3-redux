@@ -6,7 +6,13 @@ export interface Contract extends NetworkId {
     id?: string;
     address: string;
     abi: AbiItem[];
+    methods?: {
+        [callerFunctionName: string]: {
+            [argsHash: string]: { value: any; defaultBlock: string | number; args?: any[] };
+        };
+    };
 }
+
 export interface ContractId extends NetworkId {
     address: string;
 }

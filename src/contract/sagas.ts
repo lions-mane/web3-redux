@@ -5,6 +5,14 @@ import { CALL, CallAction, update } from './actions';
 import * as ContractSelector from './selector';
 import { ContractSendMethod } from 'web3-eth-contract';
 
+function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: string | number; args?: any[] }) {
+    if (!args || args.length == 0) {
+        return `().call(${defaultBlock},${JSON.stringify({ from })})`;
+    } else {
+        return `(${args}).call(${defaultBlock},${JSON.stringify({ from })})`;
+    }
+}
+
 export function* contractCall(action: CallAction) {
     const { payload } = action;
     const web3 = web3ForNetworkId(payload.networkId);
@@ -13,25 +21,26 @@ export function* contractCall(action: CallAction) {
     const contract: Contract = yield select(ContractSelector.select, id);
     const web3Contract = new web3.eth.Contract(contract.abi, contract.address);
     const defaultBlock = payload.defaultBlock ?? 'latest';
-    const options = payload.options ?? {};
+    const from: string = payload.options?.from || web3.eth.defaultAccount!;
+    const gasPrice = payload.options?.gasPrice ?? 0;
 
-    let tx: ContractSendMethod;
-    let key: string;
     if (!payload.args || payload.args.length == 0) {
-        key = `${payload.method}().call(${defaultBlock},${JSON.stringify(options)})`;
-        tx = web3Contract.methods[payload.method]();
+        const tx: ContractSendMethod = web3Contract.methods[payload.method]();
+        //@ts-ignore
+        const gas = payload.options?.gas || (yield call(tx.estimateGas, { from }));
+        const key = argsHash({ from, defaultBlock });
+        //@ts-ignore
+        const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
+        contract.methods![payload.method][key] = { value, defaultBlock };
     } else {
-        key = `${payload.method}(${payload.args}).call(${defaultBlock},${JSON.stringify(options)})`;
-        tx = web3Contract.methods[payload.method](payload.args);
+        const tx: ContractSendMethod = web3Contract.methods[payload.method](payload.args);
+        const key = argsHash({ from, defaultBlock, args: payload.args });
+        //@ts-ignore
+        const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
+        contract.methods![payload.method][key] = { value, defaultBlock, args: payload.args };
     }
 
-    const data = yield call(tx.call);
-    console.debug(data);
-    console.debug(key);
-
     yield put(update({ ...contract }));
-
-    //Add to call cache
 }
 
 export function* saga() {

@@ -159,9 +159,11 @@ describe('sagas', () => {
         );
         await sleep(2000);
 
-        console.debug(store.getState().orm['Contract'].itemsById);
-
         store.dispatch(ContractActions.call({ networkId, address: token.options.address, method: 'symbol' }));
         await sleep(2000);
+
+        console.debug(
+            store.getState().orm['Contract'].itemsById[`${networkId}-${token.options.address}`].methods.symbol,
+        );
     });
 });
