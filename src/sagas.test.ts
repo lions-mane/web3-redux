@@ -7,7 +7,7 @@ import BlockNumber from './abis/BlockNumber.json';
 
 import * as BlockActions from './block/actions';
 import * as ContractActions from './contract/actions';
-//import * as TransactionActions from './transaction/actions';
+import * as TransactionActions from './transaction/actions';
 import * as BlockSagas from './block/sagas';
 import * as BlockSelector from './block/selector';
 import * as ContractSelector from './contract/selector';
@@ -16,7 +16,8 @@ import { createStore } from './store';
 import { Block, BlockHeader, BlockTransactionObject, BlockTransactionString } from './block/model';
 import { web3ForNetworkId } from './utils';
 import { AbiItem } from 'web3-utils';
-import { Contract } from './contract/model';
+import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, Contract } from './contract/model';
+import { TransactionReceipt } from 'web3-eth';
 
 function sleep(ms: number) {
     return new Promise(resolve => {
@@ -183,7 +184,7 @@ describe('sagas', () => {
         assert.equal(blockNumber1, blockNumber2);
     });
 
-    it('store.dispatch(ContractSagas.call({sync:true}))', async () => {
+    it('store.dispatch(ContractSagas.call({sync:CALL_BLOCK_SYNC}))', async () => {
         //Block subsciption used for updates
         store.dispatch(BlockActions.subscribe({ networkId }));
         const web3 = web3ForNetworkId(networkId);
@@ -203,7 +204,7 @@ describe('sagas', () => {
                 networkId,
                 address: contract.options.address,
                 method: 'blockNumber',
-                sync: true,
+                sync: CALL_BLOCK_SYNC,
             }),
         );
         await sleep(2000);
@@ -219,5 +220,57 @@ describe('sagas', () => {
         await sleep(2000);
         const blockNumber2 = contractSel.methods!.blockNumber[blockNumberKey].value;
         assert.notEqual(blockNumber1, blockNumber2);
+    });
+
+    it('store.dispatch(ContractSagas.call({sync:CALL_TRANSACTION_SYNC}))', async () => {
+        const web3 = web3ForNetworkId(networkId);
+        const accounts = await web3.eth.getAccounts();
+        web3.eth.defaultAccount = accounts[0];
+        const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
+            data: BlockNumber.bytecode,
+        });
+        const gas1 = await tx1.estimateGas();
+        const contract = await tx1.send({ from: accounts[0], gas: gas1, gasPrice: '10000' });
+        const tx2 = await contract.methods.setValue(42);
+        const gas2 = await tx2.estimateGas();
+        await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
+
+        store.dispatch(
+            ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
+        );
+        store.dispatch(
+            ContractActions.call({
+                networkId,
+                address: contract.options.address,
+                method: 'getValue',
+                sync: CALL_TRANSACTION_SYNC,
+            }),
+        );
+        await sleep(2000);
+
+        //@ts-ignore
+        const contractSel: Contract = ContractSelector.select(
+            store.getState(),
+            //@ts-ignore
+            `${networkId}-${contract.options.address}`,
+        );
+        const valueKey = `().call(latest,{"from":"${accounts[0]}"})`;
+        const value1 = contractSel.methods!.getValue[valueKey].value;
+        assert.equal(value1, 42);
+
+        const tx3 = await contract.methods.setValue(666);
+        const gas3 = await tx3.estimateGas();
+        const receipt: TransactionReceipt = await tx3.send({ from: accounts[0], gas: gas3, gasPrice: '10000' });
+        store.dispatch(
+            TransactionActions.fetch({
+                networkId,
+                hash: receipt.transactionHash,
+            }),
+        );
+
+        //Updated from transaction sync
+        await sleep(2000);
+        const value2 = contractSel.methods!.getValue[valueKey].value;
+        assert.equal(value2, 666);
     });
 });

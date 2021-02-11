@@ -9,7 +9,7 @@ const name = 'Contract';
 export const CALL_BLOCK_SYNC = `${name}/CALL_BLOCK_SYNC`;
 //Sync call tx filter
 export const CALL_TRANSACTION_SYNC = `${name}/CALL_TRANSACTION_SYNC`;
-interface ContractCallBlockSync {
+export interface ContractCallBlockSync {
     type: typeof CALL_BLOCK_SYNC;
     filter: (block: BlockHeader) => boolean;
 }
@@ -17,7 +17,7 @@ export function isContractCallBlockSync(action: { type: string }): action is Con
     return action.type === CALL_BLOCK_SYNC;
 }
 
-interface ContractCallTransactionSync {
+export interface ContractCallTransactionSync {
     type: typeof CALL_TRANSACTION_SYNC;
     filter: (transaction: Transaction) => boolean;
 }
@@ -25,12 +25,12 @@ export function isContractCallTransactionSync(action: { type: string }): action 
     return action.type === CALL_TRANSACTION_SYNC;
 }
 
-export type ContractCallSync = ContractCallBlockSync | ContractCallTransactionSync | boolean;
+export type ContractCallSync = ContractCallBlockSync | ContractCallTransactionSync;
 interface ContractCall {
     value: any;
     defaultBlock: string | number;
     args?: any[];
-    sync: ContractCallSync;
+    sync?: ContractCallSync;
 }
 
 export interface Contract extends NetworkId {
@@ -42,7 +42,6 @@ export interface Contract extends NetworkId {
             [argsHash: string]: ContractCall;
         };
     };
-    defaultCallSync?: ContractCallSync;
 }
 
 export interface ContractId extends NetworkId {

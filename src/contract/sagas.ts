@@ -1,9 +1,17 @@
 import { put, call, select, takeEvery } from 'redux-saga/effects';
 import { web3ForNetworkId } from '../utils';
-import { Contract, Model, CALL_BLOCK_SYNC, ContractCallSync } from './model';
+import {
+    Contract,
+    Model,
+    CALL_BLOCK_SYNC,
+    ContractCallSync,
+    ContractCallBlockSync,
+    ContractCallTransactionSync,
+    CALL_TRANSACTION_SYNC,
+} from './model';
 import { CALL, CallAction, update } from './actions';
 import * as ContractSelector from './selector';
-import { ContractSendMethod } from 'web3-eth-contract';
+import { Transaction } from '../transaction/model';
 
 function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: string | number; args?: any[] }) {
     if (!args || args.length == 0) {
@@ -22,18 +30,25 @@ export function* contractCall(action: CallAction) {
     const web3Contract = new web3.eth.Contract(contract.abi, contract.address);
     const defaultBlock = payload.defaultBlock ?? 'latest';
     //No sync if block isn't set to "latest"
-    let sync: ContractCallSync;
-    if (defaultBlock != 'latest') {
-        sync = false;
-    } else {
-        const defaultSync = contract.defaultCallSync ?? {
-            type: CALL_BLOCK_SYNC,
-            filter: () => true,
-        };
-        if (payload.sync === true) {
-            sync = defaultSync;
-        } else {
-            sync = payload.sync ?? defaultSync;
+    let sync: ContractCallSync | undefined;
+    if (defaultBlock === 'latest') {
+        if (payload.sync != false) {
+            const defaultBlockSync: ContractCallBlockSync = {
+                type: CALL_BLOCK_SYNC,
+                filter: () => true,
+            };
+            const defaultTransactionSync: ContractCallTransactionSync = {
+                type: CALL_TRANSACTION_SYNC,
+                filter: (transaction: Transaction) => transaction.to === contract.address,
+            };
+
+            if (payload.sync === undefined || payload.sync === true || payload.sync === CALL_TRANSACTION_SYNC) {
+                sync = defaultTransactionSync;
+            } else if (payload.sync === CALL_BLOCK_SYNC) {
+                sync = defaultBlockSync;
+            } else {
+                sync = payload.sync as ContractCallSync;
+            }
         }
     }
 
@@ -41,7 +56,7 @@ export function* contractCall(action: CallAction) {
     const gasPrice = payload.options?.gasPrice ?? 0;
 
     if (!payload.args || payload.args.length == 0) {
-        const tx: ContractSendMethod = web3Contract.methods[payload.method]();
+        const tx = web3Contract.methods[payload.method]();
         //@ts-ignore
         const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
         const key = argsHash({ from, defaultBlock });
@@ -49,7 +64,7 @@ export function* contractCall(action: CallAction) {
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
         contract.methods![payload.method][key] = { value, sync, defaultBlock };
     } else {
-        const tx: ContractSendMethod = web3Contract.methods[payload.method](payload.args);
+        const tx = web3Contract.methods[payload.method](payload.args);
         const key = argsHash({ from, defaultBlock, args: payload.args });
         //@ts-ignore
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);

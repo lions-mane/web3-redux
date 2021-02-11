@@ -13,7 +13,7 @@ import {
     UnsubscribeAction,
 } from './actions';
 import { web3ForNetworkId } from '../utils';
-import { BlockHeader, BlockTransaction } from './model';
+import { Block, BlockHeader, BlockTransaction } from './model';
 import * as ContractSelector from '../contract/selector';
 import * as ContractActions from '../contract/actions';
 import { isContractCallBlockSync, Contract } from '../contract/model';
@@ -65,7 +65,7 @@ function subscribeChannel(networkId: string): EventChannel<ChannelMessage> {
     });
 }
 
-function* handleBlockUpdate(block: BlockHeader) {
+function* handleBlockUpdate(block: Block) {
     const contracts: Contract[] = yield select(ContractSelector.select);
     const putContractCall: any[] = [];
     contracts
@@ -75,7 +75,6 @@ function* handleBlockUpdate(block: BlockHeader) {
                 Object.values(method).map(contractCall => {
                     if (
                         !!contractCall.sync &&
-                        typeof contractCall.sync !== 'boolean' &&
                         isContractCallBlockSync(contractCall.sync) &&
                         contractCall.sync.filter(block)
                     ) {
