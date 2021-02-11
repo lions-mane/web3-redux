@@ -16,6 +16,7 @@ import { createStore } from './store';
 import { Block, BlockHeader, BlockTransactionObject, BlockTransactionString } from './block/model';
 import { web3ForNetworkId } from './utils';
 import { AbiItem } from 'web3-utils';
+import { Contract } from './contract/model';
 
 function sleep(ms: number) {
     return new Promise(resolve => {
@@ -172,12 +173,13 @@ describe('sagas', () => {
         //@ts-ignore
         const contractSel: Contract = ContractSelector.select(
             store.getState(),
+            //@ts-ignore
             `${networkId}-${contract.options.address}`,
         );
         const blockNumberKey = `().call(latest,{"from":"${accounts[0]}"})`;
-        const blockNumber1 = contractSel.methods.blockNumber[blockNumberKey].value;
+        const blockNumber1 = contractSel.methods!.blockNumber[blockNumberKey].value;
         await sleep(2000);
-        const blockNumber2 = contractSel.methods.blockNumber[blockNumberKey].value;
+        const blockNumber2 = contractSel.methods!.blockNumber[blockNumberKey].value;
         assert.equal(blockNumber1, blockNumber2);
     });
 
@@ -209,12 +211,13 @@ describe('sagas', () => {
         //@ts-ignore
         const contractSel: Contract = ContractSelector.select(
             store.getState(),
+            //@ts-ignore
             `${networkId}-${contract.options.address}`,
         );
         const blockNumberKey = `().call(latest,{"from":"${accounts[0]}"})`;
-        const blockNumber1 = contractSel.methods.blockNumber[blockNumberKey].value;
+        const blockNumber1 = contractSel.methods!.blockNumber[blockNumberKey].value;
         await sleep(2000);
-        const blockNumber2 = contractSel.methods.blockNumber[blockNumberKey].value;
+        const blockNumber2 = contractSel.methods!.blockNumber[blockNumberKey].value;
         assert.notEqual(blockNumber1, blockNumber2);
     });
 });
