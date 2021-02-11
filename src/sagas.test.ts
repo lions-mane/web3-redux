@@ -13,7 +13,7 @@ import * as BlockSelector from './block/selector';
 import * as ContractSelector from './contract/selector';
 //import * as TransactionSelector from './transaction/selector';
 import { createStore } from './store';
-import { Block, BlockHeader, BlockTransactionObject, BlockTransactionString } from './block/model';
+import { Block, BlockHeader, BlockTransaction, BlockTransactionObject, BlockTransactionString } from './block/model';
 import { web3ForNetworkId } from './utils';
 import { AbiItem } from 'web3-utils';
 import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, Contract } from './contract/model';
@@ -29,11 +29,14 @@ const networkId = '1337';
 
 describe('sagas', () => {
     let web3: Web3;
+    let accounts: string[];
     let store: ReturnType<typeof createStore>;
 
-    before(() => {
+    before(async () => {
         dotenv.config();
-        web3 = new Web3(process.env.ETH_RPC);
+        web3 = web3ForNetworkId(networkId);
+        accounts = await web3.eth.getAccounts();
+        web3.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(() => {
@@ -65,7 +68,7 @@ describe('sagas', () => {
         assert.deepEqual(putBlock, expectedPutBlockAction);
     });
 
-    it('store.dispatch(fetch({returnTransactionObjects:false}))', async () => {
+    it('store.dispatch(BlockActions.fetch({returnTransactionObjects:false}))', async () => {
         store.dispatch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
         const block = await web3.eth.getBlock('latest');
         const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
@@ -73,16 +76,20 @@ describe('sagas', () => {
         await sleep(100);
 
         const state = store.getState();
+
+        const expectedBlockSelected = [expectedBlock];
+        //@ts-ignore
+        delete expectedBlock.transactions;
         const expectedBlockState = {
             [expectedBlock.id!]: expectedBlock,
         };
-        const expectedBlockSelected = [expectedBlock];
+
         assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');
         assert.deepEqual(BlockSelector.select(state), expectedBlockSelected, 'Block.selectWithId');
         //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
     });
 
-    it('store.dispatch(subscribe())', async () => {
+    it('store.dispatch(BlockActions.subscribe())', async () => {
         store.dispatch(BlockActions.subscribe({ networkId }));
 
         const expectedBlocks: { [key: string]: BlockHeader } = {};
@@ -95,6 +102,39 @@ describe('sagas', () => {
 
         const state = store.getState();
         assert.deepEqual(state.orm['Block'].itemsById, expectedBlocks);
+    });
+
+    it('store.dispatch(BlockActions.subscribe({returnTransactionObjects:true})', async () => {
+        store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: true }));
+
+        const expectedBlocksPromise: Promise<BlockTransactionObject>[] = [];
+        const subscription = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
+            //@ts-ignore
+            expectedBlocksPromise.push(web3.eth.getBlock(block.number, true));
+        });
+
+        await web3.eth.sendTransaction({ from: accounts[0], to: accounts[0], value: '100' });
+        await sleep(2000);
+
+        subscription.unsubscribe();
+        const state = store.getState();
+        const expectedBlocks = (await Promise.all(expectedBlocksPromise))
+            .map(block => {
+                const id = `${networkId}-${block.number}`;
+                block.transactions = block.transactions.map(tx => {
+                    return { ...tx, networkId, blockId: id, id: `${networkId}-${tx.hash}` };
+                });
+                block.networkId = networkId;
+                block.id = id;
+                return block;
+            })
+            .reduce((acc, block) => {
+                return { ...acc, [block.id!]: block };
+            }, {});
+        const blocks = (BlockSelector.selectBlockTransaction(state) as BlockTransaction[]).reduce((acc, block) => {
+            return { ...acc, [block.id!]: block };
+        }, {});
+        assert.deepEqual(blocks, expectedBlocks);
     });
 
     it('store.dispatch(unsubscribe())', async () => {
@@ -112,7 +152,8 @@ describe('sagas', () => {
         await sleep(2000);
 
         const state = store.getState();
-        assert.deepEqual(state.orm['Block'].itemsById, expectedBlocks);
+        const blockState = state.orm['Block'].itemsById;
+        assert.deepEqual(blockState, expectedBlocks);
     });
 
     it('store.dispatch(unsubscribe()) - multiple networks', async () => {
@@ -149,9 +190,6 @@ describe('sagas', () => {
     it('store.dispatch(ContractSagas.call())', async () => {
         //Block subsciption used for updates
         store.dispatch(BlockActions.subscribe({ networkId }));
-        const web3 = web3ForNetworkId(networkId);
-        const accounts = await web3.eth.getAccounts();
-        web3.eth.defaultAccount = accounts[0];
         const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
         });
@@ -187,9 +225,6 @@ describe('sagas', () => {
     it('store.dispatch(ContractSagas.call({sync:CALL_BLOCK_SYNC}))', async () => {
         //Block subsciption used for updates
         store.dispatch(BlockActions.subscribe({ networkId }));
-        const web3 = web3ForNetworkId(networkId);
-        const accounts = await web3.eth.getAccounts();
-        web3.eth.defaultAccount = accounts[0];
         const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
         });
@@ -223,9 +258,6 @@ describe('sagas', () => {
     });
 
     it('store.dispatch(ContractSagas.call({sync:CALL_TRANSACTION_SYNC}))', async () => {
-        const web3 = web3ForNetworkId(networkId);
-        const accounts = await web3.eth.getAccounts();
-        web3.eth.defaultAccount = accounts[0];
         const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
         });

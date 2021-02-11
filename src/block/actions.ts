@@ -20,7 +20,12 @@ interface FetchActionInput extends NetworkId {
     returnTransactionObjects?: boolean;
 }
 export const fetch = actionCreator<typeof FETCH, FetchActionInput>(FETCH);
-export const subscribe = actionCreator<typeof SUBSCRIBE, NetworkId>(SUBSCRIBE);
+
+//Subscribe and fetch transactions
+interface SubscribeActionInput extends NetworkId {
+    returnTransactionObjects?: boolean;
+}
+export const subscribe = actionCreator<typeof SUBSCRIBE, SubscribeActionInput>(SUBSCRIBE);
 export const unsubscribe = actionCreator<typeof UNSUBSCRIBE, NetworkId>(UNSUBSCRIBE);
 
 export type CreateAction = ReturnType<typeof create>;

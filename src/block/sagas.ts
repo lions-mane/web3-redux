@@ -14,6 +14,7 @@ import {
 } from './actions';
 import { web3ForNetworkId } from '../utils';
 import { Block, BlockHeader, BlockTransaction } from './model';
+import * as BlockActions from './actions';
 import * as ContractSelector from '../contract/selector';
 import * as ContractActions from '../contract/actions';
 import { isContractCallBlockSync, Contract } from '../contract/model';
@@ -109,6 +110,16 @@ function* subscribe(action: SubscribeAction) {
                     yield put(create(newBlock));
                     //@ts-ignore
                     yield fork(handleBlockUpdate, newBlock);
+                    if (action.payload.returnTransactionObjects) {
+                        yield fork(
+                            fetch,
+                            BlockActions.fetch({
+                                networkId: action.payload.networkId,
+                                blockHashOrBlockNumber: newBlock.number,
+                                returnTransactionObjects: true,
+                            }),
+                        );
+                    }
                 } else if (type === SUBSCRIBE_ERROR) {
                     yield put({ type: SUBSCRIBE_ERROR, error });
                 } else if (type === SUBSCRIBE_CHANGED) {
@@ -116,6 +127,16 @@ function* subscribe(action: SubscribeAction) {
                     yield put(update(newBlock));
                     //@ts-ignore
                     yield fork(handleBlockUpdate, newBlock);
+                    if (action.payload.returnTransactionObjects) {
+                        yield fork(
+                            fetch,
+                            BlockActions.fetch({
+                                networkId: action.payload.networkId,
+                                blockHashOrBlockNumber: newBlock.number,
+                                returnTransactionObjects: true,
+                            }),
+                        );
+                    }
                 }
             }
         } catch (error) {
