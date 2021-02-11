@@ -37,7 +37,7 @@ export const send = actionCreator<typeof SEND, SendActionInput>(SEND);
 
 interface EventSubscribeActionInput extends ContractId {
     eventName: string;
-    filter: { [key: string]: any };
+    filter?: { [key: string]: any };
     fromBlock?: number | string;
 }
 export const eventSubscribe = actionCreator<typeof EVENT_SUBSCRIBE, EventSubscribeActionInput>(EVENT_SUBSCRIBE);

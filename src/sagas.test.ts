@@ -305,4 +305,40 @@ describe('sagas', () => {
         const value2 = contractSel.methods!.getValue[valueKey].value;
         assert.equal(value2, 666);
     });
+
+    it('store.dispatch(ContractSagas.eventSubscribe())', async () => {
+        const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
+            data: BlockNumber.bytecode,
+        });
+        const gas1 = await tx1.estimateGas();
+        const contract = await tx1.send({ from: accounts[0], gas: gas1, gasPrice: '10000' });
+        store.dispatch(
+            ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
+        );
+
+        const expectedEvents: any = {};
+        contract.events['NewValue']().on('data', (event: any) => {
+            expectedEvents[event.id] = event;
+        });
+        store.dispatch(
+            ContractActions.eventSubscribe({
+                networkId,
+                address: contract.options.address,
+                eventName: 'NewValue',
+            }),
+        );
+
+        const tx2 = await contract.methods.setValue(42);
+        const gas2 = await tx2.estimateGas();
+        await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
+
+        //@ts-ignore
+        const contractSel: Contract = ContractSelector.select(
+            store.getState(),
+            //@ts-ignore
+            `${networkId}-${contract.options.address}`,
+        );
+
+        assert.deepEqual(contractSel.events!.NewValue, expectedEvents);
+    });
 });

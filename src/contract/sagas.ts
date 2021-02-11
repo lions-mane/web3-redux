@@ -139,7 +139,7 @@ export function* eventSubscribe(action: EventSubscribeAction) {
     const contract: Contract = yield select(ContractSelector.select, id);
     const web3Contract = new web3.eth.Contract(contract.abi, contract.address);
     const eventName = payload.eventName;
-    const filter = payload.filter;
+    const filter = payload.filter ?? {};
     const fromBlock = payload.fromBlock ?? 'latest';
 
     while (true) {
