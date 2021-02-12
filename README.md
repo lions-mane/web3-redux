@@ -53,5 +53,5 @@ To contribute code, feel free to fork this repo.
 
 ## License
 
-2020 Leo Vigna
+2020 Lionsmane Development
 MIT License.

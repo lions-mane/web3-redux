@@ -1,7 +1,7 @@
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
-            NAME?: string;
+            ETH_RPC: string;
             NODE_ENV: 'development' | 'production';
         }
     }
