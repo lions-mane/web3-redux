@@ -7,7 +7,12 @@
         "url": "https://github.com/lions-mane/web3-redux.git"
     },
     "homepage": "https://lions-mane.github.io/web3-redux",
-    "copyright": "Copyright 2020 Leo Vigna",
+    "copyright": "Copyright 2020 Lionsmane Development",
+    "author": {
+        "name": "Leo Vigna",
+        "email": "leo.vigna@lionsmane.dev",
+        "url": "https://github.com/leovigna/"
+    },
     "license": "MIT",
     "scripts": {
         "clean": "rimraf lib",
