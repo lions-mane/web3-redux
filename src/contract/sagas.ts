@@ -1,6 +1,7 @@
+import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
 import { put, call, select, takeEvery, take, cancel, all, fork } from 'redux-saga/effects';
 import { Contract as Web3Contract } from 'web3-eth-contract';
-import { web3ForNetworkId } from '../utils';
+
 import {
     Contract,
     Model,
@@ -10,6 +11,9 @@ import {
     ContractCallTransactionSync,
     CALL_TRANSACTION_SYNC,
 } from './model';
+import { Network } from '../network/model';
+import { Transaction } from '../transaction/model';
+
 import {
     CALL,
     CallAction,
@@ -20,9 +24,9 @@ import {
     isEventUnsubscribeAction,
     update,
 } from './actions';
+
 import * as ContractSelector from './selector';
-import { Transaction } from '../transaction/model';
-import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
+import * as NetworkSelector from '../network/selector';
 
 function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: string | number; args?: any[] }) {
     if (!args || args.length == 0) {
@@ -34,7 +38,13 @@ function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: st
 
 export function* contractCall(action: CallAction) {
     const { payload } = action;
-    const web3 = web3ForNetworkId(payload.networkId);
+    //@ts-ignore
+    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    if (!network)
+        throw new Error(
+            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
+        );
+    const web3 = network.web3;
     const id = Model.toId(payload);
     //@ts-ignore
     const contract: Contract = yield select(ContractSelector.select, id);
@@ -133,7 +143,13 @@ function eventSubscribeChannel({
 
 export function* eventSubscribe(action: EventSubscribeAction) {
     const { payload } = action;
-    const web3 = web3ForNetworkId(payload.networkId);
+    //@ts-ignore
+    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    if (!network)
+        throw new Error(
+            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
+        );
+    const web3 = network.web3;
     const id = Model.toId(payload);
     //@ts-ignore
     const contract: Contract = yield select(ContractSelector.select, id);

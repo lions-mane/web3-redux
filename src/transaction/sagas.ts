@@ -1,10 +1,12 @@
 import { put, call, takeEvery, select, all, fork } from 'redux-saga/effects';
 import { Transaction } from './model';
-import { create, FETCH, FetchAction } from './actions';
-import { web3ForNetworkId } from '../utils';
-import * as ContractSelector from '../contract/selector';
-import * as ContractActions from '../contract/actions';
 import { Contract, isContractCallTransactionSync } from '../contract/model';
+
+import { create, FETCH, FetchAction } from './actions';
+import * as ContractActions from '../contract/actions';
+
+import * as NetworkSelector from '../network/selector';
+import * as ContractSelector from '../contract/selector';
 
 function* handleTransactionUpdate(transaction: Transaction) {
     const contracts: Contract[] = yield select(ContractSelector.select);
@@ -39,7 +41,13 @@ function* handleTransactionUpdate(transaction: Transaction) {
 
 export function* fetch(action: FetchAction) {
     const { payload } = action;
-    const web3 = web3ForNetworkId(payload.networkId);
+    //@ts-ignore
+    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    if (!network)
+        throw new Error(
+            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
+        );
+    const web3 = network.web3;
     const transaction: Transaction = yield call(web3.eth.getTransaction, payload.hash);
     const newTransaction = { ...transaction, networkId: payload.networkId };
     yield put(create(newTransaction));

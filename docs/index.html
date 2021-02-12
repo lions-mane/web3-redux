@@ -194,7 +194,7 @@
 				<a href="#syncing" id="syncing" style="color: inherit; text-decoration: none;">
 					<h3>Syncing</h3>
 				</a>
-				<p>web3-redux comes with a built-in sync features. web3-redux offers enhanced customizability of contract call syncing to avoid unecessary rpc calls.</p>
+				<p>web3-redux comes with a built-in sync features.</p>
 				<a href="#block-header-sync" id="block-header-sync" style="color: inherit; text-decoration: none;">
 					<h4>Block Header Sync</h4>
 				</a>
@@ -209,7 +209,7 @@
 					<h4>Event Sync</h4>
 				</a>
 				<p>This uses <a href="https://web3js.readthedocs.io/en/v1.3.0/web3-eth-contract.html#contract-events">web3.eth.Contract.events.MyEvent()</a>. Your web3 provider MUST support websocket subscriptions.</p>
-				<p>Before intiating an event sync your must first create a contract with a <code>Contract/CREATE</code> action:</p>
+				<p>Before intiating an event sync you must first create a contract with a <code>Contract/CREATE</code> action:</p>
 				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">ContractActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId</span><span style="color: #000000">, </span><span style="color: #001080">address</span><span style="color: #000000">, </span><span style="color: #001080">abi</span><span style="color: #000000">});</span>
 </code></pre>
 				<p>Dispatch a <code>Contract/EVENT_SUBSCRIBE</code> action to start an event sync. Event syncs are unique by contract address and event name. Duplicate actions will be ignored. Unsubscribe with a <code>Contract/EVENT_UNSUBSCRIBE</code> action.</p>
@@ -218,15 +218,15 @@
 				<a href="#contract-call-sync" id="contract-call-sync" style="color: inherit; text-decoration: none;">
 					<h4>Contract Call Sync</h4>
 				</a>
-				<p>Contract call syncing is achieved by refreshing contract calls based on a set of parameters. To intiate contract call syncing, one must first dispatch a ContractCallAction.
-				There are 3 types of contract call syncing:</p>
+				<p>web3-redux offers enhanced customizability of contract call syncing to avoid unecessary rpc calls. Contract call syncing is achieved by refreshing contract calls based on a set of parameters. To initiate contract call syncing, one must first dispatch a ContractCallAction.</p>
+				<p>There are 3 types of contract call syncing:</p>
 				<ul>
 					<li>  No sync: Call contract method once</li>
 					<li>  Block sync: Call contract and refresh every block</li>
 					<li>  Transaction sync: Call contract and refresh every time a block includes a transaction to the contract.</li>
 				</ul>
-				<p><b>Optimizing contract call syncing</b>
-				By default, contracts use Transaction syncing but this can be customized for each specific contract call. This is can be a sub-optimal or even incorrect sync strategy.</p>
+				<p><b>Optimizing contract call syncing</b></p>
+				<p>By default, contracts use Transaction syncing but this can be customized for each specific contract call. This is can be a sub-optimal or even incorrect sync strategy.</p>
 				<p>Transaction syncing can be sub-optimal if a call&#39;s return value never changes. For example, an ERC20 token&#39;s name or symbol. In this case simply disable syncing with <code>sync: false</code>.</p>
 				<p>Transaction syncing assumes that the contract call values are only dependent on your contract&#39;s state and that this state is only changed by direct transactions to your contract. The basic logic for Transaction syncing is as follows: For each transaction in a new block, update contract call if <code>tx.to == contract.address</code>.
 				Examples of cases where this assumption might be incorrect include:</p>

@@ -1,47 +1,45 @@
 import { put, call, takeEvery, take, all, cancel, fork, select } from 'redux-saga/effects';
 import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
+import Web3 from 'web3';
 
-import {
-    create,
-    FETCH,
-    FetchAction,
-    SubscribeAction,
-    SUBSCRIBE,
-    update,
-    isSubscribeAction,
-    isUnsubscribeAction,
-    UnsubscribeAction,
-} from './actions';
-import { web3ForNetworkId } from '../utils';
 import { Block, BlockHeader, BlockTransaction } from './model';
-import * as BlockActions from './actions';
-import * as ContractSelector from '../contract/selector';
-import * as ContractActions from '../contract/actions';
+import { Network } from '../network/model';
 import { isContractCallBlockSync, Contract } from '../contract/model';
 
-export function* fetch(action: FetchAction) {
+import * as BlockActions from './actions';
+import * as ContractActions from '../contract/actions';
+
+import * as NetworkSelector from '../network/selector';
+import * as ContractSelector from '../contract/selector';
+
+export function* fetch(action: BlockActions.FetchAction) {
     const { payload } = action;
-    const web3 = web3ForNetworkId(payload.networkId);
+    //@ts-ignore
+    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    if (!network)
+        throw new Error(
+            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
+        );
+    const web3 = network.web3;
     const block: BlockTransaction = yield call(
         web3.eth.getBlock,
         payload.blockHashOrBlockNumber,
         payload.returnTransactionObjects ?? false,
     );
-    yield put(create({ ...block, networkId: payload.networkId }));
+    yield put(BlockActions.create({ ...block, networkId: payload.networkId }));
 }
 
-const SUBSCRIBE_CONNECTED = `${SUBSCRIBE}/CONNECTED`;
-const SUBSCRIBE_DATA = `${SUBSCRIBE}/DATA`;
-const SUBSCRIBE_ERROR = `${SUBSCRIBE}/ERROR`;
-const SUBSCRIBE_CHANGED = `${SUBSCRIBE}/CHANGED`;
-const SUBSCRIBE_DONE = `${SUBSCRIBE}/DONE`;
+const SUBSCRIBE_CONNECTED = `${BlockActions.SUBSCRIBE}/CONNECTED`;
+const SUBSCRIBE_DATA = `${BlockActions.SUBSCRIBE}/DATA`;
+const SUBSCRIBE_ERROR = `${BlockActions.SUBSCRIBE}/ERROR`;
+const SUBSCRIBE_CHANGED = `${BlockActions.SUBSCRIBE}/CHANGED`;
+const SUBSCRIBE_DONE = `${BlockActions.SUBSCRIBE}/DONE`;
 interface ChannelMessage {
     type: typeof SUBSCRIBE_CONNECTED | typeof SUBSCRIBE_DATA | typeof SUBSCRIBE_ERROR | typeof SUBSCRIBE_CHANGED;
     error?: any;
     block?: BlockHeader;
 }
-function subscribeChannel(networkId: string): EventChannel<ChannelMessage> {
-    const web3 = web3ForNetworkId(networkId);
+function subscribeChannel(web3: Web3): EventChannel<ChannelMessage> {
     const subscription = web3.eth.subscribe('newBlockHeaders');
 
     return eventChannel(emitter => {
@@ -97,24 +95,32 @@ function* handleBlockUpdate(block: Block) {
     yield all(putContractCall);
 }
 
-function* subscribe(action: SubscribeAction) {
+function* subscribe(action: BlockActions.SubscribeAction) {
+    const networkId = action.payload.networkId;
+    //@ts-ignore
+    const network: Network = yield select(NetworkSelector.select, networkId);
+
+    if (!network)
+        throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
+    const web3 = network.web3;
+
     while (true) {
-        const channel: TakeableChannel<ChannelMessage> = yield call(subscribeChannel, action.payload.networkId);
+        const channel: TakeableChannel<ChannelMessage> = yield call(subscribeChannel, web3);
 
         try {
             while (true) {
                 const message: ChannelMessage = yield take(channel);
                 const { type, block, error } = message;
                 if (type === SUBSCRIBE_DATA) {
-                    const newBlock = { ...block!, networkId: action.payload.networkId };
-                    yield put(create(newBlock));
+                    const newBlock = { ...block!, networkId };
+                    yield put(BlockActions.create(newBlock));
                     //@ts-ignore
                     yield fork(handleBlockUpdate, newBlock);
                     if (action.payload.returnTransactionObjects) {
                         yield fork(
                             fetch,
                             BlockActions.fetch({
-                                networkId: action.payload.networkId,
+                                networkId,
                                 blockHashOrBlockNumber: newBlock.number,
                                 returnTransactionObjects: true,
                             }),
@@ -123,15 +129,15 @@ function* subscribe(action: SubscribeAction) {
                 } else if (type === SUBSCRIBE_ERROR) {
                     yield put({ type: SUBSCRIBE_ERROR, error });
                 } else if (type === SUBSCRIBE_CHANGED) {
-                    const newBlock = { ...block!, networkId: action.payload.networkId };
-                    yield put(update(newBlock));
+                    const newBlock = { ...block!, networkId };
+                    yield put(BlockActions.update(newBlock));
                     //@ts-ignore
                     yield fork(handleBlockUpdate, newBlock);
                     if (action.payload.returnTransactionObjects) {
                         yield fork(
                             fetch,
                             BlockActions.fetch({
-                                networkId: action.payload.networkId,
+                                networkId,
                                 blockHashOrBlockNumber: newBlock.number,
                                 returnTransactionObjects: true,
                             }),
@@ -154,12 +160,12 @@ function* subscribeLoop() {
     function* subscribeLoopStart() {
         while (true) {
             const subscribePattern = (action: { type: string }) => {
-                if (!isSubscribeAction(action)) return false;
+                if (!BlockActions.isSubscribeAction(action)) return false;
                 if (subscribed[action.payload.networkId]) return false;
                 subscribed[action.payload.networkId] = true;
                 return true;
             };
-            const action: SubscribeAction = yield take(subscribePattern);
+            const action: BlockActions.SubscribeAction = yield take(subscribePattern);
             tasks[action.payload.networkId] = yield fork(subscribe, action);
         }
     }
@@ -167,12 +173,12 @@ function* subscribeLoop() {
     function* subscribeLoopEnd() {
         while (true) {
             const unsubscribePattern = (action: { type: string }) => {
-                if (!isUnsubscribeAction(action)) return false;
+                if (!BlockActions.isUnsubscribeAction(action)) return false;
                 if (!subscribed[action.payload.networkId]) return false;
                 subscribed[action.payload.networkId] = false;
                 return true;
             };
-            const action: UnsubscribeAction = yield take(unsubscribePattern);
+            const action: BlockActions.UnsubscribeAction = yield take(unsubscribePattern);
             yield cancel(tasks[action.payload.networkId]);
         }
     }
@@ -181,5 +187,5 @@ function* subscribeLoop() {
 }
 
 export function* saga() {
-    yield all([takeEvery(FETCH, fetch), subscribeLoop()]);
+    yield all([takeEvery(BlockActions.FETCH, fetch), subscribeLoop()]);
 }
