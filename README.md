@@ -46,7 +46,7 @@ To display web3-redux data in your React components, you can either parse the ra
 
 ### Syncing
 
-web3-redux comes with a built-in sync features. web3-redux offers enhanced customizability of contract call syncing to avoid unecessary rpc calls.
+web3-redux comes with a built-in sync features.
 
 #### Block Header Sync
 
@@ -65,7 +65,7 @@ store.dispatch(BlockActions.unsubscribe({ networkId }));
 
 This uses [web3.eth.Contract.events.MyEvent()](https://web3js.readthedocs.io/en/v1.3.0/web3-eth-contract.html#contract-events). Your web3 provider MUST support websocket subscriptions.
 
-Before intiating an event sync your must first create a contract with a `Contract/CREATE` action:
+Before intiating an event sync you must first create a contract with a `Contract/CREATE` action:
 
 ```typescript
 store.dispatch(ContractActions.create({ networkId, address, abi});
@@ -79,7 +79,8 @@ store.dispatch(ContractActions.eventSubscribe({ networkId, address, eventName })
 
 #### Contract Call Sync
 
-Contract call syncing is achieved by refreshing contract calls based on a set of parameters. To intiate contract call syncing, one must first dispatch a ContractCallAction.
+web3-redux offers enhanced customizability of contract call syncing to avoid unecessary rpc calls. Contract call syncing is achieved by refreshing contract calls based on a set of parameters. To initiate contract call syncing, one must first dispatch a ContractCallAction.
+
 There are 3 types of contract call syncing:
 
 -   No sync: Call contract method once
@@ -87,6 +88,7 @@ There are 3 types of contract call syncing:
 -   Transaction sync: Call contract and refresh every time a block includes a transaction to the contract.
 
 <b>Optimizing contract call syncing</b>
+
 By default, contracts use Transaction syncing but this can be customized for each specific contract call. This is can be a sub-optimal or even incorrect sync strategy.
 
 Transaction syncing can be sub-optimal if a call's return value never changes. For example, an ERC20 token's name or symbol. In this case simply disable syncing with `sync: false`.
