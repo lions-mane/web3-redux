@@ -32,8 +32,10 @@ export default store;
 
 ### Configuring Web3 providers
 
+All entities in the web3-reudx stored are indexed by networkId. web3-redux let's you sync multiple networks concurrently (eg. sync Mainnet & Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.
+
 ```typescript
-//TODO: Add web3 configuration.
+store.dispatch(NetworkActions.create({ networkId, web3 }));
 ```
 
 ### Displaying React Components
