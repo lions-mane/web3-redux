@@ -4,8 +4,6 @@ Web3 Redux Library.
 
 ## Installing
 
-Save storage with [pnpm](https://pnpm.js.org/). You can also use regular NPM or Yarn.
-
 ```
 npm install @lions-mane/web3-redux
 ```
