@@ -1,4 +1,3 @@
-import Web3 from 'web3';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -9,15 +8,6 @@ export function actionCreator<ActionType, ActionInput>(type: ActionType) {
             payload,
         };
     };
-}
-
-const web3ForNetworkIdCache: { [key: string]: Web3 } = {
-    '1': new Web3(process.env.ETH_RPC),
-    '2': new Web3(process.env.ETH_RPC),
-    '1337': new Web3(process.env.ETH_RPC),
-};
-export function web3ForNetworkId(networkId: string) {
-    return web3ForNetworkIdCache[networkId];
 }
 
 export function isNumbers(array: number[] | any[]): array is number[] {
