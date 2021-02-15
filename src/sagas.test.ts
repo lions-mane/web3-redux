@@ -1,24 +1,32 @@
 import { assert } from 'chai';
 import { before } from 'mocha';
 import Web3 from 'web3';
+import { TransactionReceipt } from 'web3-eth';
+import { AbiItem } from 'web3-utils';
 import dotenv from 'dotenv';
+
 import BlockNumber from './abis/BlockNumber.json';
 
-import * as NetworkActions from './network/actions';
-import * as BlockActions from './block/actions';
-import * as ContractActions from './contract/actions';
-import * as TransactionActions from './transaction/actions';
-import * as Web3ReduxActions from './actions';
-
-import * as NetworkSelector from './network/selector';
-import * as BlockSelector from './block/selector';
-import * as ContractSelector from './contract/selector';
 import { createStore } from './store';
-import { Block, BlockHeader, BlockTransaction, BlockTransactionObject } from './block/model';
-import { AbiItem } from 'web3-utils';
-import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, Contract, eventId } from './contract/model';
-import { TransactionReceipt } from 'web3-eth';
-import { Network } from './network/model';
+import {
+    Network,
+    Block,
+    BlockHeader,
+    BlockTransaction,
+    BlockTransactionObject,
+    Contract,
+    eventId,
+    CALL_BLOCK_SYNC,
+    CALL_TRANSACTION_SYNC,
+    NetworkActions,
+    BlockActions,
+    TransactionActions,
+    ContractActions,
+    Web3ReduxActions,
+    NetworkSelector,
+    BlockSelector,
+    ContractSelector,
+} from './index';
 
 function sleep(ms: number) {
     return new Promise(resolve => {

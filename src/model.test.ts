@@ -1,18 +1,22 @@
 import { assert } from 'chai';
 import dotenv from 'dotenv';
-import { createStore } from './store';
-import * as BlockActions from './block/actions';
-import * as TransactionActions from './transaction/actions';
-import * as ContractActions from './contract/actions';
-import * as BlockSelector from './block/selector';
-import * as TransactionSelector from './transaction/selector';
-import * as ContractSelector from './contract/selector';
-import { Block } from './block/model';
-import { Transaction } from './transaction/model';
-import { Contract } from './contract/model';
 import Web3 from 'web3';
-import * as NetworkActions from './network/actions';
-import { Network, NetworkSelector } from './index';
+
+import { createStore } from './store';
+import {
+    Network,
+    Block,
+    Transaction,
+    Contract,
+    NetworkActions,
+    BlockActions,
+    TransactionActions,
+    ContractActions,
+    NetworkSelector,
+    BlockSelector,
+    TransactionSelector,
+    ContractSelector,
+} from './index';
 import { assertDeepEqual } from './utils';
 
 const networkId = '1337';
