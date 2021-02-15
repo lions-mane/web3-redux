@@ -1,7 +1,9 @@
 import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
 import { put, call, select, takeEvery, take, cancel, all, fork } from 'redux-saga/effects';
-import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
+import { EventData } from 'web3-eth-contract';
 import { PromiEvent } from 'web3-core';
+import { Subscription } from 'web3-core-subscriptions';
+import { TransactionReceipt } from 'web3-eth';
 
 import {
     Contract,
@@ -32,7 +34,6 @@ import * as TransactionActions from '../transaction/actions';
 
 import * as ContractSelector from './selector';
 import * as NetworkSelector from '../network/selector';
-import { TransactionReceipt } from 'web3-eth';
 
 function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: string | number; args?: any[] }) {
     if (!args || args.length == 0) {
@@ -207,40 +208,27 @@ export function* contractSend(action: SendAction) {
     }
 }
 
-const SUBSCRIBE_CONNECTED = `${EVENT_SUBSCRIBE}/CONNECTED`;
 const SUBSCRIBE_DATA = `${EVENT_SUBSCRIBE}/DATA`;
 const SUBSCRIBE_ERROR = `${EVENT_SUBSCRIBE}/ERROR`;
 const SUBSCRIBE_CHANGED = `${EVENT_SUBSCRIBE}/CHANGED`;
 const SUBSCRIBE_DONE = `${EVENT_SUBSCRIBE}/DONE`;
 interface EventSubscribeChannelMessage {
-    type: typeof SUBSCRIBE_CONNECTED | typeof SUBSCRIBE_DATA | typeof SUBSCRIBE_ERROR | typeof SUBSCRIBE_CHANGED;
+    type: typeof SUBSCRIBE_DATA | typeof SUBSCRIBE_ERROR | typeof SUBSCRIBE_CHANGED;
     error?: any;
     event?: EventData;
 }
 
-function eventSubscribeChannel({
-    eventName,
-    fromBlock,
-    filter,
-    web3Contract,
-}: {
-    eventName: string;
-    fromBlock: number | string;
-    filter: { [key: string]: any };
-    web3Contract: Web3Contract;
-}): EventChannel<EventSubscribeChannelMessage> {
-    const subscription = web3Contract.events[eventName]({ fromBlock, filter });
-
+function eventSubscribeChannel(subscription: Subscription<EventData>): EventChannel<EventSubscribeChannelMessage> {
     return eventChannel(emitter => {
         subscription
-            .on('data', (event: any) => {
+            .on('data', (event: EventData) => {
                 emitter({ type: SUBSCRIBE_DATA, event });
             })
             .on('error', (error: any) => {
                 emitter({ type: SUBSCRIBE_ERROR, error });
                 emitter(END);
             })
-            .on('changed', (event: any) => {
+            .on('changed', (event: EventData) => {
                 emitter({ type: SUBSCRIBE_CHANGED, event });
             });
         // The subscriber must return an unsubscribe function
@@ -265,37 +253,30 @@ export function* eventSubscribe(action: EventSubscribeAction) {
     const eventName = payload.eventName;
     const filter = payload.filter ?? {};
     const fromBlock = payload.fromBlock ?? 'latest';
+    const subscription = web3Contract.events[eventName]({ fromBlock, filter });
+    const channel: TakeableChannel<EventSubscribeChannelMessage> = yield call(eventSubscribeChannel, subscription);
 
-    while (true) {
-        const channel: TakeableChannel<EventSubscribeChannelMessage> = yield call(eventSubscribeChannel, {
-            eventName,
-            filter,
-            fromBlock,
-            web3Contract,
-        });
-
-        try {
-            while (true) {
-                const message: EventSubscribeChannelMessage = yield take(channel);
-                const { type, event, error } = message;
-                const id = eventId(event!);
-                if (type === SUBSCRIBE_DATA) {
-                    contract.events![eventName][id] = event!;
-                    yield put(update(contract));
-                    //@ts-ignore
-                    yield fork(handleBlockUpdate, newBlock);
-                } else if (type === SUBSCRIBE_ERROR) {
-                    yield put({ type: SUBSCRIBE_ERROR, error });
-                } else if (type === SUBSCRIBE_CHANGED) {
-                    delete contract.events![eventName][id];
-                    yield put(update(contract));
-                }
+    try {
+        while (true) {
+            const message: EventSubscribeChannelMessage = yield take(channel);
+            const { type, event, error } = message;
+            const id = eventId(event!);
+            if (type === SUBSCRIBE_DATA) {
+                contract.events![eventName][id] = event!;
+                yield put(update(contract));
+                //@ts-ignore
+                yield fork(handleBlockUpdate, newBlock);
+            } else if (type === SUBSCRIBE_ERROR) {
+                yield put({ type: SUBSCRIBE_ERROR, error });
+            } else if (type === SUBSCRIBE_CHANGED) {
+                delete contract.events![eventName][id];
+                yield put(update(contract));
             }
-        } catch (error) {
-            yield put({ type: SUBSCRIBE_ERROR, error });
-        } finally {
-            yield put({ type: SUBSCRIBE_DONE });
         }
+    } catch (error) {
+        yield put({ type: SUBSCRIBE_ERROR, error });
+    } finally {
+        yield put({ type: SUBSCRIBE_DONE });
     }
 }
 
