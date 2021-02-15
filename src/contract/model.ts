@@ -1,5 +1,7 @@
 import { attr, Model as ORMModel } from 'redux-orm';
 import { AbiItem } from 'web3-utils';
+import { Contract as Web3Contract } from 'web3-eth-contract';
+
 import { BlockHeader } from '../block/model';
 import { NetworkId } from '../network/model';
 import { Transaction } from '../transaction/model';
@@ -47,6 +49,7 @@ export interface Contract extends NetworkId {
             [eventId: string]: any;
         };
     };
+    web3Contract?: Web3Contract;
 }
 
 export interface ContractId extends NetworkId {

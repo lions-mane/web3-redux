@@ -44,11 +44,11 @@ export function* contractCall(action: CallAction) {
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
         );
-    const web3 = network.web3;
     const id = Model.toId(payload);
+    const web3 = network.web3;
     //@ts-ignore
     const contract: Contract = yield select(ContractSelector.select, id);
-    const web3Contract = new web3.eth.Contract(contract.abi, contract.address);
+    const web3Contract = contract.web3Contract!;
     const defaultBlock = payload.defaultBlock ?? 'latest';
     //No sync if block isn't set to "latest"
     let sync: ContractCallSync | undefined;
@@ -149,11 +149,10 @@ export function* eventSubscribe(action: EventSubscribeAction) {
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
         );
-    const web3 = network.web3;
     const id = Model.toId(payload);
     //@ts-ignore
     const contract: Contract = yield select(ContractSelector.select, id);
-    const web3Contract = new web3.eth.Contract(contract.abi, contract.address);
+    const web3Contract = contract.web3Contract!;
     const eventName = payload.eventName;
     const filter = payload.filter ?? {};
     const fromBlock = payload.fromBlock ?? 'latest';

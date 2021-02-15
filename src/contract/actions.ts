@@ -55,6 +55,7 @@ export type UpdateAction = ReturnType<typeof update>;
 export function isUpdateAction(action: { type: string }): action is UpdateAction {
     return action.type === UPDATE;
 }
+
 export type RemoveAction = ReturnType<typeof remove>;
 export function isRemoveAction(action: { type: string }): action is RemoveAction {
     return action.type === REMOVE;
