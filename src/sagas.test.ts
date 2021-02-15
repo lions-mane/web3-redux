@@ -1,23 +1,34 @@
 import { assert } from 'chai';
 import { before } from 'mocha';
 import Web3 from 'web3';
+import { TransactionReceipt } from 'web3-eth';
+import { AbiItem } from 'web3-utils';
 import dotenv from 'dotenv';
+import ganache from 'ganache-core';
+
 import BlockNumber from './abis/BlockNumber.json';
 
-import * as NetworkActions from './network/actions';
-import * as BlockActions from './block/actions';
-import * as ContractActions from './contract/actions';
-import * as TransactionActions from './transaction/actions';
-import * as NetworkSelector from './network/selector';
-import * as BlockSelector from './block/selector';
-import * as ContractSelector from './contract/selector';
-//import * as TransactionSelector from './transaction/selector';
 import { createStore } from './store';
-import { Block, BlockHeader, BlockTransaction, BlockTransactionObject } from './block/model';
-import { AbiItem } from 'web3-utils';
-import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, Contract } from './contract/model';
-import { TransactionReceipt } from 'web3-eth';
-import { Network } from './network/model';
+import {
+    Network,
+    Block,
+    BlockHeader,
+    BlockTransaction,
+    BlockTransactionObject,
+    Contract,
+    eventId,
+    CALL_BLOCK_SYNC,
+    CALL_TRANSACTION_SYNC,
+    NetworkActions,
+    BlockActions,
+    TransactionActions,
+    ContractActions,
+    Web3ReduxActions,
+    NetworkSelector,
+    BlockSelector,
+    ContractSelector,
+} from './index';
+import { sleepForPort } from './utils';
 
 function sleep(ms: number) {
     return new Promise(resolve => {
@@ -28,21 +39,29 @@ function sleep(ms: number) {
 const networkId = '1337';
 
 describe('sagas', () => {
-    let web3Default: Web3; //RPC Provider (eg. Metamask)
+    let web3Default: Web3;
     let web3: Web3; //Web3 loaded from store
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
 
     before(async () => {
         dotenv.config();
-        web3Default = new Web3(process.env.ETH_RPC);
+        const networkIdInt = parseInt(networkId);
+        const server = ganache.server({
+            port: 0,
+            networkId: networkIdInt,
+            blockTime: 1,
+        });
+        const port = await sleepForPort(server, 1000);
+        const rpc = `ws://localhost:${port}`;
+        web3Default = new Web3(rpc);
         accounts = await web3Default.eth.getAccounts();
         web3Default.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(NetworkActions.create({ networkId, web3: web3Default }));
+        store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId, web3: web3Default }] }));
         //@ts-ignore
         const network: Network = NetworkSelector.select(store.getState(), networkId) as Network;
         if (!network)
@@ -99,7 +118,7 @@ describe('sagas', () => {
             [expectedBlock.id!]: expectedBlock,
         };
 
-        assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');
+        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlockState, 'state.web3Redux.Block.itemsById');
         assert.deepEqual(BlockSelector.select(state), expectedBlockSelected, 'Block.selectWithId');
         //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
     });
@@ -116,7 +135,7 @@ describe('sagas', () => {
         await sleep(2000);
 
         const state = store.getState();
-        assert.deepEqual(state.orm['Block'].itemsById, expectedBlocks);
+        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlocks);
     });
 
     it('store.dispatch(BlockActions.subscribe({returnTransactionObjects:true})', async () => {
@@ -167,13 +186,13 @@ describe('sagas', () => {
         await sleep(2000);
 
         const state = store.getState();
-        const blockState = state.orm['Block'].itemsById;
+        const blockState = state.web3Redux['Block'].itemsById;
         assert.deepEqual(blockState, expectedBlocks);
     });
 
     it('store.dispatch(unsubscribe()) - multiple networks', async () => {
-        const network1 = '1';
-        const network2 = '2';
+        const network1 = `${networkId}-1`;
+        const network2 = `${networkId}-2`;
         store.dispatch(NetworkActions.create({ networkId: network1, web3: web3Default }));
         store.dispatch(NetworkActions.create({ networkId: network2, web3: web3Default }));
         store.dispatch(BlockActions.subscribe({ networkId: network1 }));
@@ -195,13 +214,13 @@ describe('sagas', () => {
         store.dispatch(BlockActions.unsubscribe({ networkId: network1 }));
         subscription1.unsubscribe();
         let state = store.getState();
-        assert.deepEqual(state.orm['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
+        assert.deepEqual(state.web3Redux['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
 
         await sleep(2000);
         store.dispatch(BlockActions.unsubscribe({ networkId: network2 }));
         subscription2.unsubscribe();
         state = store.getState();
-        assert.deepEqual(state.orm['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
+        assert.deepEqual(state.web3Redux['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
     });
 
     it('store.dispatch(ContractSagas.call())', async () => {
@@ -323,6 +342,31 @@ describe('sagas', () => {
         assert.equal(value2, 666);
     });
 
+    it('store.dispatch(ContractSagas.send())', async () => {
+        const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
+            data: BlockNumber.bytecode,
+        });
+        const gas1 = await tx1.estimateGas();
+        const contract = await tx1.send({ from: accounts[0], gas: gas1, gasPrice: '10000' });
+        store.dispatch(
+            ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
+        );
+
+        store.dispatch(
+            ContractActions.send({
+                networkId,
+                address: contract.options.address,
+                method: 'setValue',
+                args: [42],
+            }),
+        );
+
+        await sleep(2000);
+
+        const value = await contract.methods.getValue().call();
+        assert.equal(value, 42, 'setValue() did not work!');
+    });
+
     it('store.dispatch(ContractSagas.eventSubscribe())', async () => {
         const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
@@ -335,7 +379,7 @@ describe('sagas', () => {
 
         const expectedEvents: any = {};
         contract.events['NewValue']().on('data', (event: any) => {
-            expectedEvents[event.id] = event;
+            expectedEvents[eventId(event)] = event;
         });
         store.dispatch(
             ContractActions.eventSubscribe({

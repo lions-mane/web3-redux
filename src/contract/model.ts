@@ -1,5 +1,7 @@
 import { attr, Model as ORMModel } from 'redux-orm';
 import { AbiItem } from 'web3-utils';
+import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
+
 import { BlockHeader } from '../block/model';
 import { NetworkId } from '../network/model';
 import { Transaction } from '../transaction/model';
@@ -44,9 +46,10 @@ export interface Contract extends NetworkId {
     };
     events?: {
         [eventName: string]: {
-            [eventId: string]: any;
+            [eventId: string]: EventData;
         };
     };
+    web3Contract?: Web3Contract;
 }
 
 export interface ContractId extends NetworkId {
@@ -68,6 +71,10 @@ class Model extends ORMModel {
     static toId({ address, networkId }: ContractId) {
         return `${networkId}-${address}`;
     }
+}
+
+export function eventId(event: EventData) {
+    return `${event.transactionHash}-${event.transactionIndex}`;
 }
 
 export { Model };

@@ -24,7 +24,7 @@ const reducers = combineReducers({
 });
 
 const sagaMiddleware = createSagaMiddleware();
-const store = createReduxStore(reducers, applyMiddleware(sagaMiddleware));
+const store = createStore(reducers, applyMiddleware(sagaMiddleware));
 sagaMiddleware.run(web3Saga);
 
 export default store;

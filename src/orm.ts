@@ -7,13 +7,14 @@ import * as NetworkActions from './network/actions';
 import * as BlockActions from './block/actions';
 import * as TransactionActions from './transaction/actions';
 import * as ContractActions from './contract/actions';
+import * as Web3ReduxActions from './actions';
 import { reducer as networkReducer } from './network/reducer';
 import { reducer as blockReducer } from './block/reducer';
 import { reducer as transactionReducer } from './transaction/reducer';
 import { reducer as contractReducer } from './contract/reducer';
 
 const orm = new ORM({
-    stateSelector: (state: any) => state.orm,
+    stateSelector: (state: any) => state.web3Redux,
 });
 orm.register(NetworkModel);
 orm.register(BlockModel);
@@ -25,7 +26,12 @@ export const initializeState = (orm: any) => {
     return state;
 };
 
-type Action = NetworkActions.Action | BlockActions.Action | TransactionActions.Action | ContractActions.Action;
+type Action =
+    | NetworkActions.Action
+    | BlockActions.Action
+    | TransactionActions.Action
+    | ContractActions.Action
+    | Web3ReduxActions.Action;
 
 export function reducer(state: any, action: Action) {
     const sess = orm.session(state || initializeState(orm));
