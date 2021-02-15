@@ -14,7 +14,7 @@ import * as ContractSelector from './contract/selector';
 import { createStore } from './store';
 import { Block, BlockHeader, BlockTransaction, BlockTransactionObject } from './block/model';
 import { AbiItem } from 'web3-utils';
-import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, Contract } from './contract/model';
+import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, Contract, eventId } from './contract/model';
 import { TransactionReceipt } from 'web3-eth';
 import { Network } from './network/model';
 
@@ -334,7 +334,7 @@ describe('sagas', () => {
 
         const expectedEvents: any = {};
         contract.events['NewValue']().on('data', (event: any) => {
-            expectedEvents[event.id] = event;
+            expectedEvents[eventId(event)] = event;
         });
         store.dispatch(
             ContractActions.eventSubscribe({

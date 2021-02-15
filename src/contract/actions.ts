@@ -27,7 +27,6 @@ export interface CallActionInput extends ContractId {
 }
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
 
-//TODO
 export interface SendActionInput extends ContractId {
     method: string;
     args?: any[];
@@ -65,7 +64,6 @@ export function isCallAction(action: { type: string }): action is CallAction {
     return action.type === CALL;
 }
 
-//TODO
 export type SendAction = ReturnType<typeof send>;
 export function isSendAction(action: { type: string }): action is SendAction {
     return action.type === SEND;

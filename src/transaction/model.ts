@@ -1,10 +1,12 @@
 import { attr, fk, Model as ORMModel } from 'redux-orm';
-import { Transaction as Web3Transaction } from 'web3-eth';
+import { Transaction as Web3Transaction, TransactionReceipt } from 'web3-eth';
 import { NetworkId } from '../network/model';
 
 export interface Transaction extends Web3Transaction, NetworkId {
     id?: string;
     blockId: string;
+    receipt?: TransactionReceipt;
+    confirmations?: number;
 }
 export interface TransactionId extends NetworkId {
     hash: string;

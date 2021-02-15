@@ -1,6 +1,7 @@
 import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
 import { put, call, select, takeEvery, take, cancel, all, fork } from 'redux-saga/effects';
-import { Contract as Web3Contract } from 'web3-eth-contract';
+import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
+import { PromiEvent } from 'web3-core';
 
 import {
     Contract,
@@ -10,6 +11,7 @@ import {
     ContractCallBlockSync,
     ContractCallTransactionSync,
     CALL_TRANSACTION_SYNC,
+    eventId,
 } from './model';
 import { Network } from '../network/model';
 import { Transaction } from '../transaction/model';
@@ -22,11 +24,15 @@ import {
     EVENT_SUBSCRIBE,
     isEventSubscribeAction,
     isEventUnsubscribeAction,
+    SEND,
+    SendAction,
     update,
 } from './actions';
+import * as TransactionActions from '../transaction/actions';
 
 import * as ContractSelector from './selector';
 import * as NetworkSelector from '../network/selector';
+import { TransactionReceipt } from 'web3-eth';
 
 function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: string | number; args?: any[] }) {
     if (!args || args.length == 0) {
@@ -78,16 +84,14 @@ export function* contractCall(action: CallAction) {
 
     if (!payload.args || payload.args.length == 0) {
         const tx = web3Contract.methods[payload.method]();
-        //@ts-ignore
         const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
         const key = argsHash({ from, defaultBlock });
-        //@ts-ignore
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
         contract.methods![payload.method][key] = { value, sync, defaultBlock };
     } else {
         const tx = web3Contract.methods[payload.method](payload.args);
+        const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
         const key = argsHash({ from, defaultBlock, args: payload.args });
-        //@ts-ignore
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
         contract.methods![payload.method][key] = { value, defaultBlock, sync, args: payload.args };
     }
@@ -95,15 +99,123 @@ export function* contractCall(action: CallAction) {
     yield put(update({ ...contract }));
 }
 
+const CONTRACT_SEND_HASH = `${SEND}/HASH`;
+const CONTRACT_SEND_RECEIPT = `${SEND}/RECEIPT`;
+const CONTRACT_SEND_CONFIRMATION = `${SEND}/CONFIRMATION`;
+const CONTRACT_SEND_ERROR = `${SEND}/ERROR`;
+const CONTRACT_SEND_DONE = `${SEND}/DONE`;
+interface ContractSendChannelMessage {
+    type:
+        | typeof CONTRACT_SEND_HASH
+        | typeof CONTRACT_SEND_RECEIPT
+        | typeof CONTRACT_SEND_CONFIRMATION
+        | typeof CONTRACT_SEND_ERROR;
+    error?: any;
+    hash?: string;
+    receipt?: TransactionReceipt;
+    confirmations?: number;
+}
+
+function contractSendChannel(tx: PromiEvent<TransactionReceipt>): EventChannel<ContractSendChannelMessage> {
+    return eventChannel(emitter => {
+        let savedHash: string;
+        let savedReceipt: TransactionReceipt;
+        let savedConfirmations: number;
+
+        tx.on('transactionHash', (hash: string) => {
+            savedHash = hash;
+            emitter({ type: CONTRACT_SEND_HASH, hash });
+        })
+            .on('receipt', (receipt: TransactionReceipt) => {
+                savedReceipt = receipt;
+                emitter({ type: CONTRACT_SEND_RECEIPT, hash: savedHash, receipt });
+            })
+            .on('confirmation', (confirmations: number) => {
+                savedConfirmations = confirmations;
+                emitter({ type: CONTRACT_SEND_CONFIRMATION, hash: savedHash, receipt: savedReceipt, confirmations });
+                if (confirmations == 24) emitter(END);
+            })
+            .on('error', (error: any) => {
+                emitter({
+                    type: CONTRACT_SEND_ERROR,
+                    hash: savedHash,
+                    receipt: savedReceipt,
+                    confirmations: savedConfirmations,
+                    error,
+                });
+                emitter(END);
+            });
+        // The subscriber must return an unsubscribe function
+        return () => {}; //eslint-disable-line @typescript-eslint/no-empty-function
+    });
+}
+
+export function* contractSend(action: SendAction) {
+    const { payload } = action;
+    const networkId = payload.networkId;
+    //@ts-ignore
+    const network: Network = yield select(NetworkSelector.select, networkId);
+    if (!network)
+        throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
+    const id = Model.toId(payload);
+    const web3 = network.web3;
+    //@ts-ignore
+    const contract: Contract = yield select(ContractSelector.select, id);
+    const web3Contract = contract.web3Contract!;
+
+    const from: string = payload.options?.from ?? web3.eth.defaultAccount!;
+    const gasPrice = payload.options?.gasPrice ?? 0;
+
+    let txPromiEvent: PromiEvent<TransactionReceipt>;
+    if (!payload.args || payload.args.length == 0) {
+        const tx = web3Contract.methods[payload.method]();
+        const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
+        txPromiEvent = tx.send({ from, gas, gasPrice });
+    } else {
+        const tx = web3Contract.methods[payload.method](payload.args);
+        const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
+        txPromiEvent = tx.send({ from, gas, gasPrice });
+    }
+
+    const channel: TakeableChannel<ContractSendChannelMessage> = yield call(contractSendChannel, txPromiEvent);
+    try {
+        while (true) {
+            const message: ContractSendChannelMessage = yield take(channel);
+            const { type, hash, receipt, confirmations } = message;
+            if (type === CONTRACT_SEND_HASH) {
+                //@ts-ignore
+                yield put(TransactionActions.create({ networkId, hash: hash! }));
+            } else if (type === CONTRACT_SEND_RECEIPT) {
+                //@ts-ignore
+                yield put(TransactionActions.update({ networkId, hash: hash!, receipt: receipt! }));
+            } else if (type === CONTRACT_SEND_CONFIRMATION) {
+                yield put(
+                    //@ts-ignore
+                    TransactionActions.update({
+                        networkId,
+                        hash: hash!,
+                        receipt: receipt!,
+                        confirmations: confirmations!,
+                    }),
+                );
+            }
+        }
+    } catch (error) {
+        yield put({ type: CONTRACT_SEND_ERROR, error });
+    } finally {
+        yield put({ type: CONTRACT_SEND_DONE });
+    }
+}
+
 const SUBSCRIBE_CONNECTED = `${EVENT_SUBSCRIBE}/CONNECTED`;
 const SUBSCRIBE_DATA = `${EVENT_SUBSCRIBE}/DATA`;
 const SUBSCRIBE_ERROR = `${EVENT_SUBSCRIBE}/ERROR`;
 const SUBSCRIBE_CHANGED = `${EVENT_SUBSCRIBE}/CHANGED`;
 const SUBSCRIBE_DONE = `${EVENT_SUBSCRIBE}/DONE`;
-interface ChannelMessage {
+interface EventSubscribeChannelMessage {
     type: typeof SUBSCRIBE_CONNECTED | typeof SUBSCRIBE_DATA | typeof SUBSCRIBE_ERROR | typeof SUBSCRIBE_CHANGED;
     error?: any;
-    event?: any;
+    event?: EventData;
 }
 
 function eventSubscribeChannel({
@@ -116,16 +228,13 @@ function eventSubscribeChannel({
     fromBlock: number | string;
     filter: { [key: string]: any };
     web3Contract: Web3Contract;
-}): EventChannel<ChannelMessage> {
+}): EventChannel<EventSubscribeChannelMessage> {
     const subscription = web3Contract.events[eventName]({ fromBlock, filter });
 
     return eventChannel(emitter => {
         subscription
             .on('data', (event: any) => {
                 emitter({ type: SUBSCRIBE_DATA, event });
-            })
-            .on('connected', () => {
-                emitter({ type: SUBSCRIBE_CONNECTED });
             })
             .on('error', (error: any) => {
                 emitter({ type: SUBSCRIBE_ERROR, error });
@@ -158,7 +267,7 @@ export function* eventSubscribe(action: EventSubscribeAction) {
     const fromBlock = payload.fromBlock ?? 'latest';
 
     while (true) {
-        const channel: TakeableChannel<ChannelMessage> = yield call(eventSubscribeChannel, {
+        const channel: TakeableChannel<EventSubscribeChannelMessage> = yield call(eventSubscribeChannel, {
             eventName,
             filter,
             fromBlock,
@@ -167,17 +276,18 @@ export function* eventSubscribe(action: EventSubscribeAction) {
 
         try {
             while (true) {
-                const message: ChannelMessage = yield take(channel);
+                const message: EventSubscribeChannelMessage = yield take(channel);
                 const { type, event, error } = message;
+                const id = eventId(event!);
                 if (type === SUBSCRIBE_DATA) {
-                    contract.events![eventName][event.id] = event;
+                    contract.events![eventName][id] = event!;
                     yield put(update(contract));
                     //@ts-ignore
                     yield fork(handleBlockUpdate, newBlock);
                 } else if (type === SUBSCRIBE_ERROR) {
                     yield put({ type: SUBSCRIBE_ERROR, error });
                 } else if (type === SUBSCRIBE_CHANGED) {
-                    delete contract.events![eventName][event.id];
+                    delete contract.events![eventName][id];
                     yield put(update(contract));
                 }
             }
