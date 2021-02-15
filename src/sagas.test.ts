@@ -322,6 +322,31 @@ describe('sagas', () => {
         assert.equal(value2, 666);
     });
 
+    it('store.dispatch(ContractSagas.send())', async () => {
+        const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
+            data: BlockNumber.bytecode,
+        });
+        const gas1 = await tx1.estimateGas();
+        const contract = await tx1.send({ from: accounts[0], gas: gas1, gasPrice: '10000' });
+        store.dispatch(
+            ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
+        );
+
+        store.dispatch(
+            ContractActions.send({
+                networkId,
+                address: contract.options.address,
+                method: 'setValue',
+                args: [42],
+            }),
+        );
+
+        await sleep(2000);
+
+        const value = await contract.methods.getValue().call();
+        assert.equal(value, 42, 'setValue() did not work!');
+    });
+
     it('store.dispatch(ContractSagas.eventSubscribe())', async () => {
         const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,

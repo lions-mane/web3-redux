@@ -318,5 +318,5 @@ function* eventSubscribeLoop() {
 }
 
 export function* saga() {
-    yield all([takeEvery(CALL, contractCall), eventSubscribeLoop()]);
+    yield all([takeEvery(CALL, contractCall), takeEvery(SEND, contractSend), eventSubscribeLoop()]);
 }
