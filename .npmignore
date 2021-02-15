@@ -1,0 +1,7 @@
+# source
+src/
+
+# misc
+.env
+docs/
+.github/
