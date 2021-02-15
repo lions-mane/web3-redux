@@ -71,7 +71,7 @@ describe('redux-orm', () => {
 
         //State
         const expectedState = { [expected.id!]: expected };
-        assert.deepEqual(state.orm['Block'].itemsById, expectedState, 'state.orm.Block.itemsById');
+        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedState, 'state.web3Redux.Block.itemsById');
 
         //Block.select
         assert.deepEqual(
@@ -96,7 +96,11 @@ describe('redux-orm', () => {
 
         //State
         const expectedState = { [expected.id!]: expected };
-        assert.deepEqual(state.orm['Transaction'].itemsById, expectedState, 'state.orm.Transaction.itemsById');
+        assert.deepEqual(
+            state.web3Redux['Transaction'].itemsById,
+            expectedState,
+            'state.web3Redux.Transaction.itemsById',
+        );
 
         //Transaction.select
         assert.deepEqual(
@@ -121,7 +125,7 @@ describe('redux-orm', () => {
 
         //State
         const expectedState = { [expected.id!]: expected };
-        assert.deepEqual(state.orm['Contract'].itemsById, expectedState, 'state.orm.Contract.itemsById');
+        assert.deepEqual(state.web3Redux['Contract'].itemsById, expectedState, 'state.web3Redux.Contract.itemsById');
 
         //Transaction.select
         assert.deepEqual(

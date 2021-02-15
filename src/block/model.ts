@@ -25,7 +25,7 @@ export interface BlockId extends NetworkId {
 }
 export type Block = BlockHeader | BlockTransaction;
 
-function isBlockTransaction(block: Block): block is BlockTransaction {
+export function isBlockTransaction(block: Block): block is BlockTransaction {
     return !!(block as BlockTransaction).transactions;
 }
 export function isBlockTransactionString(block: Block): block is BlockTransactionString {

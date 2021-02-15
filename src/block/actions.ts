@@ -15,14 +15,14 @@ export const create = actionCreator<typeof CREATE, Block>(CREATE);
 export const update = actionCreator<typeof UPDATE, Block>(UPDATE);
 export const remove = actionCreator<typeof REMOVE, BlockId>(REMOVE);
 
-interface FetchActionInput extends NetworkId {
+export interface FetchActionInput extends NetworkId {
     blockHashOrBlockNumber: string | number;
     returnTransactionObjects?: boolean;
 }
 export const fetch = actionCreator<typeof FETCH, FetchActionInput>(FETCH);
 
 //Subscribe and fetch transactions
-interface SubscribeActionInput extends NetworkId {
+export interface SubscribeActionInput extends NetworkId {
     returnTransactionObjects?: boolean;
 }
 export const subscribe = actionCreator<typeof SUBSCRIBE, SubscribeActionInput>(SUBSCRIBE);

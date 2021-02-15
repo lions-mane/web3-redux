@@ -11,7 +11,6 @@ import * as TransactionActions from './transaction/actions';
 import * as NetworkSelector from './network/selector';
 import * as BlockSelector from './block/selector';
 import * as ContractSelector from './contract/selector';
-//import * as TransactionSelector from './transaction/selector';
 import { createStore } from './store';
 import { Block, BlockHeader, BlockTransaction, BlockTransactionObject } from './block/model';
 import { AbiItem } from 'web3-utils';
@@ -99,7 +98,7 @@ describe('sagas', () => {
             [expectedBlock.id!]: expectedBlock,
         };
 
-        assert.deepEqual(state.orm['Block'].itemsById, expectedBlockState, 'state.orm.Block.itemsById');
+        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlockState, 'state.web3Redux.Block.itemsById');
         assert.deepEqual(BlockSelector.select(state), expectedBlockSelected, 'Block.selectWithId');
         //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
     });
@@ -116,7 +115,7 @@ describe('sagas', () => {
         await sleep(2000);
 
         const state = store.getState();
-        assert.deepEqual(state.orm['Block'].itemsById, expectedBlocks);
+        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlocks);
     });
 
     it('store.dispatch(BlockActions.subscribe({returnTransactionObjects:true})', async () => {
@@ -167,7 +166,7 @@ describe('sagas', () => {
         await sleep(2000);
 
         const state = store.getState();
-        const blockState = state.orm['Block'].itemsById;
+        const blockState = state.web3Redux['Block'].itemsById;
         assert.deepEqual(blockState, expectedBlocks);
     });
 
@@ -195,13 +194,13 @@ describe('sagas', () => {
         store.dispatch(BlockActions.unsubscribe({ networkId: network1 }));
         subscription1.unsubscribe();
         let state = store.getState();
-        assert.deepEqual(state.orm['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
+        assert.deepEqual(state.web3Redux['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
 
         await sleep(2000);
         store.dispatch(BlockActions.unsubscribe({ networkId: network2 }));
         subscription2.unsubscribe();
         state = store.getState();
-        assert.deepEqual(state.orm['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
+        assert.deepEqual(state.web3Redux['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
     });
 
     it('store.dispatch(ContractSagas.call())', async () => {

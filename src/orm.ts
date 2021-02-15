@@ -13,7 +13,7 @@ import { reducer as transactionReducer } from './transaction/reducer';
 import { reducer as contractReducer } from './contract/reducer';
 
 const orm = new ORM({
-    stateSelector: (state: any) => state.orm,
+    stateSelector: (state: any) => state.web3Redux,
 });
 orm.register(NetworkModel);
 orm.register(BlockModel);

@@ -18,7 +18,7 @@ export const create = actionCreator<typeof CREATE, Contract>(CREATE);
 export const update = actionCreator<typeof UPDATE, Contract>(UPDATE);
 export const remove = actionCreator<typeof REMOVE, ContractId>(REMOVE);
 
-interface CallActionInput extends ContractId {
+export interface CallActionInput extends ContractId {
     method: string;
     args?: any[];
     options?: CallOptions;
@@ -28,21 +28,21 @@ interface CallActionInput extends ContractId {
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
 
 //TODO
-interface SendActionInput extends ContractId {
+export interface SendActionInput extends ContractId {
     method: string;
     args?: any[];
     options?: SendOptions;
 }
 export const send = actionCreator<typeof SEND, SendActionInput>(SEND);
 
-interface EventSubscribeActionInput extends ContractId {
+export interface EventSubscribeActionInput extends ContractId {
     eventName: string;
     filter?: { [key: string]: any };
     fromBlock?: number | string;
 }
 export const eventSubscribe = actionCreator<typeof EVENT_SUBSCRIBE, EventSubscribeActionInput>(EVENT_SUBSCRIBE);
 
-interface EventUnsubscribeActionInput extends ContractId {
+export interface EventUnsubscribeActionInput extends ContractId {
     eventName: string;
 }
 export const eventUnsubscribe = actionCreator<typeof EVENT_UNSUBSCRIBE, EventUnsubscribeActionInput>(EVENT_UNSUBSCRIBE);
