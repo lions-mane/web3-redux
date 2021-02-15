@@ -8,6 +8,8 @@ import * as NetworkActions from './network/actions';
 import * as BlockActions from './block/actions';
 import * as ContractActions from './contract/actions';
 import * as TransactionActions from './transaction/actions';
+import * as Web3ReduxActions from './actions';
+
 import * as NetworkSelector from './network/selector';
 import * as BlockSelector from './block/selector';
 import * as ContractSelector from './contract/selector';
@@ -27,21 +29,17 @@ function sleep(ms: number) {
 const networkId = '1337';
 
 describe('sagas', () => {
-    let web3Default: Web3; //RPC Provider (eg. Metamask)
     let web3: Web3; //Web3 loaded from store
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
 
     before(async () => {
         dotenv.config();
-        web3Default = new Web3(process.env.ETH_RPC);
-        accounts = await web3Default.eth.getAccounts();
-        web3Default.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(NetworkActions.create({ networkId, web3: web3Default }));
+        store.dispatch(Web3ReduxActions.initialize());
         //@ts-ignore
         const network: Network = NetworkSelector.select(store.getState(), networkId) as Network;
         if (!network)
@@ -49,6 +47,8 @@ describe('sagas', () => {
                 `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
             );
         web3 = network.web3;
+        accounts = await web3.eth.getAccounts();
+        web3.eth.defaultAccount = accounts[0];
     });
 
     /*
@@ -171,10 +171,10 @@ describe('sagas', () => {
     });
 
     it('store.dispatch(unsubscribe()) - multiple networks', async () => {
-        const network1 = '1';
-        const network2 = '2';
-        store.dispatch(NetworkActions.create({ networkId: network1, web3: web3Default }));
-        store.dispatch(NetworkActions.create({ networkId: network2, web3: web3Default }));
+        const network1 = `${networkId}-1`;
+        const network2 = `${networkId}-2`;
+        store.dispatch(NetworkActions.create({ networkId: network1, web3: new Web3(process.env.LOCAL_RPC!) }));
+        store.dispatch(NetworkActions.create({ networkId: network2, web3: new Web3(process.env.LOCAL_RPC!) }));
         store.dispatch(BlockActions.subscribe({ networkId: network1 }));
         store.dispatch(BlockActions.subscribe({ networkId: network2 }));
 

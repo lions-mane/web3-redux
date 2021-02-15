@@ -72,7 +72,7 @@ describe('redux-orm', () => {
 
     before(async () => {
         dotenv.config();
-        web3Default = new Web3(process.env.ETH_RPC);
+        web3Default = new Web3(process.env.LOCAL_RPC!);
         accounts = await web3Default.eth.getAccounts();
         web3Default.eth.defaultAccount = accounts[0];
     });
