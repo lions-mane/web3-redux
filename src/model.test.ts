@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import dotenv from 'dotenv';
 import Web3 from 'web3';
+import ganache from 'ganache-core';
 
 import { createStore } from './store';
 import {
@@ -17,7 +18,7 @@ import {
     TransactionSelector,
     ContractSelector,
 } from './index';
-import { assertDeepEqual } from './utils';
+import { assertDeepEqual, sleepForPort } from './utils';
 
 const networkId = '1337';
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -76,7 +77,14 @@ describe('redux-orm', () => {
 
     before(async () => {
         dotenv.config();
-        web3Default = new Web3(process.env.LOCAL_RPC!);
+        const networkIdInt = parseInt(networkId);
+        const server = ganache.server({
+            port: 0,
+            networkId: networkIdInt,
+        });
+        const port = await sleepForPort(server, 1000);
+        const rpc = `ws://localhost:${port}`;
+        web3Default = new Web3(rpc);
         accounts = await web3Default.eth.getAccounts();
         web3Default.eth.defaultAccount = accounts[0];
     });
