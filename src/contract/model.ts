@@ -28,7 +28,7 @@ export function isContractCallTransactionSync(action: { type: string }): action 
 }
 
 export type ContractCallSync = ContractCallBlockSync | ContractCallTransactionSync;
-interface ContractCall {
+export interface ContractCall {
     value: any;
     defaultBlock: string | number;
     args?: any[];
@@ -36,20 +36,20 @@ interface ContractCall {
 }
 
 export interface Contract extends NetworkId {
-    id?: string;
+    id: string;
     address: string;
     abi: AbiItem[];
-    methods?: {
+    methods: {
         [callerFunctionName: string]: {
             [argsHash: string]: ContractCall;
         };
     };
-    events?: {
+    events: {
         [eventName: string]: {
             [eventId: string]: EventData;
         };
     };
-    web3Contract?: Web3Contract;
+    web3Contract: Web3Contract;
 }
 
 export interface ContractId extends NetworkId {

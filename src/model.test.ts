@@ -8,7 +8,6 @@ import {
     Network,
     Block,
     Transaction,
-    Contract,
     NetworkActions,
     BlockActions,
     TransactionActions,
@@ -19,6 +18,7 @@ import {
     ContractSelector,
 } from './index';
 import { assertDeepEqual, sleepForPort } from './utils';
+import { CreateActionInput } from './contract/actions';
 
 const networkId = '1337';
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -62,8 +62,7 @@ const transaction: Transaction = {
     input: '',
 };
 
-const contract: Contract = {
-    id: `${networkId}-${ZERO_ADDRESS}`,
+const contract: CreateActionInput = {
     networkId,
     address: ZERO_ADDRESS,
     abi: [],
@@ -126,7 +125,7 @@ describe('redux-orm', () => {
     });
 
     it('TransactionActions.create', async () => {
-        store.dispatch(TransactionActions.create({ ...transaction, id: '' }));
+        store.dispatch(TransactionActions.create({ ...transaction }));
         const expected = { ...transaction };
         const state = store.getState();
 
@@ -155,8 +154,8 @@ describe('redux-orm', () => {
     });
 
     it('ContractActions.create', async () => {
-        store.dispatch(ContractActions.create({ ...contract, id: '' }));
-        const expected = { ...contract, methods: {}, events: {} };
+        store.dispatch(ContractActions.create({ ...contract }));
+        const expected = { ...contract, methods: {}, events: {}, id: `${contract.networkId}-${contract.address}` };
         const state = store.getState();
 
         //State
@@ -186,8 +185,8 @@ describe('redux-orm', () => {
     });
 
     it('Block.transactions', async () => {
-        store.dispatch(BlockActions.create({ ...block, id: '' }));
-        store.dispatch(TransactionActions.create({ ...transaction, id: '' }));
+        store.dispatch(BlockActions.create({ ...block }));
+        store.dispatch(TransactionActions.create({ ...transaction }));
 
         const expectedBlock = { ...block };
         const expectedTransaction = { ...transaction };

@@ -57,6 +57,10 @@ export function* contractCall(action: CallAction) {
     const contract: Contract = yield select(ContractSelector.select, id);
     const web3Contract = contract.web3Contract!;
     const defaultBlock = payload.defaultBlock ?? 'latest';
+    const from: string =
+        payload.options?.from ?? web3.eth.defaultAccount ?? '0x0000000000000000000000000000000000000000';
+    const gasPrice = payload.options?.gasPrice ?? 0;
+
     //No sync if block isn't set to "latest"
     let sync: ContractCallSync | undefined;
     if (defaultBlock === 'latest') {
@@ -79,9 +83,6 @@ export function* contractCall(action: CallAction) {
             }
         }
     }
-
-    const from: string = payload.options?.from ?? web3.eth.defaultAccount!;
-    const gasPrice = payload.options?.gasPrice ?? 0;
 
     if (!payload.args || payload.args.length == 0) {
         const tx = web3Contract.methods[payload.method]();
@@ -164,7 +165,9 @@ export function* contractSend(action: SendAction) {
     const contract: Contract = yield select(ContractSelector.select, id);
     const web3Contract = contract.web3Contract!;
 
-    const from: string = payload.options?.from ?? web3.eth.defaultAccount!;
+    const from = payload.options?.from ?? web3.eth.defaultAccount;
+    if (!from)
+        throw new Error('contractSend: Missing from address. Make sure to set options.from or web3.eth.defaultAccount');
     const gasPrice = payload.options?.gasPrice ?? 0;
 
     let txPromiEvent: PromiEvent<TransactionReceipt>;
