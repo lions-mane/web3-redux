@@ -75,6 +75,34 @@
 					<h1>Web3 Redux</h1>
 				</a>
 				<p>Web3 Redux Library.</p>
+				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
+					<h2>Table of Contents</h2>
+				</a>
+				<ul>
+					<li>  <a href="#installing">Installing</a></li>
+					<li><a href="#getting-started">Getting Started</a> - <a href="#initialize-the-redux-store">Initialize the Redux Store</a><ul>
+							<li>  <a href="#configure-web3-providers">Configure Web3 Providers</a></li>
+							<li>  <a href="#start-a-block-subscription">Start a block subscription</a></li>
+						</ul>
+					</li>
+					<li>  <a href="#displaying-react-components">Displaying React Components</a></li>
+					<li><a href="#syncing">Syncing</a><ul>
+							<li>  <a href="#block-header-sync">Block Header Sync</a></li>
+							<li>  <a href="#event-sync">Event Sync</a></li>
+							<li>  <a href="#contract-call-sync">Contract Call Sync</a></li>
+						</ul>
+					</li>
+					<li>  <a href="#selectors">Selectors</a></li>
+					<li>  <a href="#redux-state">Redux State</a></li>
+					<li><a href="#advanced">Advanced</a><ul>
+							<li>  <a href="#optimizing-contract-call-sync">Optimizing Contract Call Sync</a></li>
+							<li>  <a href="#custom-contract-call-sync">Custom Contract Call Sync</a></li>
+						</ul>
+					</li>
+					<li>  <a href="#additional-documentation">Additional Documentation</a></li>
+					<li>  <a href="#built-with">Built with</a></li>
+					<li>  <a href="#license">License</a></li>
+				</ul>
 				<a href="#installing" id="installing" style="color: inherit; text-decoration: none;">
 					<h2>Installing</h2>
 				</a>
@@ -83,8 +111,8 @@
 				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
 					<h2>Getting Started</h2>
 				</a>
-				<a href="#initializing-the-redux-store" id="initializing-the-redux-store" style="color: inherit; text-decoration: none;">
-					<h3>Initializing the Redux Store</h3>
+				<a href="#initialize-the-redux-store" id="initialize-the-redux-store" style="color: inherit; text-decoration: none;">
+					<h3>Initialize the Redux Store</h3>
 				</a>
 				<p>web3-redux can be added to your existing Redux store. The web3Reducer MUST be stored at the <code>web3Redux</code> key in your store.</p>
 				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">combineReducers</span><span style="color: #000000">, </span><span style="color: #001080">createStore</span><span style="color: #000000">, </span><span style="color: #001080">applyMiddleware</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;redux&#039;</span><span style="color: #000000">;</span>
@@ -101,24 +129,48 @@
 
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #001080">store</span><span style="color: #000000">;</span>
 </code></pre>
-				<a href="#configuring-web3-providers" id="configuring-web3-providers" style="color: inherit; text-decoration: none;">
-					<h3>Configuring Web3 providers</h3>
+				<a href="#configure-web3-providers" id="configure-web3-providers" style="color: inherit; text-decoration: none;">
+					<h3>Configure Web3 providers</h3>
 				</a>
-				<p>All entities in the web3-reudx stored are indexed by networkId. web3-redux let&#39;s you sync multiple networks concurrently (eg. sync Mainnet &amp; Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.</p>
-				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">NetworkActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId</span><span style="color: #000000">, </span><span style="color: #001080">web3</span><span style="color: #000000"> }));</span>
+				<p>All entities in the web3-redux stored are indexed by networkId. web3-redux let&#39;s you sync multiple networks concurrently (eg. sync Mainnet &amp; Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">NetworkActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">web3</span><span style="color: #000000"> }));</span>
+</code></pre>
+				<p>Alternatively, if your app has environment variables such as <code>REACT_APP_MAINNET_RPC</code> or <code>MAINNET_RPC</code> you can dispatch a <code>WEB3_REDUX/INITIALIZE</code> action to initialize multiple networks.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Web3ReduxActions</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">());</span>
+</code></pre>
+				<a href="#start-a-block-subscription" id="start-a-block-subscription" style="color: inherit; text-decoration: none;">
+					<h3>Start a block subscription</h3>
+				</a>
+				<p>To sync with on-chain events, it&#39;s a good idea to start a block subscription as it can be used as a reference point to keep data fresh. This is recommended but not required as some apps might use a different refresh mechanism.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">BlockActions</span><span style="color: #000000">.</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000"> }));</span>
 </code></pre>
 				<a href="#displaying-react-components" id="displaying-react-components" style="color: inherit; text-decoration: none;">
-					<h3>Displaying React Components</h3>
+					<h2>Displaying React Components</h2>
 				</a>
 				<p>To display web3-redux data in your React components, you can either parse the raw state or use web3-redux&#39;s state selectors (recommended). See <a href="#selectors">Selectors</a> section for a description of all web3-redux selectors.</p>
-				<pre><code class="language-typescript"><span style="color: #008000">//TODO: Add example React Component</span>
+				<p>Below a short example component using the BlockSelector to display all blocks.</p>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">React</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;react&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">useSelector</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;react-redux&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Block</span><span style="color: #000000">, </span><span style="color: #001080">BlockSelector</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@lions-mane/web3-redux&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">Blocks</span><span style="color: #000000">() {</span>
+<span style="color: #000000">    </span><span style="color: #008000">//@ts-ignore</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">blocks</span><span style="color: #000000">: </span><span style="color: #267F99">Block</span><span style="color: #000000">[] = </span><span style="color: #795E26">useSelector</span><span style="color: #000000">(</span><span style="color: #001080">BlockSelector</span><span style="color: #000000">.</span><span style="color: #001080">select</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> (</span>
+<span style="color: #000000">        &lt;</span><span style="color: #267F99">div</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">            &lt;</span><span style="color: #267F99">h1</span><span style="color: #000000">&gt;</span><span style="color: #001080">Blocks</span><span style="color: #000000">&lt;/</span><span style="color: #001080">h1</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">            &lt;</span><span style="color: #267F99">div</span><span style="color: #000000">&gt;{JSON.stringify(blocks)}&lt;/</span><span style="color: #001080">div</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">        &lt;/</span><span style="color: #001080">div</span><span style="color: #000000">&gt;</span>
+<span style="color: #000000">    );</span>
+<span style="color: #000000">}</span>
 </code></pre>
+				<p>For a more complete example React app checkout <a href="https://github.com/lions-mane/web3-redux-react-example">web3-redux-react-example</a>.</p>
 				<a href="#syncing" id="syncing" style="color: inherit; text-decoration: none;">
-					<h3>Syncing</h3>
+					<h2>Syncing</h2>
 				</a>
 				<p>web3-redux comes with a built-in sync features.</p>
 				<a href="#block-header-sync" id="block-header-sync" style="color: inherit; text-decoration: none;">
-					<h4>Block Header Sync</h4>
+					<h3>Block Header Sync</h3>
 				</a>
 				<p>This uses <a href="https://web3js.readthedocs.io/en/v1.3.0/web3-eth-subscribe.html#subscribe-newblockheaders">web3.eth.subscribe(&quot;newBlockHeaders&quot;)</a>. Your web3 provider MUST support websocket subscriptions.</p>
 				<p>Dispatch a <code>Block/SUBSCRIBE</code> action to start a block sync. Only one active block sync per networkId is allowed, and duplicate actions will be ignored. Unsubscribe with a <code>Block/UNSUBSCRIBE</code> action.</p>
@@ -128,7 +180,7 @@
 <span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">BlockActions</span><span style="color: #000000">.</span><span style="color: #795E26">unsubscribe</span><span style="color: #000000">({ </span><span style="color: #001080">networkId</span><span style="color: #000000"> }));</span>
 </code></pre>
 				<a href="#event-sync" id="event-sync" style="color: inherit; text-decoration: none;">
-					<h4>Event Sync</h4>
+					<h3>Event Sync</h3>
 				</a>
 				<p>This uses <a href="https://web3js.readthedocs.io/en/v1.3.0/web3-eth-contract.html#contract-events">web3.eth.Contract.events.MyEvent()</a>. Your web3 provider MUST support websocket subscriptions.</p>
 				<p>Before intiating an event sync you must first create a contract with a <code>Contract/CREATE</code> action:</p>
@@ -138,44 +190,19 @@
 				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">ContractActions</span><span style="color: #000000">.</span><span style="color: #795E26">eventSubscribe</span><span style="color: #000000">({ </span><span style="color: #001080">networkId</span><span style="color: #000000">, </span><span style="color: #001080">address</span><span style="color: #000000">, </span><span style="color: #001080">eventName</span><span style="color: #000000"> }));</span>
 </code></pre>
 				<a href="#contract-call-sync" id="contract-call-sync" style="color: inherit; text-decoration: none;">
-					<h4>Contract Call Sync</h4>
+					<h3>Contract Call Sync</h3>
 				</a>
 				<p>web3-redux offers enhanced customizability of contract call syncing to avoid unecessary rpc calls. Contract call syncing is achieved by refreshing contract calls based on a set of parameters. To initiate contract call syncing, one must first dispatch a ContractCallAction.</p>
 				<p>There are 3 types of contract call syncing:</p>
 				<ul>
 					<li>  No sync: Call contract method once</li>
-					<li>  Block sync: Call contract and refresh every block</li>
-					<li>  Transaction sync: Call contract and refresh every time a block includes a transaction to the contract.</li>
+					<li>  Block sync (<code>Contract/CALL_BLOCK_SYNC</code>): Call contract and refresh every block.</li>
+					<li>  Transaction sync (<code>Contract/CALL_TRANSACTION_SYNC</code>): Call contract and refresh every time a block includes a transaction to the contract.</li>
 				</ul>
-				<p><b>Optimizing contract call syncing</b></p>
-				<p>By default, contracts use Transaction syncing but this can be customized for each specific contract call. This is can be a sub-optimal or even incorrect sync strategy.</p>
-				<p>Transaction syncing can be sub-optimal if a call&#39;s return value never changes. For example, an ERC20 token&#39;s name or symbol. In this case simply disable syncing with <code>sync: false</code>.</p>
-				<p>Transaction syncing assumes that the contract call values are only dependent on your contract&#39;s state and that this state is only changed by direct transactions to your contract. The basic logic for Transaction syncing is as follows: For each transaction in a new block, update contract call if <code>tx.to == contract.address</code>.
-				Examples of cases where this assumption might be incorrect include:</p>
-				<ul>
-					<li>  Contract call return value depends on block number</li>
-					<li>  Contract state can be changed by a call to some proxy contract</li>
-				</ul>
-				<p>In these cases we recommend switching to Block syncing, which will poll the contract call at every block. For even better optimization, it might be interesting in some cases to use a custom block or transaction sync.</p>
-				<p><b>Custom Block/Transaction Syncing</b>
-				The interface of ContractCallBlockSync and ContractCallTransactionSync use a filter function returning whether a contract call should update. Customizing the filter function can help you create more optimized syncing depending on your use case.</p>
-				<pre><code class="language-typescript"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">ContractCallBlockSync</span><span style="color: #000000"> {</span>
-<span style="color: #000000">    </span><span style="color: #001080">type</span><span style="color: #000000">: </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #0070C1">CALL_BLOCK_SYNC</span><span style="color: #000000">;</span>
-<span style="color: #000000">    </span><span style="color: #795E26">filter</span><span style="color: #000000">: (</span><span style="color: #001080">block</span><span style="color: #000000">: </span><span style="color: #267F99">BlockHeader</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">boolean</span><span style="color: #000000">;</span>
-<span style="color: #000000">}</span>
-
-<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">ContractCallTransactionSync</span><span style="color: #000000"> {</span>
-<span style="color: #000000">    </span><span style="color: #001080">type</span><span style="color: #000000">: </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #0070C1">CALL_TRANSACTION_SYNC</span><span style="color: #000000">;</span>
-<span style="color: #000000">    </span><span style="color: #795E26">filter</span><span style="color: #000000">: (</span><span style="color: #001080">transaction</span><span style="color: #000000">: </span><span style="color: #267F99">Transaction</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">boolean</span><span style="color: #000000">;</span>
-<span style="color: #000000">}</span>
-</code></pre>
-				<p>Example sync strategies:</p>
-				<ul>
-					<li>  Sync every 5 blocks: <code>(block) =&gt; block.number % 5 == 0</code></li>
-					<li>  Sync for transactions to contract or proxy: <code>(tx) =&gt; tx.to === contract.address || tx.to === proxy.address</code></li>
-				</ul>
+				<p>Note: Both block sync and transaction sync require an existing block subscription to be first created.</p>
+				<p>By default we use Transaction syncing. See <a href="#custom-contract-call-syncing">Advanced/Optimising Contract Call Sync</a> for more info.</p>
 				<a href="#selectors" id="selectors" style="color: inherit; text-decoration: none;">
-					<h3>Selectors</h3>
+					<h2>Selectors</h2>
 				</a>
 				<p>web3-redux exports a set of <a href="https://github.com/reduxjs/reselect">reselect</a> selectors to let you easily read data from the store.</p>
 				<pre><code class="language-typescript"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">BlockSelector</span><span style="color: #000000">, </span><span style="color: #001080">TransactionSelector</span><span style="color: #000000">, </span><span style="color: #001080">ContractSelector</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@lions-mane/web3-redux&#039;</span><span style="color: #000000">;</span>
@@ -205,7 +232,7 @@
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">blocksWithTransactions</span><span style="color: #000000">: </span><span style="color: #267F99">BlockTransactionObject</span><span style="color: #000000">[] = </span><span style="color: #001080">BlockSelector</span><span style="color: #000000">.</span><span style="color: #795E26">selectBlockTransaction</span><span style="color: #000000">(</span><span style="color: #001080">state</span><span style="color: #000000">);</span>
 </code></pre>
 				<a href="#redux-state" id="redux-state" style="color: inherit; text-decoration: none;">
-					<h3>Redux State</h3>
+					<h2>Redux State</h2>
 				</a>
 				<pre><code class="language-typescript"><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">Web3ReduxStore</span><span style="color: #000000"> {</span>
 <span style="color: #000000">    </span><span style="color: #001080">Block</span><span style="color: #000000">: {</span>
@@ -225,8 +252,42 @@
 <span style="color: #000000">    };</span>
 <span style="color: #000000">}</span>
 </code></pre>
-				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
-					<h2>Documentation</h2>
+				<a href="#advanced" id="advanced" style="color: inherit; text-decoration: none;">
+					<h2>Advanced</h2>
+				</a>
+				<a href="#optimizing-contract-call-sync" id="optimizing-contract-call-sync" style="color: inherit; text-decoration: none;">
+					<h3>Optimizing Contract Call Sync</h3>
+				</a>
+				<p>By default, contracts use Transaction syncing but this can be customized for each specific contract call. This is can be a sub-optimal or even incorrect sync strategy.</p>
+				<p>Transaction syncing can be sub-optimal if a call&#39;s return value never changes. For example, an ERC20 token&#39;s name or symbol. In this case simply disable syncing with <code>sync: false</code>.</p>
+				<p>Transaction syncing assumes that the contract call values are only dependent on your contract&#39;s state and that this state is only changed by direct transactions to your contract. The basic logic for Transaction syncing is as follows: For each transaction in a new block, update contract call if <code>tx.to == contract.address</code>.
+				Examples of cases where this assumption might be incorrect include:</p>
+				<ul>
+					<li>  Contract call return value depends on block number</li>
+					<li>  Contract state can be changed by a call to some proxy contract</li>
+				</ul>
+				<p>In these cases we recommend switching to Block syncing, which will poll the contract call at every block. For even better optimization, it might be interesting in some cases to use a custom block or transaction sync.</p>
+				<a href="#custom-contract-call-sync" id="custom-contract-call-sync" style="color: inherit; text-decoration: none;">
+					<h3>Custom Contract Call Sync</h3>
+				</a>
+				<p>The interface of ContractCallBlockSync and ContractCallTransactionSync use a filter function returning whether a contract call should update. Customizing the filter function can help you create more optimized syncing depending on your use case.</p>
+				<pre><code class="language-typescript"><span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">ContractCallBlockSync</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">type</span><span style="color: #000000">: </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #0070C1">CALL_BLOCK_SYNC</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #795E26">filter</span><span style="color: #000000">: (</span><span style="color: #001080">block</span><span style="color: #000000">: </span><span style="color: #267F99">BlockHeader</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">boolean</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">interface</span><span style="color: #000000"> </span><span style="color: #267F99">ContractCallTransactionSync</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #001080">type</span><span style="color: #000000">: </span><span style="color: #0000FF">typeof</span><span style="color: #000000"> </span><span style="color: #0070C1">CALL_TRANSACTION_SYNC</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #795E26">filter</span><span style="color: #000000">: (</span><span style="color: #001080">transaction</span><span style="color: #000000">: </span><span style="color: #267F99">Transaction</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #267F99">boolean</span><span style="color: #000000">;</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>Example sync strategies:</p>
+				<ul>
+					<li>  Sync every 5 blocks: <code>(block) =&gt; block.number % 5 == 0</code></li>
+					<li>  Sync for transactions to contract or proxy: <code>(tx) =&gt; tx.to === contract.address || tx.to === proxy.address</code></li>
+				</ul>
+				<a href="#additional-documentation" id="additional-documentation" style="color: inherit; text-decoration: none;">
+					<h2>Additional Documentation</h2>
 				</a>
 				<p>Additional documentation is available at <a href="https://lions-mane.github.io/web3-redux">lions-mane.github.io/web3-redux</a></p>
 				<a href="#built-with" id="built-with" style="color: inherit; text-decoration: none;">
