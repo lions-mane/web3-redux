@@ -21,7 +21,7 @@ import { sleep, sleepForPort } from '../utils';
 
 const networkId = '1337';
 
-describe('Block', () => {
+describe('block.sagas', () => {
     let web3Default: Web3;
     let web3: Web3; //Web3 loaded from store
     let accounts: string[];

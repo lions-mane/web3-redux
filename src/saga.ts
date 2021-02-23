@@ -1,11 +1,14 @@
 import { all, fork, put, takeEvery } from 'redux-saga/effects';
 import Web3 from 'web3';
+import dotenv from 'dotenv';
 
 import { saga as blockSaga } from './block/sagas';
 import { saga as transactionSaga } from './transaction/sagas';
 import { saga as contractSaga } from './contract/sagas';
 import { InitializeAction, INITIALIZE } from './actions';
 import { NetworkActions } from '.';
+
+dotenv.config();
 
 function* initialize(action: InitializeAction) {
     if (action.payload.networks) {

@@ -20,7 +20,7 @@ const contract: CreateActionInput = {
     abi: [],
 };
 
-describe('Contract', () => {
+describe('contract.actions', () => {
     let store: ReturnType<typeof createStore>;
 
     beforeEach(() => {

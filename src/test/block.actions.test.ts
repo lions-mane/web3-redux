@@ -51,7 +51,7 @@ const transaction: Transaction = {
     input: '',
 };
 
-describe('Block', () => {
+describe('block.actions', () => {
     let store: ReturnType<typeof createStore>;
 
     beforeEach(() => {
