@@ -136,7 +136,18 @@
 				<p>All entities in the web3-redux stored are indexed by networkId. web3-redux let&#39;s you sync multiple networks concurrently (eg. sync Mainnet &amp; Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.</p>
 				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">NetworkActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">web3</span><span style="color: #000000"> }));</span>
 </code></pre>
-				<p>Alternatively, if your app has environment variables such as <code>REACT_APP_MAINNET_RPC</code> or <code>MAINNET_RPC</code> you can dispatch a <code>WEB3_REDUX/INITIALIZE</code> action to initialize multiple networks.</p>
+				<p>Alternatively, if your app has the required environment variables set you can dispatch a <code>WEB3_REDUX/INITIALIZE</code> action to initialize multiple networks. The networks will only be initialized if an environment variable with the rpc endpoint value. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
+				The following networks are supported:</p>
+				<ul>
+					<li>  Local: <code>LOCAL_RPC</code> (eg. <code>ws://localhost:8545</code>)</li>
+					<li>  Mainnet: <code>MAINNET_RPC</code> (eg. <code>wss://mainnet.infura.io/ws/v3/&lt;API_KEY&gt;</code>)</li>
+					<li>  Ropsten: <code>ROPSTEN_RPC</code></li>
+					<li>  Kovan: <code>KOVAN_RPC</code></li>
+					<li>  Rinkeby: <code>RINKEBY_RPC</code></li>
+					<li>  Goerli: <code>GOERLI_RPC</code></li>
+				</ul>
+				<p>The environment variables are also supported with the prefixes <code>REACT_APP_*</code> and <code>NEXT_PUBLIC_*</code>.</p>
+				<p>The following action will automatically add networks and their ids if the rpc environment variable is set.</p>
 				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Web3ReduxActions</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">());</span>
 </code></pre>
 				<a href="#start-a-block-subscription" id="start-a-block-subscription" style="color: inherit; text-decoration: none;">

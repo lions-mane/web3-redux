@@ -59,7 +59,19 @@ All entities in the web3-redux stored are indexed by networkId. web3-redux let's
 store.dispatch(NetworkActions.create({ networkId: '1', web3 }));
 ```
 
-Alternatively, if your app has environment variables such as `REACT_APP_MAINNET_RPC` or `MAINNET_RPC` you can dispatch a `WEB3_REDUX/INITIALIZE` action to initialize multiple networks.
+Alternatively, if your app has the required environment variables set you can dispatch a `WEB3_REDUX/INITIALIZE` action to initialize multiple networks. The networks will only be initialized if an environment variable with the rpc endpoint value. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
+The following networks are supported:
+
+-   Local: `LOCAL_RPC` (eg. `ws://localhost:8545`)
+-   Mainnet: `MAINNET_RPC` (eg. `wss://mainnet.infura.io/ws/v3/<API_KEY>`)
+-   Ropsten: `ROPSTEN_RPC`
+-   Kovan: `KOVAN_RPC`
+-   Rinkeby: `RINKEBY_RPC`
+-   Goerli: `GOERLI_RPC`
+
+The environment variables are also supported with the prefixes `REACT_APP_*` and `NEXT_PUBLIC_*`.
+
+The following action will automatically add networks and their ids if the rpc environment variable is set.
 
 ```typescript
 store.dispatch(Web3ReduxActions.initialize());
