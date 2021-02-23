@@ -10,13 +10,12 @@ import {
     Model,
     CALL_BLOCK_SYNC,
     ContractCallSync,
-    ContractCallBlockSync,
-    ContractCallTransactionSync,
     CALL_TRANSACTION_SYNC,
+    defaultTransactionSyncForContract,
+    defaultBlockSync,
     eventId,
 } from './model';
 import { Network } from '../network/model';
-import { Transaction } from '../transaction/model';
 
 import {
     CALL,
@@ -65,14 +64,7 @@ export function* contractCall(action: CallAction) {
     let sync: ContractCallSync | undefined;
     if (defaultBlock === 'latest') {
         if (payload.sync != false) {
-            const defaultBlockSync: ContractCallBlockSync = {
-                type: CALL_BLOCK_SYNC,
-                filter: () => true,
-            };
-            const defaultTransactionSync: ContractCallTransactionSync = {
-                type: CALL_TRANSACTION_SYNC,
-                filter: (transaction: Transaction) => transaction.to === contract.address,
-            };
+            const defaultTransactionSync = defaultTransactionSyncForContract(contract.address);
 
             if (payload.sync === undefined || payload.sync === true || payload.sync === CALL_TRANSACTION_SYNC) {
                 sync = defaultTransactionSync;

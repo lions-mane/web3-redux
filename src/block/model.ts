@@ -6,19 +6,19 @@ import { isStrings } from '../utils';
 
 /**
  * Block header object. Typically returned by Web3 websocket subscriptions.
- * Extends the web3 interface with a {@link NetworkId}.
+ * Extends the web3 interface.
  *
  * @param id - Block id. Used to index blocks in redux-orm. Computed as `${networkId}-${number}`.
  * @param networkId - A network id.
- * @param number Number: The block number. null if a pending block.
- * @param hash 32 Bytes - String: Hash of the block. null if a pending block.
+ * @param number - Number: The block number. null if a pending block.
+ * @param hash - 32 Bytes - String: Hash of the block. null if a pending block.
  * @param parentHash - 32 Bytes - String: Hash of the parent block.
- * @param nonce 8 Bytes - String: Hash of the generated proof-of-work. null if a pending block.
- * @param sha3Uncles 32 Bytes - String: SHA3 of the uncles data in the block.
- * @param logsBloom 256 Bytes - String: The bloom filter for the logs of the block. null if a pending block.
- * @param transactionRoot 32 Bytes - String: The root of the transaction trie of the block.
- * @param stateRoot 32 Bytes - String: The root of the final state trie of the block.
- * @param receiptRoot 32 Bytes - String: The root of the final receipt trie of the block.
+ * @param nonce - 8 Bytes - String: Hash of the generated proof-of-work. null if a pending block.
+ * @param sha3Uncles - 32 Bytes - String: SHA3 of the uncles data in the block.
+ * @param logsBloom - 256 Bytes - String: The bloom filter for the logs of the block. null if a pending block.
+ * @param transactionRoot - 32 Bytes - String: The root of the transaction trie of the block.
+ * @param stateRoot - 32 Bytes - String: The root of the final state trie of the block.
+ * @param receiptRoot - 32 Bytes - String: The root of the final receipt trie of the block.
  * @param miner - String: The address of the beneficiary to whom the mining rewards were given.
  * @param extraData- String: The “extra data” field of this block.
  * @param gasLimit - Number: The maximum gas allowed in this block.
@@ -68,9 +68,9 @@ export type BlockTransaction = BlockTransactionString | BlockTransactionObject;
 
 /**
  * Block Id object.
- * @see {@link NetworkId} for additional params.
  *
- * @param number Number: The block number. null if a pending block.
+ * @param networkId - A network id.
+ * @param number - Number: The block number. null if a pending block.
  */
 export interface BlockId extends NetworkId {
     number: number;

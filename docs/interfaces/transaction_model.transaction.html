@@ -76,6 +76,46 @@
 		</div>
 		<div class="col-7 offset-3 col-content">
 			<h1>Interface Transaction</h1>
+			<section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography tsd-comment-shorttext">
+					<div class="lead">
+						<p>Transaction object.
+						Extends the web3 interface.</p>
+					</div>
+					</div><div class="tsd-comment tsd-typography tsd-comment-tags">
+					<dl class="tsd-comment-tags"><dt>param</dt>
+						<dd><p>Tx id. Used to index transactions in redux-orm. Computed as <code>${networkId}-${hash}</code>.</p>
+						</dd><dt>param</dt>
+						<dd><p>A network id.</p>
+						</dd><dt>param</dt>
+						<dd><p>Tx id. Used to index the block this transaction is in. Computed as <code>${networkId}-${blockNumber}</code>.</p>
+						</dd><dt>param</dt>
+						<dd><p>Tx receipt. Applicable when this is a pending sent transaction.</p>
+						</dd><dt>param</dt>
+						<dd><p>Tx confirmations. Applicable when this is a pending sent transaction.</p>
+						</dd><dt>param</dt>
+						<dd><p>32 Bytes - String: Hash of the transaction.</p>
+						</dd><dt>param</dt>
+						<dd><p>Number: The number of transactions made by the sender prior to this one.</p>
+						</dd><dt>param</dt>
+						<dd><p>32 Bytes - String: Hash of the block where this transaction was in. null if pending.</p>
+						</dd><dt>param</dt>
+						<dd><p>Number: Block number where this transaction was in. null if pending.</p>
+						</dd><dt>param</dt>
+						<dd><p>Number: Integer of the transactions index position in the block. null if pending.</p>
+						</dd><dt>param</dt>
+						<dd><p>String: Address of the sender.</p>
+						</dd><dt>param</dt>
+						<dd><p>String: Address of the receiver. null if it’s a contract creation transaction.</p>
+						</dd><dt>param</dt>
+						<dd><p>String: Value transferred in wei.</p>
+						</dd><dt>param</dt>
+						<dd><p>String: Gas price provided by the sender in wei.</p>
+						</dd><dt>param</dt>
+						<dd><p>Number: Gas provided by the sender.</p>
+						</dd><dt>param</dt>
+						<dd><p>String: The data sent along with the transaction.</p>
+					</dd></dl>
+			</div></section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -137,7 +177,7 @@
 					<div class="tsd-signature tsd-kind-icon">block<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/transaction/model.ts:7</li>
+							<li>Defined in src/transaction/model.ts:28</li>
 						</ul>
 					</aside>
 				</section>
@@ -157,7 +197,7 @@
 					<div class="tsd-signature tsd-kind-icon">confirmations<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/transaction/model.ts:9</li>
+							<li>Defined in src/transaction/model.ts:30</li>
 						</ul>
 					</aside>
 				</section>
@@ -207,7 +247,7 @@
 					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/transaction/model.ts:6</li>
+							<li>Defined in src/transaction/model.ts:27</li>
 						</ul>
 					</aside>
 				</section>
@@ -248,7 +288,7 @@
 					<div class="tsd-signature tsd-kind-icon">receipt<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TransactionReceipt</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/transaction/model.ts:8</li>
+							<li>Defined in src/transaction/model.ts:29</li>
 						</ul>
 					</aside>
 				</section>

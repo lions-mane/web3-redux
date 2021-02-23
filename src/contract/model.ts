@@ -7,10 +7,16 @@ import { NetworkId } from '../network/model';
 import { Transaction } from '../transaction/model';
 
 const name = 'Contract';
-//Sync call block filter
 export const CALL_BLOCK_SYNC = `${name}/CALL_BLOCK_SYNC`;
-//Sync call tx filter
 export const CALL_TRANSACTION_SYNC = `${name}/CALL_TRANSACTION_SYNC`;
+
+/**
+ * Contract Call Block Sync strategy.
+ * Syncs calls based on block filter. Default syncs call every block.
+ *
+ * @param type CALL_BLOCK_SYNC
+ * @param filter Block filter function that returns true if call should be refreshed.
+ */
 export interface ContractCallBlockSync {
     type: typeof CALL_BLOCK_SYNC;
     filter: (block: BlockHeader) => boolean;
@@ -18,7 +24,18 @@ export interface ContractCallBlockSync {
 export function isContractCallBlockSync(action: { type: string }): action is ContractCallBlockSync {
     return action.type === CALL_BLOCK_SYNC;
 }
+export const defaultBlockSync: ContractCallBlockSync = {
+    type: CALL_BLOCK_SYNC,
+    filter: () => true,
+};
 
+/**
+ * Contract Call Transaction Sync strategy.
+ * Syncs calls based on transaction filter. Default syncs call every tx with to param set to contract address.
+ *
+ * @param type CALL_TRANSACTION_SYNC
+ * @param filter Transaction filter function that returns true if call should be refreshed.
+ */
 export interface ContractCallTransactionSync {
     type: typeof CALL_TRANSACTION_SYNC;
     filter: (transaction: Transaction) => boolean;
@@ -26,8 +43,25 @@ export interface ContractCallTransactionSync {
 export function isContractCallTransactionSync(action: { type: string }): action is ContractCallTransactionSync {
     return action.type === CALL_TRANSACTION_SYNC;
 }
+export const defaultTransactionSyncForContract: (address: string) => ContractCallTransactionSync = (
+    address: string,
+) => {
+    return {
+        type: CALL_TRANSACTION_SYNC,
+        filter: (transaction: Transaction) => transaction.to === address,
+    };
+};
 
 export type ContractCallSync = ContractCallBlockSync | ContractCallTransactionSync;
+
+/**
+ * Contract call object. Stores a cached contract call.
+ *
+ * @param value - Contract call return value.
+ * @param defaultBlock - Call at a specific block height. Block number or "latest".
+ * @param args - Call function arguments.
+ * @param sync - {@link ContractCallSync} used to sync calls. defaultBlock MUST be "latest".
+ */
 export interface ContractCall {
     value: any;
     defaultBlock: string | number;
@@ -35,6 +69,17 @@ export interface ContractCall {
     sync?: ContractCallSync;
 }
 
+/**
+ * Contract object.
+ *
+ * @param id - Contract id. Used to index contracts in redux-orm. Computed as `${networkId}-${address}`.
+ * @param networkId - A network id.
+ * @param address - Contract address.
+ * @param abi - Contract ABI.
+ * @param methods - Contract call store. Call data is stored at [methodName][`(${...args}).call(${defaultBlock},${from})`]
+ * @param events - Contract event subscription store
+ * @param web3Contract - Web3 Contract instance
+ */
 export interface Contract extends NetworkId {
     id: string;
     address: string;
@@ -52,6 +97,12 @@ export interface Contract extends NetworkId {
     web3Contract: Web3Contract;
 }
 
+/**
+ * Contract Id object.
+ *
+ * @param networkId - A network id.
+ * @param address - Contract address.
+ */
 export interface ContractId extends NetworkId {
     address: string;
 }

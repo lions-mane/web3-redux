@@ -103,11 +103,13 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_model.html#call_block_sync" class="tsd-kind-icon">CALL_<wbr>BLOCK_<wbr>SYNC</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_model.html#call_transaction_sync" class="tsd-kind-icon">CALL_<wbr>TRANSACTION_<wbr>SYNC</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_model.html#defaultblocksync" class="tsd-kind-icon">default<wbr>Block<wbr>Sync</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_model.html#defaulttransactionsyncforcontract" class="tsd-kind-icon">default<wbr>Transaction<wbr>Sync<wbr>For<wbr>Contract</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_model.html#eventid" class="tsd-kind-icon">event<wbr>Id</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_model.html#iscontractcallblocksync" class="tsd-kind-icon">is<wbr>Contract<wbr>Call<wbr>Block<wbr>Sync</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_model.html#iscontractcalltransactionsync" class="tsd-kind-icon">is<wbr>Contract<wbr>Call<wbr>Transaction<wbr>Sync</a></li>
@@ -124,7 +126,7 @@
 					<div class="tsd-signature tsd-kind-icon">Contract<wbr>Call<wbr>Sync<span class="tsd-signature-symbol">:</span> <a href="../interfaces/contract_model.contractcallblocksync.html" class="tsd-signature-type">ContractCallBlockSync</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/contract_model.contractcalltransactionsync.html" class="tsd-signature-type">ContractCallTransactionSync</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/model.ts:30</li>
+							<li>Defined in src/contract/model.ts:55</li>
 							<li>Defined in src/index.ts:47</li>
 						</ul>
 					</aside>
@@ -138,7 +140,7 @@
 					<div class="tsd-signature tsd-kind-icon">CALL_<wbr>BLOCK_<wbr>SYNC<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/model.ts:11</li>
+							<li>Defined in src/contract/model.ts:10</li>
 							<li>Defined in src/index.ts:51</li>
 						</ul>
 					</aside>
@@ -149,14 +151,47 @@
 					<div class="tsd-signature tsd-kind-icon">CALL_<wbr>TRANSACTION_<wbr>SYNC<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/model.ts:13</li>
+							<li>Defined in src/contract/model.ts:11</li>
 							<li>Defined in src/index.ts:52</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="defaultblocksync" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> default<wbr>Block<wbr>Sync</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Block<wbr>Sync<span class="tsd-signature-symbol">:</span> <a href="../interfaces/contract_model.contractcallblocksync.html" class="tsd-signature-type">ContractCallBlockSync</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/contract/model.ts:27</li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="defaulttransactionsyncforcontract" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> default<wbr>Transaction<wbr>Sync<wbr>For<wbr>Contract</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">default<wbr>Transaction<wbr>Sync<wbr>For<wbr>Contract<span class="tsd-signature-symbol">(</span>address<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_model.contractcalltransactionsync.html" class="tsd-signature-type">ContractCallTransactionSync</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/contract/model.ts:46</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>address: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/contract_model.contractcalltransactionsync.html" class="tsd-signature-type">ContractCallTransactionSync</a></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="eventid" class="tsd-anchor"></a>
 					<h3>event<wbr>Id</h3>
@@ -167,7 +202,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/model.ts:76</li>
+									<li>Defined in src/contract/model.ts:127</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -190,7 +225,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/model.ts:18</li>
+									<li>Defined in src/contract/model.ts:24</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -218,7 +253,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/model.ts:26</li>
+									<li>Defined in src/contract/model.ts:43</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -268,6 +303,12 @@
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module root">
 						<a href="contract_model.html#call_transaction_sync" class="tsd-kind-icon">CALL_<wbr>TRANSACTION_<wbr>SYNC</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module root">
+						<a href="contract_model.html#defaultblocksync" class="tsd-kind-icon">default<wbr>Block<wbr>Sync</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="contract_model.html#defaulttransactionsyncforcontract" class="tsd-kind-icon">default<wbr>Transaction<wbr>Sync<wbr>For<wbr>Contract</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
 						<a href="contract_model.html#eventid" class="tsd-kind-icon">event<wbr>Id</a>
