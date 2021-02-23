@@ -87,7 +87,7 @@ describe('contract.sagas', () => {
             //@ts-ignore
             `${networkId}-${contract.options.address}`,
         );
-        const blockNumberKey = `().call(latest,{"from":"${accounts[0]}"})`;
+        const blockNumberKey = `().call(latest,${accounts[0]})`;
         const blockNumber1 = contractSel.methods!.blockNumber[blockNumberKey].value;
         await sleep(2000);
         const blockNumber2 = contractSel.methods!.blockNumber[blockNumberKey].value;
@@ -122,7 +122,7 @@ describe('contract.sagas', () => {
             //@ts-ignore
             `${networkId}-${contract.options.address}`,
         );
-        const blockNumberKey = `().call(latest,{"from":"${accounts[0]}"})`;
+        const blockNumberKey = `().call(latest,${accounts[0]})`;
         const blockNumber1 = contractSel.methods!.blockNumber[blockNumberKey].value;
         await sleep(2000);
         const blockNumber2 = contractSel.methods!.blockNumber[blockNumberKey].value;
@@ -158,7 +158,7 @@ describe('contract.sagas', () => {
             //@ts-ignore
             `${networkId}-${contract.options.address}`,
         );
-        const valueKey = `().call(latest,{"from":"${accounts[0]}"})`;
+        const valueKey = `().call(latest,${accounts[0]})`;
         const value1 = contractSel.methods!.getValue[valueKey].value;
         assert.equal(value1, 42);
 

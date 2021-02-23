@@ -36,9 +36,9 @@ import * as NetworkSelector from '../network/selector';
 
 function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: string | number; args?: any[] }) {
     if (!args || args.length == 0) {
-        return `().call(${defaultBlock},${JSON.stringify({ from })})`;
+        return `().call(${defaultBlock},${from})`;
     } else {
-        return `(${args}).call(${defaultBlock},${JSON.stringify({ from })})`;
+        return `(${JSON.stringify(args)}).call(${defaultBlock},${from})`;
     }
 }
 
