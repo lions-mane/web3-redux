@@ -73,6 +73,28 @@ To sync with on-chain events, it's a good idea to start a block subscription as 
 store.dispatch(BlockActions.subscribe({ networkId: '1' }));
 ```
 
+### Add a contract
+
+One you've started the block sync, add a contract and make a call.
+
+```typescript
+store.dispatch(ContractActions.create({ networkId: '1', address: '0x000...', abi: ERC20ABI }));
+store.dispatch(ContractActions.call({
+    networkId: '1',
+    address: '0x000...',
+    method: 'balanceOf',
+    args: ['0x111...'],
+}));
+
+const balance = ContractSelector.selectContractCall(state, '1-0x000...', 'balanceOf', { args: ['0x0111...', from: web3.eth.defaultAccount ]})
+
+//Alternatively, fetch things manually
+const contract = ContractSelector.select(state, '1-0x000...')
+const balanceOf = contract.methods.balanceOf
+const argsHash = callArgsHash({ args: ['0x111...'] }) //([0x111...]).call(latest,web3.eth.defaultAccount)
+const value = balanceOf['([0x111...]).call(latest,0x222...)'].value
+```
+
 ## Displaying React Components
 
 To display web3-redux data in your React components, you can either parse the raw state or use web3-redux's state selectors (recommended). See [Selectors](#selectors) section for a description of all web3-redux selectors.

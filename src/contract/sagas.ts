@@ -14,6 +14,7 @@ import {
     defaultTransactionSyncForContract,
     defaultBlockSync,
     eventId,
+    callArgsHash,
 } from './model';
 import { Network } from '../network/model';
 
@@ -33,14 +34,6 @@ import * as TransactionActions from '../transaction/actions';
 
 import * as ContractSelector from './selector';
 import * as NetworkSelector from '../network/selector';
-
-function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: string | number; args?: any[] }) {
-    if (!args || args.length == 0) {
-        return `().call(${defaultBlock},${from})`;
-    } else {
-        return `(${JSON.stringify(args)}).call(${defaultBlock},${from})`;
-    }
-}
 
 export function* contractCall(action: CallAction) {
     const { payload } = action;
@@ -79,13 +72,13 @@ export function* contractCall(action: CallAction) {
     if (!payload.args || payload.args.length == 0) {
         const tx = web3Contract.methods[payload.method]();
         const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
-        const key = argsHash({ from, defaultBlock });
+        const key = callArgsHash({ from, defaultBlock });
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
         contract.methods![payload.method][key] = { value, sync, defaultBlock };
     } else {
         const tx = web3Contract.methods[payload.method](payload.args);
         const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
-        const key = argsHash({ from, defaultBlock, args: payload.args });
+        const key = callArgsHash({ from, defaultBlock, args: payload.args });
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
         contract.methods![payload.method][key] = { value, defaultBlock, sync, args: payload.args };
     }

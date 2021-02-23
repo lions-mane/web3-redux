@@ -5,6 +5,7 @@ import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
 import { BlockHeader } from '../block/model';
 import { NetworkId } from '../network/model';
 import { Transaction } from '../transaction/model';
+import { ZERO_ADDRESS } from '../utils';
 
 const name = 'Contract';
 export const CALL_BLOCK_SYNC = `${name}/CALL_BLOCK_SYNC`;
@@ -126,6 +127,26 @@ class Model extends ORMModel {
 
 export function eventId(event: EventData) {
     return `${event.transactionHash}-${event.transactionIndex}`;
+}
+
+export interface CallArgsHash {
+    args?: any[];
+    defaultBlock?: string | number;
+    from?: string;
+}
+export function callArgsHash(callArgs?: CallArgsHash): string {
+    if (!callArgs) return `().call(latest,${ZERO_ADDRESS})`;
+
+    // eslint-disable-next-line prefer-const
+    let { args, from, defaultBlock } = callArgs!;
+    if (!defaultBlock) defaultBlock = 'latest';
+    if (!from) from = ZERO_ADDRESS;
+
+    if (!args || args.length == 0) {
+        return `().call(${defaultBlock},${from})`;
+    } else {
+        return `(${JSON.stringify(args)}).call(${defaultBlock},${from})`;
+    }
 }
 
 export { Model };
