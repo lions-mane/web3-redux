@@ -5,7 +5,8 @@ Web3 Redux Library.
 ## Table of Contents
 
 -   [Installing](#installing)
--   [Getting Started](#getting-started) - [Initialize the Redux Store](#initialize-the-redux-store)
+-   [Getting Started](#getting-started)
+    -   [Initialize the Redux Store](#initialize-the-redux-store)
     -   [Configure Web3 Providers](#configure-web3-providers)
     -   [Start a block subscription](#start-a-block-subscription)
 -   [Displaying React Components](#displaying-react-components)
