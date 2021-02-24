@@ -18,6 +18,19 @@ describe('Network', () => {
         store = createStore();
     });
 
+    it('NetworkSelector.selectSingle(state, id) => undefined', async () => {
+        const state = store.getState();
+        const selected = NetworkSelector.selectSingle(state, '');
+        assert.equal(selected, undefined);
+    });
+
+    it('NetworkSelector.selectSingle(state, [id]) => []', async () => {
+        const state = store.getState();
+        const selected = NetworkSelector.selectMany(state, ['']);
+        console.debug(selected);
+        assert.deepEqual(selected, [null]);
+    });
+
     it('NetworkActions.create', async () => {
         store.dispatch(NetworkActions.create(network));
 

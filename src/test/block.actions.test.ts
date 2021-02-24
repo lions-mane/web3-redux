@@ -59,6 +59,43 @@ describe('block.actions', () => {
         store.dispatch(NetworkActions.create(network));
     });
 
+    it('BlockSelector.selectSingle(state, id) => undefined', async () => {
+        const state = store.getState();
+        const selected = BlockSelector.selectSingle(state, '');
+        assert.equal(selected, undefined);
+    });
+
+    it('BlockSelector.selectSingle(state, [id]) => []', async () => {
+        const state = store.getState();
+        const selected = BlockSelector.selectMany(state, ['']);
+        console.debug(selected);
+        assert.deepEqual(selected, [null]);
+    });
+
+    it('BlockSelector.selectSingleTransactions(state, blockId) => null', async () => {
+        const state = store.getState();
+        const selected = BlockSelector.selectSingleTransactions(state, '');
+        assert.equal(selected, null);
+    });
+
+    it('BlockSelector.selectManyTransactions(state, [blockNo]) => [null]', async () => {
+        const state = store.getState();
+        const selected = BlockSelector.selectManyTransactions(state, ['']);
+        assert.deepEqual(selected, [null]);
+    });
+
+    it('BlockSelector.selectSingleTransactions(state, blockId) => null', async () => {
+        const state = store.getState();
+        const selected = BlockSelector.selectSingleBlockTransaction(state, '');
+        assert.equal(selected, null);
+    });
+
+    it('BlockSelector.selectManyTransactions(state, [blockNo]) => [null]', async () => {
+        const state = store.getState();
+        const selected = BlockSelector.selectManyBlockTransaction(state, ['']);
+        assert.deepEqual(selected, [null]);
+    });
+
     it('BlockActions.create', async () => {
         store.dispatch(BlockActions.create({ ...block, id: '' }));
         const expected = { ...block };
@@ -72,8 +109,8 @@ describe('block.actions', () => {
 
         //Block.select
         assert.deepEqual(selected, expected, 'Block.select(id)');
-        assert.deepEqual(BlockSelector.selectMany(state, [expected.id!]), [selected], 'Block.select([id])');
-        assert.deepEqual(BlockSelector.select(state), [expected], 'Block.select()');
+        assert.deepEqual(BlockSelector.selectMany(state, [expected.id!]), [expected], 'Block.select([id])');
+        assert.deepEqual(BlockSelector.selectMany(state), [expected], 'Block.select()');
     });
 
     it('Block.transactions', async () => {

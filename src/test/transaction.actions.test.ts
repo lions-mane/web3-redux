@@ -59,6 +59,19 @@ describe('Transaction', () => {
         store.dispatch(NetworkActions.create(network));
     });
 
+    it('TransactionSelector.selectSingle(state, id) => undefined', async () => {
+        const state = store.getState();
+        const selected = TransactionSelector.selectSingle(state, '');
+        assert.equal(selected, undefined);
+    });
+
+    it('TransactionSelector.selectSingle(state, [id]) => []', async () => {
+        const state = store.getState();
+        const selected = TransactionSelector.selectMany(state, ['']);
+        console.debug(selected);
+        assert.deepEqual(selected, [null]);
+    });
+
     it('TransactionActions.create', async () => {
         store.dispatch(TransactionActions.create({ ...transaction }));
         const expected = { ...transaction };
