@@ -23,14 +23,6 @@ Web3 Redux Library.
 -   [Built with](#built-with)
 -   [License](#license)
 
-## Installing
-
-```
-npm install @lions-mane/web3-redux
-```
-
-## Getting Started
-
 ### Initialize the Redux Store
 
 web3-redux can be added to your existing Redux store. The web3Reducer MUST be stored at the `web3Redux` key in your store.
@@ -43,92 +35,6 @@ import { web3Reducer, web3Saga } from '@lions-mane/web3-redux';
 const reducers = combineReducers({
     web3Redux: web3Reducer,
 });
-
-const sagaMiddleware = createSagaMiddleware();
-const store = createStore(reducers, applyMiddleware(sagaMiddleware));
-sagaMiddleware.run(web3Saga);
-
-export default store;
-```
-
-### Configure Web3 providers
-
-All entities in the web3-redux stored are indexed by networkId. web3-redux let's you sync multiple networks concurrently (eg. sync Mainnet & Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.
-
-```typescript
-store.dispatch(NetworkActions.create({ networkId: '1', web3 }));
-```
-
-Alternatively, you can dispatch a `WEB3_REDUX/INITIALIZE` action to initialize multiple networks. The networks will only be initialized if an environment variable with the rpc endpoint value is set. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
-The following networks are supported:
-
--   Local: `LOCAL_RPC` (eg. `ws://localhost:8545`)
--   Mainnet: `MAINNET_RPC` (eg. `wss://mainnet.infura.io/ws/v3/<API_KEY>`)
--   Ropsten: `ROPSTEN_RPC`
--   Kovan: `KOVAN_RPC`
--   Rinkeby: `RINKEBY_RPC`
--   Goerli: `GOERLI_RPC`
-
-The environment variables are also supported with the prefixes `REACT_APP_*` and `NEXT_PUBLIC_*`.
-
-The following action will automatically add networks and their ids if the rpc environment variable is set.
-
-```typescript
-store.dispatch(Web3ReduxActions.initialize());
-```
-
-### Start a block subscription
-
-To sync with on-chain events, it's a good idea to start a block subscription as it can be used as a reference point to keep data fresh. This is recommended but not required as some apps might use a different refresh mechanism.
-
-```typescript
-store.dispatch(BlockActions.subscribe({ networkId: '1' }));
-```
-
-### Add a contract
-
-One you've started the block sync, add a contract and make a call.
-
-```typescript
-store.dispatch(ContractActions.create({ networkId: '1', address: '0x000...', abi: ERC20ABI }));
-store.dispatch(ContractActions.call({
-    networkId: '1',
-    address: '0x000...',
-    method: 'balanceOf',
-    args: ['0x111...'],
-}));
-
-const balance = ContractSelector.selectContractCall(state, '1-0x000...', 'balanceOf', { args: ['0x0111...', from: web3.eth.defaultAccount ]})
-
-//Alternatively, fetch things manually
-const contract = ContractSelector.select(state, '1-0x000...')
-const balanceOf = contract.methods.balanceOf
-const argsHash = callArgsHash({ args: ['0x111...'] }) //([0x111...]).call(latest,web3.eth.defaultAccount)
-const value = balanceOf['([0x111...]).call(latest,0x222...)'].value
-```
-
-## Displaying React Components
-
-To display web3-redux data in your React components, you can either parse the raw state or use web3-redux's state selectors (recommended). See [Selectors](#selectors) section for a description of all web3-redux selectors.
-
-Below a short example component using the BlockSelector to display all blocks.
-
-```typescript
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { Block, BlockSelector } from '@lions-mane/web3-redux';
-
-export default function Blocks() {
-    //@ts-ignore
-    const blocks: Block[] = useSelector(BlockSelector.select);
-    return (
-        <div>
-            <h1>Blocks</h1>
-            <div>{JSON.stringify(blocks)}</div>
-        </div>
-    );
-}
-```
 
 For a more complete example React app checkout [web3-redux-react-example](https://github.com/lions-mane/web3-redux-react-example).
 
