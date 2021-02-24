@@ -1,6 +1,6 @@
 {
     "name": "@lions-mane/web3-redux",
-    "version": "0.1.0",
+    "version": "0.1.0-beta.1",
     "private": false,
     "repository": {
         "type": "git",
@@ -70,6 +70,10 @@
         "typedoc-neo-theme": "^1.1.0",
         "typescript": "^4.0.3"
     },
+    "files": [
+        "lib",
+        "!lib/**/*.test.*"
+    ],
     "main": "lib/index.js",
     "types": "lib/index.d.ts"
 }

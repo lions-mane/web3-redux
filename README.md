@@ -59,7 +59,7 @@ All entities in the web3-redux stored are indexed by networkId. web3-redux let's
 store.dispatch(NetworkActions.create({ networkId: '1', web3 }));
 ```
 
-Alternatively, if your app has the required environment variables set you can dispatch a `WEB3_REDUX/INITIALIZE` action to initialize multiple networks. The networks will only be initialized if an environment variable with the rpc endpoint value. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
+Alternatively, you can dispatch a `WEB3_REDUX/INITIALIZE` action to initialize multiple networks. The networks will only be initialized if an environment variable with the rpc endpoint value is set. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
 The following networks are supported:
 
 -   Local: `LOCAL_RPC` (eg. `ws://localhost:8545`)
