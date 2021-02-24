@@ -9,7 +9,7 @@ export function reducer(sess: any, action: Action) {
             if (!createAction.payload.web3.eth.defaultAccount) {
                 createAction.payload.web3.eth.defaultAccount = ZERO_ADDRESS;
             }
-            Model.create({ ...(action as CreateAction).payload });
+            Model.upsert({ ...(action as CreateAction).payload });
             break;
         case UPDATE:
             Model.withId((action as UpdateAction).payload.networkId).update({ ...(action as UpdateAction).payload });

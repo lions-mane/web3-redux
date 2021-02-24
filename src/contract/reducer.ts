@@ -28,7 +28,7 @@ export function reducer(sess: any, action: ReducerAction) {
                 }, {});
         const web3Contract =
             action.payload.web3Contract ?? new network.web3.eth.Contract(action.payload.abi, action.payload.address);
-        Contract.create({ ...action.payload, methods, events, web3Contract, id });
+        Contract.upsert({ ...action.payload, methods, events, web3Contract, id });
     } else if (isUpdateAction(action)) {
         const methods =
             action.payload.methods ??

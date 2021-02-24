@@ -12,9 +12,9 @@ export function reducer(sess: any, action: ReducerAction) {
             const transactions = payload.transactions;
             //@ts-ignore
             delete payload.transactions;
-            Block.create({ ...payload, id });
+            Block.upsert({ ...payload, id });
             transactions.forEach((hash: string) => {
-                Transaction.create({
+                Transaction.upsert({
                     hash,
                     networkId: payload.networkId,
                     blockNumber: payload.number,
@@ -26,9 +26,9 @@ export function reducer(sess: any, action: ReducerAction) {
             const transactions = payload.transactions;
             //@ts-ignore
             delete payload.transactions;
-            Block.create({ ...payload, id });
+            Block.upsert({ ...payload, id });
             transactions.forEach(tx => {
-                Transaction.create({
+                Transaction.upsert({
                     ...tx,
                     networkId: payload.networkId,
                     blockId: id,
@@ -36,7 +36,7 @@ export function reducer(sess: any, action: ReducerAction) {
                 });
             });
         } else {
-            Block.create({ ...action.payload, id });
+            Block.upsert({ ...action.payload, id });
         }
     } else if (isUpdateAction(action)) Block.withId(id).update({ ...action.payload, id });
     else if (isRemoveAction(action)) Block.withId(id).delete();

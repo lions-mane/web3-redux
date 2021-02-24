@@ -176,14 +176,24 @@ export function* contractSend(action: SendAction) {
                 yield put(TransactionActions.create({ networkId, hash: hash! }));
             } else if (type === CONTRACT_SEND_RECEIPT) {
                 //@ts-ignore
-                yield put(TransactionActions.update({ networkId, hash: hash!, receipt: receipt! }));
-            } else if (type === CONTRACT_SEND_CONFIRMATION) {
                 yield put(
-                    //@ts-ignore
                     TransactionActions.update({
                         networkId,
                         hash: hash!,
                         receipt: receipt!,
+                        blockNumber: receipt!.blockNumber,
+                        blockId: `${networkId}-${receipt!.blockNumber}`,
+                        blockHash: receipt!.blockHash,
+                        from: receipt!.from,
+                        to: receipt!.to,
+                    }),
+                );
+            } else if (type === CONTRACT_SEND_CONFIRMATION) {
+                //@ts-ignore
+                yield put(
+                    TransactionActions.update({
+                        networkId,
+                        hash: hash!,
                         confirmations: confirmations!,
                     }),
                 );
