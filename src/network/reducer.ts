@@ -6,7 +6,7 @@ export function reducer(sess: any, action: Action) {
     switch (action.type) {
         case CREATE:
             const createAction = action as CreateAction;
-            if (createAction.payload.web3.eth.defaultAccount) {
+            if (!createAction.payload.web3.eth.defaultAccount) {
                 createAction.payload.web3.eth.defaultAccount = ZERO_ADDRESS;
             }
             Model.create({ ...(action as CreateAction).payload });
