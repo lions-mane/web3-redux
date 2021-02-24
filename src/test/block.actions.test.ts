@@ -66,7 +66,6 @@ describe('block.actions', () => {
 
     it('BlockSelector.selectSingle(state, [id]) => []', async () => {
         const selected = BlockSelector.selectMany(store.getState(), ['']);
-        console.debug(selected);
         assert.deepEqual(selected, [null]);
     });
 

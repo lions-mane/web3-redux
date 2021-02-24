@@ -25,7 +25,6 @@ describe('Network', () => {
 
     it('NetworkSelector.selectSingle(state, [id]) => []', async () => {
         const selected = NetworkSelector.selectMany(store.getState(), ['']);
-        console.debug(selected);
         assert.deepEqual(selected, [null]);
     });
 

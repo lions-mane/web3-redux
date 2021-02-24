@@ -13,7 +13,6 @@ import {
     BlockTransactionObject,
     NetworkActions,
     BlockActions,
-    Web3ReduxActions,
     NetworkSelector,
     BlockSelector,
 } from '../index';
@@ -44,7 +43,7 @@ describe('block.sagas', () => {
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId, web3: web3Default }] }));
+        store.dispatch(NetworkActions.create({ networkId, web3: web3Default }));
         const network: Network = NetworkSelector.selectSingle(store.getState(), networkId) as Network;
         if (!network)
             throw new Error(

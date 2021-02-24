@@ -66,7 +66,6 @@ describe('Transaction', () => {
 
     it('TransactionSelector.selectSingle(state, [id]) => []', async () => {
         const selected = TransactionSelector.selectMany(store.getState(), ['']);
-        console.debug(selected);
         assert.deepEqual(selected, [null]);
     });
 

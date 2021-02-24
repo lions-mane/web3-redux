@@ -17,9 +17,9 @@ import {
     BlockActions,
     TransactionActions,
     ContractActions,
-    Web3ReduxActions,
     NetworkSelector,
     ContractSelector,
+    NetworkActions,
 } from '../index';
 import { sleep, sleepForPort } from '../utils';
 
@@ -48,7 +48,7 @@ describe('contract.sagas', () => {
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId, web3: web3Default }] }));
+        store.dispatch(NetworkActions.create({ networkId, web3: web3Default }));
         const network: Network = NetworkSelector.selectSingle(store.getState(), networkId) as Network;
         if (!network)
             throw new Error(

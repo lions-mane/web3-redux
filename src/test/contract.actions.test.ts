@@ -49,7 +49,6 @@ describe('contract.actions', () => {
 
     it('ContractSelector.selectSingle(state, [id]) => []', async () => {
         const selected = ContractSelector.selectMany(store.getState(), ['']);
-        console.debug(selected);
         assert.deepEqual(selected, [null]);
     });
 
