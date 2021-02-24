@@ -59,7 +59,7 @@ describe('contract.sagas', () => {
 
     it('store.dispatch(ContractSagas.call({sync:false}))', async () => {
         //Block subsciption used for updates
-        store.dispatch(BlockActions.subscribe({ networkId }));
+        store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: false }));
         const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
         });
@@ -80,11 +80,10 @@ describe('contract.sagas', () => {
         const blockNumber = await web3.eth.getBlockNumber();
         await sleep(2000);
 
-        const state = store.getState();
         const contractId = `${networkId}-${contract.options.address}`;
 
         //Selector
-        const value = ContractSelector.selectContractCall(state, contractId, 'blockNumber', {
+        const value = ContractSelector.selectContractCall(store.getState(), contractId, 'blockNumber', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.approximately(parseInt(value), blockNumber, 1, 'blockNumber');
@@ -92,7 +91,7 @@ describe('contract.sagas', () => {
 
     it('store.dispatch(ContractSagas.call({sync:CALL_BLOCK_SYNC}))', async () => {
         //Block subsciption used for updates
-        store.dispatch(BlockActions.subscribe({ networkId }));
+        store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: false }));
         const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
         });
@@ -112,14 +111,13 @@ describe('contract.sagas', () => {
         );
         await sleep(2000);
 
-        const state = store.getState();
         const contractId = `${networkId}-${contract.options.address}`;
 
-        const blockNumber1 = ContractSelector.selectContractCall(state, contractId, 'blockNumber', {
+        const blockNumber1 = ContractSelector.selectContractCall(store.getState(), contractId, 'blockNumber', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         await sleep(2000);
-        const blockNumber2 = ContractSelector.selectContractCall(state, contractId, 'blockNumber', {
+        const blockNumber2 = ContractSelector.selectContractCall(store.getState(), contractId, 'blockNumber', {
             from: web3.eth.defaultAccount ?? undefined,
         });
 
@@ -149,10 +147,9 @@ describe('contract.sagas', () => {
         );
         await sleep(2000);
 
-        const state = store.getState();
         const contractId = `${networkId}-${contract.options.address}`;
 
-        const value1 = ContractSelector.selectContractCall(state, contractId, 'getValue', {
+        const value1 = ContractSelector.selectContractCall(store.getState(), contractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value1, 42);
@@ -169,7 +166,7 @@ describe('contract.sagas', () => {
 
         //Updated from transaction sync
         await sleep(2000);
-        const value2 = ContractSelector.selectContractCall(state, contractId, 'getValue', {
+        const value2 = ContractSelector.selectContractCall(store.getState(), contractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value2, 666);

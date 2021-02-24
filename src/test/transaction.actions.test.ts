@@ -60,14 +60,12 @@ describe('Transaction', () => {
     });
 
     it('TransactionSelector.selectSingle(state, id) => undefined', async () => {
-        const state = store.getState();
-        const selected = TransactionSelector.selectSingle(state, '');
+        const selected = TransactionSelector.selectSingle(store.getState(), '');
         assert.equal(selected, undefined);
     });
 
     it('TransactionSelector.selectSingle(state, [id]) => []', async () => {
-        const state = store.getState();
-        const selected = TransactionSelector.selectMany(state, ['']);
+        const selected = TransactionSelector.selectMany(store.getState(), ['']);
         console.debug(selected);
         assert.deepEqual(selected, [null]);
     });
@@ -75,19 +73,26 @@ describe('Transaction', () => {
     it('TransactionActions.create', async () => {
         store.dispatch(TransactionActions.create({ ...transaction }));
         const expected = { ...transaction };
-        const state = store.getState();
 
         //State
         const expectedState = { [expected.id!]: expected };
         assert.deepEqual(
-            state.web3Redux['Transaction'].itemsById,
+            store.getState().web3Redux['Transaction'].itemsById,
             expectedState,
             'state.web3Redux.Transaction.itemsById',
         );
 
         //Transaction.select
-        assert.deepEqual(TransactionSelector.selectSingle(state, expected.id!), expected, 'Transaction.select(id)');
-        assert.deepEqual(TransactionSelector.selectMany(state, [expected.id!]), [expected], 'Transaction.select([id])');
-        assert.deepEqual(TransactionSelector.selectMany(state), [expected], 'Transaction.select()');
+        assert.deepEqual(
+            TransactionSelector.selectSingle(store.getState(), expected.id!),
+            expected,
+            'Transaction.select(id)',
+        );
+        assert.deepEqual(
+            TransactionSelector.selectMany(store.getState(), [expected.id!]),
+            [expected],
+            'Transaction.select([id])',
+        );
+        assert.deepEqual(TransactionSelector.selectMany(store.getState()), [expected], 'Transaction.select()');
     });
 });

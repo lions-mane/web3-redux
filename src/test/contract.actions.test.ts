@@ -22,7 +22,7 @@ const methods = BlockNumber.abi
         return { ...acc, [m]: {} };
     }, {});
 const events = BlockNumber.abi
-    .filter(item => item.type == 'function')
+    .filter(item => item.type == 'event')
     .map(item => item.name!)
     .reduce((acc, m) => {
         return { ...acc, [m]: {} };
@@ -43,41 +43,37 @@ describe('contract.actions', () => {
     });
 
     it('ContractSelector.selectSingle(state, id) => undefined', async () => {
-        const state = store.getState();
-        const selected = ContractSelector.selectSingle(state, '');
+        const selected = ContractSelector.selectSingle(store.getState(), '');
         assert.equal(selected, undefined);
     });
 
     it('ContractSelector.selectSingle(state, [id]) => []', async () => {
-        const state = store.getState();
-        const selected = ContractSelector.selectMany(state, ['']);
+        const selected = ContractSelector.selectMany(store.getState(), ['']);
         console.debug(selected);
         assert.deepEqual(selected, [null]);
     });
 
     it('ContractSelector.selectContractCall(state, id) => undefined', async () => {
-        const state = store.getState();
-        const selected1 = ContractSelector.selectContractCall(state, '', 'xyz');
+        const selected1 = ContractSelector.selectContractCall(store.getState(), '', 'xyz');
         assert.equal(selected1, undefined, 'contract undefined');
 
         store.dispatch(ContractActions.create({ ...contract }));
 
         const contractId = `${contract.networkId}-${contract.address}`;
-        const selected2 = ContractSelector.selectContractCall(state, contractId, 'xyz');
+        const selected2 = ContractSelector.selectContractCall(store.getState(), contractId, 'xyz');
         assert.equal(selected2, undefined, 'method undefined');
 
-        const selected3 = ContractSelector.selectContractCall(state, contractId, 'blockNumber');
+        const selected3 = ContractSelector.selectContractCall(store.getState(), contractId, 'blockNumber');
         assert.equal(selected3, undefined, 'argsHash undefined');
     });
 
     it('ContractActions.create', async () => {
         store.dispatch(ContractActions.create({ ...contract }));
         const expected = { ...contract, methods, events, id: `${contract.networkId}-${contract.address}` };
-        const state = store.getState();
 
         //State
         assertDeepEqual(
-            state.web3Redux['Contract'].itemsById[expected.id!],
+            store.getState().web3Redux['Contract'].itemsById[expected.id!],
             expected,
             ['web3Contract'],
             'state.web3Redux.Contract.itemsById',
@@ -85,17 +81,22 @@ describe('contract.actions', () => {
 
         //Contract.select
         assertDeepEqual(
-            ContractSelector.selectSingle(state, expected.id!),
+            ContractSelector.selectSingle(store.getState(), expected.id!),
             expected,
             ['web3Contract'],
             'Contract.select(id)',
         );
         assertDeepEqual(
-            ContractSelector.selectMany(state, [expected.id!]),
+            ContractSelector.selectMany(store.getState(), [expected.id!]),
             [expected],
             ['web3Contract'],
             'Contract.select([id])',
         );
-        assertDeepEqual(ContractSelector.selectMany(state), [expected], ['web3Contract'], 'Contract.select()');
+        assertDeepEqual(
+            ContractSelector.selectMany(store.getState()),
+            [expected],
+            ['web3Contract'],
+            'Contract.select()',
+        );
     });
 });
