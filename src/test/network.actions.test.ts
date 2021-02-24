@@ -18,23 +18,31 @@ describe('Network', () => {
         store = createStore();
     });
 
+    it('NetworkSelector.selectSingle(state, id) => undefined', async () => {
+        const selected = NetworkSelector.selectSingle(store.getState(), '');
+        assert.equal(selected, undefined);
+    });
+
+    it('NetworkSelector.selectSingle(state, [id]) => []', async () => {
+        const selected = NetworkSelector.selectMany(store.getState(), ['']);
+        assert.deepEqual(selected, [null]);
+    });
+
     it('NetworkActions.create', async () => {
         store.dispatch(NetworkActions.create(network));
 
         const expected = network;
-        const state = store.getState();
 
         //State
         assert.deepEqual(
-            state.web3Redux['Network'].itemsById[network.networkId],
+            store.getState().web3Redux['Network'].itemsById[network.networkId],
             expected,
             'state.web3Redux.Network.itemsById',
         );
 
         //Network.select
         assert.deepEqual(
-            //@ts-ignore
-            NetworkSelector.select(state, network.networkId),
+            NetworkSelector.selectSingle(store.getState(), network.networkId),
             expected,
             'Network.select(networkId)',
         );

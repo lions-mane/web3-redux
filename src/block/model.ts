@@ -8,7 +8,7 @@ import { isStrings } from '../utils';
  * Block header object. Typically returned by Web3 websocket subscriptions.
  * Extends the web3 interface.
  *
- * @param id - Block id. Used to index blocks in redux-orm. Computed as `${networkId}-${number}`.
+ * @param id - Block id.
  * @param networkId - A network id.
  * @param number - Number: The block number. null if a pending block.
  * @param hash - 32 Bytes - String: Hash of the block. null if a pending block.
@@ -26,6 +26,7 @@ import { isStrings } from '../utils';
  * @param timestamp - Number: The unix timestamp for when the block was collated.
  */
 export interface BlockHeader extends Web3BlockHeader, NetworkId {
+    /** Block id. Used to index blocks in redux-orm. Computed as `${networkId}-${number}`. */
     id?: string;
 }
 

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>FetchActionInput | @lions-mane/web3-redux - v0.1.0-beta.1</title>
+	<title>FetchActionInput | @lions-mane/web3-redux - v0.1.0-beta.2</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.1</a>
+					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.2</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -76,6 +76,11 @@
 		</div>
 		<div class="col-7 offset-3 col-content">
 			<h1>Interface FetchActionInput</h1>
+			<section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography tsd-comment-shorttext">
+					<div class="lead">
+						<p>Block fetch action.  Uses web3.eth.getBlock().</p>
+					</div>
+			</div></section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -111,9 +116,14 @@
 					<div class="tsd-signature tsd-kind-icon">block<wbr>Hash<wbr>OrBlock<wbr>Number<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/block/actions.ts:19</li>
+							<li>Defined in src/block/actions.ts:21</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography tsd-comment-shorttext">
+						<div class="lead">
+							<p>The block number or block hash. Or the string &quot;earliest&quot;, &quot;latest&quot; or &quot;pending&quot;</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="networkid" class="tsd-anchor"></a>
@@ -132,9 +142,18 @@
 					<div class="tsd-signature tsd-kind-icon">return<wbr>Transaction<wbr>Objects<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/block/actions.ts:20</li>
+							<li>Defined in src/block/actions.ts:26</li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography tsd-comment-shorttext">
+						<div class="lead">
+							<p>If specified true, the returned block will contain all transactions as objects. If false it will only contains the transaction hashes.</p>
+						</div>
+						</div><div class="tsd-comment tsd-typography tsd-comment-tags">
+						<dl class="tsd-comment-tags"><dt>defaultvalue</dt>
+							<dd><p><code>true</code></p>
+						</dd></dl>
+					</div>
 				</section>
 			</section>
 			<!--{&quot;options&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;tsconfig&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;entryPoints&quot;:[&quot;src&quot;],&quot;exclude&quot;:[],&quot;externalPattern&quot;:[&quot;**/node_modules/**&quot;],&quot;excludeExternals&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludeInternal&quot;:false,&quot;excludePrivate&quot;:false,&quot;excludeProtected&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;watch&quot;:false,&quot;preserveWatchOutput&quot;:false,&quot;emit&quot;:false,&quot;out&quot;:&quot;docs&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;./node_modules/typedoc-neo-theme/bin/default&quot;,&quot;highlightTheme&quot;:&quot;light-plus&quot;,&quot;name&quot;:&quot;&quot;,&quot;includeVersion&quot;:true,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;showConfig&quot;:false,&quot;plugin&quot;:[&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;logLevel&quot;:1,&quot;listInvalidSymbolLinks&quot;:false,&quot;outline&quot;:[{&quot;Web3Redux&quot;:{&quot;actions&quot;:&quot;actions&quot;,&quot;sagas&quot;:&quot;saga&quot;,&quot;store&quot;:&quot;store&quot;,&quot;orm&quot;:&quot;orm&quot;},&quot;Block&quot;:{&quot;model&quot;:&quot;block_model&quot;,&quot;actions&quot;:&quot;block_actions&quot;,&quot;selector&quot;:&quot;block_selector&quot;,&quot;reducer&quot;:&quot;block_reducer&quot;,&quot;sagas&quot;:&quot;block_sagas&quot;},&quot;Transaction&quot;:{&quot;model&quot;:&quot;transaction_model&quot;,&quot;actions&quot;:&quot;transaction_actions&quot;,&quot;selector&quot;:&quot;transaction_selector&quot;,&quot;reducer&quot;:&quot;transaction_reducer&quot;,&quot;sagas&quot;:&quot;transaction_sagas&quot;},&quot;Network&quot;:{&quot;model&quot;:&quot;network_model&quot;,&quot;actions&quot;:&quot;network_actions&quot;,&quot;selector&quot;:&quot;network_selector&quot;,&quot;reducer&quot;:&quot;network_reducer&quot;},&quot;Contract&quot;:{&quot;model&quot;:&quot;contract_model&quot;,&quot;actions&quot;:&quot;contract_actions&quot;,&quot;selector&quot;:&quot;contract_selector&quot;,&quot;reducer&quot;:&quot;contract_reducer&quot;,&quot;sagas&quot;:&quot;contract_sagas&quot;}}]}-->

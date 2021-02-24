@@ -59,32 +59,39 @@ describe('Transaction', () => {
         store.dispatch(NetworkActions.create(network));
     });
 
+    it('TransactionSelector.selectSingle(state, id) => undefined', async () => {
+        const selected = TransactionSelector.selectSingle(store.getState(), '');
+        assert.equal(selected, undefined);
+    });
+
+    it('TransactionSelector.selectSingle(state, [id]) => []', async () => {
+        const selected = TransactionSelector.selectMany(store.getState(), ['']);
+        assert.deepEqual(selected, [null]);
+    });
+
     it('TransactionActions.create', async () => {
         store.dispatch(TransactionActions.create({ ...transaction }));
         const expected = { ...transaction };
-        const state = store.getState();
 
         //State
         const expectedState = { [expected.id!]: expected };
         assert.deepEqual(
-            state.web3Redux['Transaction'].itemsById,
+            store.getState().web3Redux['Transaction'].itemsById,
             expectedState,
             'state.web3Redux.Transaction.itemsById',
         );
 
         //Transaction.select
         assert.deepEqual(
-            //@ts-ignore
-            TransactionSelector.select(state, expected.id!),
+            TransactionSelector.selectSingle(store.getState(), expected.id!),
             expected,
             'Transaction.select(id)',
         );
         assert.deepEqual(
-            //@ts-ignore
-            TransactionSelector.select(state, [expected.id!]),
+            TransactionSelector.selectMany(store.getState(), [expected.id!]),
             [expected],
             'Transaction.select([id])',
         );
-        assert.deepEqual(TransactionSelector.select(state), [expected], 'Transaction.select()');
+        assert.deepEqual(TransactionSelector.selectMany(store.getState()), [expected], 'Transaction.select()');
     });
 });

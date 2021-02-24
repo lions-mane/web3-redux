@@ -13,7 +13,6 @@ import {
     BlockTransactionObject,
     NetworkActions,
     BlockActions,
-    Web3ReduxActions,
     NetworkSelector,
     BlockSelector,
 } from '../index';
@@ -44,9 +43,8 @@ describe('block.sagas', () => {
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId, web3: web3Default }] }));
-        //@ts-ignore
-        const network: Network = NetworkSelector.select(store.getState(), networkId) as Network;
+        store.dispatch(NetworkActions.create({ networkId, web3: web3Default }));
+        const network: Network = NetworkSelector.selectSingle(store.getState(), networkId) as Network;
         if (!network)
             throw new Error(
                 `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
@@ -86,13 +84,13 @@ describe('block.sagas', () => {
     */
 
     it('store.dispatch(BlockActions.fetch({returnTransactionObjects:false}))', async () => {
-        store.dispatch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
+        store.dispatch(
+            BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: false }),
+        );
         const block = await web3.eth.getBlock('latest');
         const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
 
         await sleep(100);
-
-        const state = store.getState();
 
         const expectedBlockSelected = [expectedBlock];
         //@ts-ignore
@@ -101,13 +99,17 @@ describe('block.sagas', () => {
             [expectedBlock.id!]: expectedBlock,
         };
 
-        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlockState, 'state.web3Redux.Block.itemsById');
-        assert.deepEqual(BlockSelector.select(state), expectedBlockSelected, 'Block.selectWithId');
+        assert.deepEqual(
+            store.getState().web3Redux['Block'].itemsById,
+            expectedBlockState,
+            'state.web3Redux.Block.itemsById',
+        );
+        assert.deepEqual(BlockSelector.selectMany(store.getState()), expectedBlockSelected, 'Block.selectWithId');
         //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
     });
 
     it('store.dispatch(BlockActions.subscribe())', async () => {
-        store.dispatch(BlockActions.subscribe({ networkId }));
+        store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: false }));
 
         const expectedBlocks: { [key: string]: BlockHeader } = {};
         web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
@@ -117,8 +119,7 @@ describe('block.sagas', () => {
 
         await sleep(2000);
 
-        const state = store.getState();
-        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlocks);
+        assert.deepEqual(store.getState().web3Redux['Block'].itemsById, expectedBlocks);
     });
 
     it('store.dispatch(BlockActions.subscribe({returnTransactionObjects:true})', async () => {
@@ -134,7 +135,7 @@ describe('block.sagas', () => {
         await sleep(2000);
 
         subscription.unsubscribe();
-        const state = store.getState();
+
         const expectedBlocks = (await Promise.all(expectedBlocksPromise))
             .map(block => {
                 const id = `${networkId}-${block.number}`;
@@ -148,14 +149,17 @@ describe('block.sagas', () => {
             .reduce((acc, block) => {
                 return { ...acc, [block.id!]: block };
             }, {});
-        const blocks = (BlockSelector.selectBlockTransaction(state) as BlockTransaction[]).reduce((acc, block) => {
-            return { ...acc, [block.id!]: block };
-        }, {});
+        const blocks = (BlockSelector.selectManyBlockTransaction(store.getState()) as BlockTransaction[]).reduce(
+            (acc, block) => {
+                return { ...acc, [block.id!]: block };
+            },
+            {},
+        );
         assert.deepEqual(blocks, expectedBlocks);
     });
 
     it('store.dispatch(unsubscribe())', async () => {
-        store.dispatch(BlockActions.subscribe({ networkId }));
+        store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: false }));
 
         const expectedBlocks: { [key: string]: BlockHeader } = {};
         const subscription = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
@@ -168,8 +172,7 @@ describe('block.sagas', () => {
         subscription.unsubscribe();
         await sleep(2000);
 
-        const state = store.getState();
-        const blockState = state.web3Redux['Block'].itemsById;
+        const blockState = store.getState().web3Redux['Block'].itemsById;
         assert.deepEqual(blockState, expectedBlocks);
     });
 
@@ -178,8 +181,8 @@ describe('block.sagas', () => {
         const network2 = `${networkId}-2`;
         store.dispatch(NetworkActions.create({ networkId: network1, web3: web3Default }));
         store.dispatch(NetworkActions.create({ networkId: network2, web3: web3Default }));
-        store.dispatch(BlockActions.subscribe({ networkId: network1 }));
-        store.dispatch(BlockActions.subscribe({ networkId: network2 }));
+        store.dispatch(BlockActions.subscribe({ networkId: network1, returnTransactionObjects: false }));
+        store.dispatch(BlockActions.subscribe({ networkId: network2, returnTransactionObjects: false }));
 
         const expectedBlocks1: { [key: string]: BlockHeader } = {};
         const subscription1 = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {

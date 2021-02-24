@@ -24,7 +24,7 @@ export function* fetch(action: BlockActions.FetchAction) {
     const block: BlockTransaction = yield call(
         web3.eth.getBlock,
         payload.blockHashOrBlockNumber,
-        payload.returnTransactionObjects ?? false,
+        payload.returnTransactionObjects ?? true,
     );
     yield put(BlockActions.create({ ...block, networkId: payload.networkId }));
 }
@@ -116,7 +116,7 @@ function* subscribe(action: BlockActions.SubscribeAction) {
                     yield put(BlockActions.create(newBlock));
                     //@ts-ignore
                     yield fork(handleBlockUpdate, newBlock);
-                    if (action.payload.returnTransactionObjects) {
+                    if (action.payload.returnTransactionObjects ?? true) {
                         yield fork(
                             fetch,
                             BlockActions.fetch({

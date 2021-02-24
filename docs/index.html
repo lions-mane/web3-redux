@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@lions-mane/web3-redux - v0.1.0-beta.1</title>
+	<title>@lions-mane/web3-redux - v0.1.0-beta.2</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.1</a>
+					<a href="index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.2</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -69,7 +69,7 @@
 			</nav>
 		</div>
 		<div class="col-7 offset-3 col-content">
-			<h1>@lions-mane/web3-redux - v0.1.0-beta.1</h1>
+			<h1>@lions-mane/web3-redux - v0.1.0-beta.2</h1>
 			<div class="tsd-panel tsd-typography">
 				<a href="#web3-redux" id="web3-redux" style="color: inherit; text-decoration: none;">
 					<h1>Web3 Redux</h1>
@@ -82,8 +82,11 @@
 					<li>  <a href="#installing">Installing</a></li>
 					<li><a href="#getting-started">Getting Started</a><ul>
 							<li>  <a href="#initialize-the-redux-store">Initialize the Redux Store</a></li>
-							<li>  <a href="#configure-web3-providers">Configure Web3 Providers</a></li>
-							<li>  <a href="#start-a-block-subscription">Start a block subscription</a></li>
+							<li><a href="#initialize-networks">Initialize Networks</a><ul>
+									<li>  <a href="#automatic">Automatic</a></li>
+									<li>  <a href="#manual">Manual</a></li>
+								</ul>
+							</li>
 						</ul>
 					</li>
 					<li>  <a href="#displaying-react-components">Displaying React Components</a></li>
@@ -130,14 +133,19 @@
 
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #AF00DB">default</span><span style="color: #000000"> </span><span style="color: #001080">store</span><span style="color: #000000">;</span>
 </code></pre>
-				<a href="#configure-web3-providers" id="configure-web3-providers" style="color: inherit; text-decoration: none;">
-					<h3>Configure Web3 providers</h3>
+				<a href="#initialize-networks" id="initialize-networks" style="color: inherit; text-decoration: none;">
+					<h3>Initialize Networks</h3>
 				</a>
-				<p>All entities in the web3-redux stored are indexed by networkId. web3-redux let&#39;s you sync multiple networks concurrently (eg. sync Mainnet &amp; Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.</p>
-				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">NetworkActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">web3</span><span style="color: #000000"> }));</span>
+				<p>To start web3-redux, you can either use the helper <code>WEB3_REDUX/INITIALIZE</code> action or manually add networks and block subscriptions.
+				While a block subscription is optional, it is in most cases necessary to enable syncing the latest on-chain data for your smart contracts.</p>
+				<a href="#automatic" id="automatic" style="color: inherit; text-decoration: none;">
+					<h4>Automatic</h4>
+				</a>
+				<p>You can dispatch a <code>WEB3_REDUX/INITIALIZE</code> action to initialize multiple networks.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Web3ReduxActions</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">());</span>
 </code></pre>
-				<p>Alternatively, you can dispatch a <code>WEB3_REDUX/INITIALIZE</code> action to initialize multiple networks. The networks will only be initialized if an environment variable with the rpc endpoint value is set. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
-				The following networks are supported:</p>
+				<p>A set of default ethereum networks will be initialized if an environment variable with the rpc endpoint value is set. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
+				The following default networks are supported:</p>
 				<ul>
 					<li>  Local: <code>LOCAL_RPC</code> (eg. <code>ws://localhost:8545</code>)</li>
 					<li>  Mainnet: <code>MAINNET_RPC</code> (eg. <code>wss://mainnet.infura.io/ws/v3/&lt;API_KEY&gt;</code>)</li>
@@ -147,19 +155,32 @@
 					<li>  Goerli: <code>GOERLI_RPC</code></li>
 				</ul>
 				<p>The environment variables are also supported with the prefixes <code>REACT_APP_*</code> and <code>NEXT_PUBLIC_*</code>.</p>
-				<p>The following action will automatically add networks and their ids if the rpc environment variable is set.</p>
-				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Web3ReduxActions</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">());</span>
+				<p>Alternatively, you can pass your own set of networks with web3 instances to the initialize action:</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Web3ReduxActions</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">({ </span><span style="color: #001080">networks:</span><span style="color: #000000"> [{ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">web3</span><span style="color: #000000"> }] }));</span>
 </code></pre>
-				<a href="#start-a-block-subscription" id="start-a-block-subscription" style="color: inherit; text-decoration: none;">
-					<h3>Start a block subscription</h3>
+				<p><b>Block Sync</b>
+					By default, the initialize action will also start a block sync for each network.
+				You can disable this with:</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Web3ReduxActions</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">({ </span><span style="color: #001080">blockSubscribe:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000"> }));</span>
+</code></pre>
+				<p>Or customize it with:</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Web3ReduxActions</span><span style="color: #000000">.</span><span style="color: #795E26">initialize</span><span style="color: #000000">({ </span><span style="color: #001080">blockSubscribe:</span><span style="color: #000000"> [{ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000"> }] }));</span>
+</code></pre>
+				<a href="#manual" id="manual" style="color: inherit; text-decoration: none;">
+					<h4>Manual</h4>
 				</a>
-				<p>To sync with on-chain events, it&#39;s a good idea to start a block subscription as it can be used as a reference point to keep data fresh. This is recommended but not required as some apps might use a different refresh mechanism.</p>
+				<p><b>Add a network</b>
+				All entities in the web3-redux stored are indexed by networkId. web3-redux let&#39;s you sync multiple networks concurrently (eg. sync Mainnet &amp; Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.</p>
+				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">NetworkActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">web3</span><span style="color: #000000"> }));</span>
+</code></pre>
+				<p><b>Start a block subscription</b>
+				To sync with on-chain events, it&#39;s a good idea to start a block subscription as it can be used as a reference point to keep data fresh. This is recommended but not required as some apps might use a different refresh mechanism.</p>
 				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">BlockActions</span><span style="color: #000000">.</span><span style="color: #795E26">subscribe</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000"> }));</span>
 </code></pre>
 				<a href="#add-a-contract" id="add-a-contract" style="color: inherit; text-decoration: none;">
 					<h3>Add a contract</h3>
 				</a>
-				<p>One you&#39;ve started the block sync, add a contract and make a call.</p>
+				<p>One you&#39;ve add a network and started the block sync, add a contract and make a call.</p>
 				<pre><code class="language-typescript"><span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">ContractActions</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">address:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;0x000...&#039;</span><span style="color: #000000">, </span><span style="color: #001080">abi:</span><span style="color: #000000"> </span><span style="color: #0070C1">ERC20ABI</span><span style="color: #000000"> }));</span>
 <span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">ContractActions</span><span style="color: #000000">.</span><span style="color: #795E26">call</span><span style="color: #000000">({</span>
 <span style="color: #000000">    </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">,</span>
