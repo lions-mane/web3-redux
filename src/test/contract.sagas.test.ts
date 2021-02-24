@@ -79,7 +79,9 @@ describe('contract.sagas', () => {
                 sync: false,
             }),
         );
+
         const blockNumber = await web3.eth.getBlockNumber();
+
         await sleep(2000);
 
         const state = store.getState();
@@ -89,7 +91,9 @@ describe('contract.sagas', () => {
         const value = ContractSelector.selectContractCall(state, contractId, 'blockNumber', {
             from: web3.eth.defaultAccount ?? undefined,
         });
+
         assert.approximately(parseInt(value), blockNumber, 1, 'blockNumber');
+
     });
 
     it('store.dispatch(ContractSagas.call({sync:CALL_BLOCK_SYNC}))', async () => {
@@ -126,6 +130,7 @@ describe('contract.sagas', () => {
         });
 
         assert.isAtLeast(parseInt(blockNumber2), parseInt(blockNumber1) + 1);
+
     });
 
     it('store.dispatch(ContractSagas.call({sync:CALL_TRANSACTION_SYNC}))', async () => {
