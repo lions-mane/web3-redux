@@ -54,19 +54,25 @@ export function* contractCall(action: CallAction) {
     const gasPrice = payload.options?.gasPrice ?? 0;
 
     //No sync if block isn't set to "latest"
-    let sync: ContractCallSync | undefined;
-    if (defaultBlock === 'latest') {
-        if (payload.sync != false) {
-            const defaultTransactionSync = defaultTransactionSyncForContract(contract.address);
+    let sync: ContractCallSync | false;
+    const defaultTransactionSync = defaultTransactionSyncForContract(contract.address);
 
-            if (payload.sync === undefined || payload.sync === true || payload.sync === CALL_TRANSACTION_SYNC) {
-                sync = defaultTransactionSync;
-            } else if (payload.sync === CALL_BLOCK_SYNC) {
-                sync = defaultBlockSync;
-            } else {
-                sync = payload.sync as ContractCallSync;
-            }
+    if (defaultBlock === 'latest') {
+        if (payload.sync === false) {
+            sync = false;
+        } else if (payload.sync === true) {
+            sync = defaultTransactionSync;
+        } else if (!payload.sync) {
+            sync = defaultTransactionSync;
+        } else if (payload.sync === CALL_TRANSACTION_SYNC) {
+            sync = defaultTransactionSync;
+        } else if (payload.sync === CALL_BLOCK_SYNC) {
+            sync = defaultBlockSync;
+        } else {
+            sync = payload.sync as ContractCallSync;
         }
+    } else {
+        sync = false;
     }
 
     if (!payload.args || payload.args.length == 0) {

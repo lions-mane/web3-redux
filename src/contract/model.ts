@@ -67,7 +67,7 @@ export interface ContractCall {
     value: any;
     defaultBlock: string | number;
     args?: any[];
-    sync?: ContractCallSync;
+    sync: ContractCallSync | false;
 }
 
 /**
