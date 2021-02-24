@@ -10,13 +10,13 @@ import {
     Model,
     CALL_BLOCK_SYNC,
     ContractCallSync,
-    ContractCallBlockSync,
-    ContractCallTransactionSync,
     CALL_TRANSACTION_SYNC,
+    defaultTransactionSyncForContract,
+    defaultBlockSync,
     eventId,
+    callArgsHash,
 } from './model';
 import { Network } from '../network/model';
-import { Transaction } from '../transaction/model';
 
 import {
     CALL,
@@ -35,14 +35,6 @@ import * as TransactionActions from '../transaction/actions';
 import * as ContractSelector from './selector';
 import * as NetworkSelector from '../network/selector';
 
-function argsHash({ from, defaultBlock, args }: { from: string; defaultBlock: string | number; args?: any[] }) {
-    if (!args || args.length == 0) {
-        return `().call(${defaultBlock},${JSON.stringify({ from })})`;
-    } else {
-        return `(${args}).call(${defaultBlock},${JSON.stringify({ from })})`;
-    }
-}
-
 export function* contractCall(action: CallAction) {
     const { payload } = action;
     //@ts-ignore
@@ -57,18 +49,15 @@ export function* contractCall(action: CallAction) {
     const contract: Contract = yield select(ContractSelector.select, id);
     const web3Contract = contract.web3Contract!;
     const defaultBlock = payload.defaultBlock ?? 'latest';
+    const from: string =
+        payload.options?.from ?? web3.eth.defaultAccount ?? '0x0000000000000000000000000000000000000000';
+    const gasPrice = payload.options?.gasPrice ?? 0;
+
     //No sync if block isn't set to "latest"
     let sync: ContractCallSync | undefined;
     if (defaultBlock === 'latest') {
         if (payload.sync != false) {
-            const defaultBlockSync: ContractCallBlockSync = {
-                type: CALL_BLOCK_SYNC,
-                filter: () => true,
-            };
-            const defaultTransactionSync: ContractCallTransactionSync = {
-                type: CALL_TRANSACTION_SYNC,
-                filter: (transaction: Transaction) => transaction.to === contract.address,
-            };
+            const defaultTransactionSync = defaultTransactionSyncForContract(contract.address);
 
             if (payload.sync === undefined || payload.sync === true || payload.sync === CALL_TRANSACTION_SYNC) {
                 sync = defaultTransactionSync;
@@ -80,19 +69,16 @@ export function* contractCall(action: CallAction) {
         }
     }
 
-    const from: string = payload.options?.from ?? web3.eth.defaultAccount!;
-    const gasPrice = payload.options?.gasPrice ?? 0;
-
     if (!payload.args || payload.args.length == 0) {
         const tx = web3Contract.methods[payload.method]();
         const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
-        const key = argsHash({ from, defaultBlock });
+        const key = callArgsHash({ from, defaultBlock });
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
         contract.methods![payload.method][key] = { value, sync, defaultBlock };
     } else {
         const tx = web3Contract.methods[payload.method](payload.args);
         const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
-        const key = argsHash({ from, defaultBlock, args: payload.args });
+        const key = callArgsHash({ from, defaultBlock, args: payload.args });
         const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
         contract.methods![payload.method][key] = { value, defaultBlock, sync, args: payload.args };
     }
@@ -164,7 +150,9 @@ export function* contractSend(action: SendAction) {
     const contract: Contract = yield select(ContractSelector.select, id);
     const web3Contract = contract.web3Contract!;
 
-    const from: string = payload.options?.from ?? web3.eth.defaultAccount!;
+    const from = payload.options?.from ?? web3.eth.defaultAccount;
+    if (!from)
+        throw new Error('contractSend: Missing from address. Make sure to set options.from or web3.eth.defaultAccount');
     const gasPrice = payload.options?.gasPrice ?? 0;
 
     let txPromiEvent: PromiEvent<TransactionReceipt>;

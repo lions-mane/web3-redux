@@ -1,6 +1,6 @@
 {
     "name": "@lions-mane/web3-redux",
-    "version": "0.1.0",
+    "version": "0.1.0-beta.1",
     "private": false,
     "repository": {
         "type": "git",
@@ -18,7 +18,8 @@
         "clean": "rimraf lib",
         "test": "mocha lib/**/*.test.js",
         "start": "node lib/index.js",
-        "build": "npm -s run clean && tsc",
+        "build": "npm run clean && tsc",
+        "build:watch": "npm run clean && tsc -w",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint src/**/*.ts --fix",
         "dev": "ts-node-dev --respawn src/index",
@@ -46,6 +47,7 @@
         "@types/node": "^12.19.16",
         "@typescript-eslint/eslint-plugin": "^2.34.0",
         "@typescript-eslint/parser": "^2.34.0",
+        "electron": "^11.2.3",
         "chai": "^4.3.0",
         "cross-env": "^7.0.3",
         "dotenv": "^8.2.0",
@@ -68,6 +70,10 @@
         "typedoc-neo-theme": "^1.1.0",
         "typescript": "^4.0.3"
     },
+    "files": [
+        "lib",
+        "!lib/**/*.test.*"
+    ],
     "main": "lib/index.js",
     "types": "lib/index.d.ts"
 }

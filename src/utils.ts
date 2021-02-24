@@ -3,6 +3,8 @@ import { assert } from 'chai';
 import { AddressInfo, Server } from 'net';
 dotenv.config();
 
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 export function actionCreator<ActionType, ActionInput>(type: ActionType) {
     return (payload: ActionInput) => {
         return {
@@ -48,7 +50,7 @@ export function assertDeepEqual(a: any, b: any, ignore: string[], message?: stri
     }
 }
 
-const sleep = (ms: number) => {
+export const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 };
 

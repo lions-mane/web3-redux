@@ -1,6 +1,8 @@
 import { CallOptions, SendOptions } from 'web3-eth-contract';
+import { AbiItem } from 'web3-utils';
+import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
 import { actionCreator } from '../utils';
-import { ContractCallSync, Contract, ContractId, CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC } from './model';
+import { ContractCallSync, Contract, ContractId, CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, ContractCall } from './model';
 
 const name = 'Contract';
 
@@ -14,7 +16,21 @@ export const SEND = `${name}/SEND`;
 export const EVENT_SUBSCRIBE = `${name}/EVENT_SUBSCRIBE`;
 export const EVENT_UNSUBSCRIBE = `${name}/EVENT_UNSUBSCRIBE`;
 
-export const create = actionCreator<typeof CREATE, Contract>(CREATE);
+export interface CreateActionInput extends ContractId {
+    abi: AbiItem[];
+    methods?: {
+        [callerFunctionName: string]: {
+            [argsHash: string]: ContractCall;
+        };
+    };
+    events?: {
+        [eventName: string]: {
+            [eventId: string]: EventData;
+        };
+    };
+    web3Contract?: Web3Contract;
+}
+export const create = actionCreator<typeof CREATE, CreateActionInput>(CREATE);
 export const update = actionCreator<typeof UPDATE, Contract>(UPDATE);
 export const remove = actionCreator<typeof REMOVE, ContractId>(REMOVE);
 

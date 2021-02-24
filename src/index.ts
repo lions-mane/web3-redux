@@ -12,6 +12,7 @@ import {
     CALL_BLOCK_SYNC,
     CALL_TRANSACTION_SYNC,
     eventId,
+    callArgsHash,
 } from './contract/model';
 
 import * as NetworkActions from './network/actions';
@@ -23,6 +24,7 @@ import * as Web3ReduxActions from './actions';
 import * as BlockSagas from './block/sagas';
 import * as TransactionSagas from './block/sagas';
 import * as EventSagas from './block/sagas';
+import * as ContractSagas from './contract/sagas';
 
 import * as NetworkSelector from './network/selector';
 import * as BlockSelector from './block/selector';
@@ -48,6 +50,7 @@ export {
     ContractCallBlockSync,
     ContractCallTransactionSync,
     eventId,
+    callArgsHash,
     CALL_BLOCK_SYNC,
     CALL_TRANSACTION_SYNC,
     NetworkActions,
@@ -57,6 +60,7 @@ export {
     Web3ReduxActions,
     BlockSagas,
     TransactionSagas,
+    ContractSagas,
     EventSagas,
     NetworkSelector,
     BlockSelector,
