@@ -7,8 +7,9 @@ Web3 Redux Library.
 -   [Installing](#installing)
 -   [Getting Started](#getting-started)
     -   [Initialize the Redux Store](#initialize-the-redux-store)
-    -   [Configure Web3 Providers](#configure-web3-providers)
-    -   [Start a block subscription](#start-a-block-subscription)
+    -   [Initialize Networks](#initialize-networks)
+        -   [Automatic](#automatic)
+        -   [Manual](#manual)
 -   [Displaying React Components](#displaying-react-components)
 -   [Syncing](#syncing)
     -   [Block Header Sync](#block-header-sync)
@@ -51,16 +52,21 @@ sagaMiddleware.run(web3Saga);
 export default store;
 ```
 
-### Configure Web3 providers
+### Initialize Networks
 
-All entities in the web3-redux stored are indexed by networkId. web3-redux let's you sync multiple networks concurrently (eg. sync Mainnet & Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.
+To start web3-redux, you can either use the helper `WEB3_REDUX/INITIALIZE` action or manually add networks and block subscriptions.
+While a block subscription is optional, it is in most cases necessary to enable syncing the latest on-chain data for your smart contracts.
+
+#### Automatic
+
+You can dispatch a `WEB3_REDUX/INITIALIZE` action to initialize multiple networks.
 
 ```typescript
-store.dispatch(NetworkActions.create({ networkId: '1', web3 }));
+store.dispatch(Web3ReduxActions.initialize());
 ```
 
-Alternatively, you can dispatch a `WEB3_REDUX/INITIALIZE` action to initialize multiple networks. The networks will only be initialized if an environment variable with the rpc endpoint value is set. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
-The following networks are supported:
+A set of default ethereum networks will be initialized if an environment variable with the rpc endpoint value is set. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
+The following default networks are supported:
 
 -   Local: `LOCAL_RPC` (eg. `ws://localhost:8545`)
 -   Mainnet: `MAINNET_RPC` (eg. `wss://mainnet.infura.io/ws/v3/<API_KEY>`)
@@ -71,14 +77,36 @@ The following networks are supported:
 
 The environment variables are also supported with the prefixes `REACT_APP_*` and `NEXT_PUBLIC_*`.
 
-The following action will automatically add networks and their ids if the rpc environment variable is set.
+Alternatively, you can pass your own set of networks with web3 instances to the initialize action:
 
 ```typescript
-store.dispatch(Web3ReduxActions.initialize());
+store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId: '1', web3 }] }));
 ```
 
-### Start a block subscription
+<b>Block Sync</b>
+By default, the initialize action will also start a block sync for each network.
+You can disable this with:
 
+```typescript
+store.dispatch(Web3ReduxActions.initialize({ blockSubscribe: false }));
+```
+
+Or customize it with:
+
+```typescript
+store.dispatch(Web3ReduxActions.initialize({ blockSubscribe: [{ networkId: '1' }] }));
+```
+
+#### Manual
+
+<b>Add a network</b>
+All entities in the web3-redux stored are indexed by networkId. web3-redux let's you sync multiple networks concurrently (eg. sync Mainnet & Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.
+
+```typescript
+store.dispatch(NetworkActions.create({ networkId: '1', web3 }));
+```
+
+<b>Start a block subscription</b>
 To sync with on-chain events, it's a good idea to start a block subscription as it can be used as a reference point to keep data fresh. This is recommended but not required as some apps might use a different refresh mechanism.
 
 ```typescript
@@ -87,7 +115,7 @@ store.dispatch(BlockActions.subscribe({ networkId: '1' }));
 
 ### Add a contract
 
-One you've started the block sync, add a contract and make a call.
+One you've add a network and started the block sync, add a contract and make a call.
 
 ```typescript
 store.dispatch(ContractActions.create({ networkId: '1', address: '0x000...', abi: ERC20ABI }));
