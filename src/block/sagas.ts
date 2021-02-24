@@ -175,8 +175,8 @@ function* createBlockTransactions(block: Block) {
     if (isBlockTransactionString(block)) {
         const transactions = block.transactions;
         const actions = transactions.map((hash: string) => {
-            //@ts-ignore
             return put(
+                //@ts-ignore
                 TransactionActions.create({
                     hash,
                     networkId: block.networkId,

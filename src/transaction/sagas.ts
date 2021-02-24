@@ -1,5 +1,5 @@
-import { put, call, takeEvery, select, all, fork } from 'redux-saga/effects';
-import { Transaction } from './model';
+import { put, call, takeEvery, select, all } from 'redux-saga/effects';
+import { Transaction, transactionId } from './model';
 import { Contract, isContractCallTransactionSync } from '../contract/model';
 
 import * as TransactionActions from './actions';
@@ -8,7 +8,37 @@ import * as ContractActions from '../contract/actions';
 import * as NetworkSelector from '../network/selector';
 import * as ContractSelector from '../contract/selector';
 
-function* handleTransactionUpdate(transaction: Transaction) {
+export function* fetch(action: TransactionActions.FetchAction) {
+    const { payload } = action;
+    //@ts-ignore
+    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    if (!network)
+        throw new Error(
+            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
+        );
+    //@ts-ignore;
+    yield put(TransactionActions.create({ networkId: payload.networkId, hash: payload.hash }));
+    const web3 = network.web3;
+    const transaction: Transaction = yield call(web3.eth.getTransaction, payload.hash);
+    const newTransaction = { ...transaction, networkId: payload.networkId };
+    yield put(TransactionActions.update(newTransaction));
+}
+
+function* fetchLoop() {
+    const cache: { [key: string]: boolean } = {};
+
+    const actionPattern = (action: { type: string }) => {
+        if (!TransactionActions.isFetchAction(action)) return false;
+        const actionId = `${action.payload.networkId}-${action.payload.hash}`;
+        if (cache[actionId]) return false;
+        cache[actionId] = true;
+        return true;
+    };
+
+    yield takeEvery(actionPattern, fetch);
+}
+
+function* contractCallTransactionSync(transaction: Transaction) {
     const contracts: Contract[] = yield select(ContractSelector.select);
     const putContractCall: any[] = [];
     contracts
@@ -39,36 +69,47 @@ function* handleTransactionUpdate(transaction: Transaction) {
     yield all(putContractCall);
 }
 
-export function* fetch(action: TransactionActions.FetchAction) {
-    const { payload } = action;
-    //@ts-ignore
-    const network: Network = yield select(NetworkSelector.select, payload.networkId);
-    if (!network)
-        throw new Error(
-            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
-        );
-    const web3 = network.web3;
-    const transaction: Transaction = yield call(web3.eth.getTransaction, payload.hash);
-    const newTransaction = { ...transaction, networkId: payload.networkId };
-    yield put(TransactionActions.create(newTransaction));
-    //@ts-ignore
-    yield fork(handleTransactionUpdate, newTransaction);
+function* onCreate(action: TransactionActions.CreateAction) {
+    if (action.payload.blockNumber) {
+        yield contractCallTransactionSync(action.payload);
+    }
 }
 
-function* fetchLoop() {
+/** Yields for the first transaction create action */
+function* onCreateLoop() {
     const cache: { [key: string]: boolean } = {};
 
     const actionPattern = (action: { type: string }) => {
-        if (!TransactionActions.isFetchAction(action)) return false;
-        const actionId = `${action.payload.networkId}-${action.payload.hash}`;
+        if (!TransactionActions.isCreateAction(action)) return false;
+        const actionId = transactionId(action.payload);
         if (cache[actionId]) return false;
         cache[actionId] = true;
         return true;
     };
 
-    yield takeEvery(actionPattern, fetch);
+    yield takeEvery(actionPattern, onCreate);
 }
 
+function* onUpdate(action: TransactionActions.CreateAction) {
+    if (action.payload.blockNumber) {
+        yield contractCallTransactionSync(action.payload);
+    }
+}
+
+/** Yields for every transaction update that changes the blockNumber */
+function* onUpdateLoop() {
+    const cache: { [key: string]: boolean } = {};
+
+    const actionPattern = (action: { type: string }) => {
+        if (!TransactionActions.isUpdateAction(action)) return false;
+        const actionId = `${transactionId(action.payload)}-${action.payload.blockNumber}`;
+        if (cache[actionId]) return false;
+        cache[actionId] = true;
+        return true;
+    };
+
+    yield takeEvery(actionPattern, onUpdate);
+}
 export function* saga() {
-    yield all([fetchLoop()]);
+    yield all([fetchLoop(), onCreateLoop(), onUpdateLoop()]);
 }

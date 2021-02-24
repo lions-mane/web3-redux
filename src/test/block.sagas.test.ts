@@ -108,7 +108,7 @@ describe('block.sagas', () => {
         //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
     });
 
-    it('store.dispatch(BlockActions.subscribe())', async () => {
+    it('store.dispatch(BlockActions.subscribe({returnTransactionObjects:false}))', async () => {
         store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: false }));
 
         const expectedBlocks: { [key: string]: BlockHeader } = {};
