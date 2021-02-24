@@ -1,45 +1,26 @@
 import { ReducerAction, isCreateAction, isUpdateAction, isRemoveAction } from './actions';
-import { Model, isBlockTransactionObject, isBlockTransactionString } from './model';
-import { Model as TransactionModel } from '../transaction/model';
+import { blockId } from './model';
 
 export function reducer(sess: any, action: ReducerAction) {
-    const { Block, Transaction } = sess;
-    const id = Model.toId(action.payload);
+    const { Block } = sess;
+    const id = blockId(action.payload);
     if (isCreateAction(action)) {
         const { payload } = action;
-
-        if (isBlockTransactionString(payload)) {
-            const transactions = payload.transactions;
-            //@ts-ignore
-            delete payload.transactions;
-            Block.upsert({ ...payload, id });
-            transactions.forEach((hash: string) => {
-                Transaction.upsert({
-                    hash,
-                    networkId: payload.networkId,
-                    blockNumber: payload.number,
-                    blockId: id,
-                    id: TransactionModel.toId({ hash, networkId: payload.networkId }),
-                });
-            });
-        } else if (isBlockTransactionObject(payload)) {
-            const transactions = payload.transactions;
-            //@ts-ignore
-            delete payload.transactions;
-            Block.upsert({ ...payload, id });
-            transactions.forEach(tx => {
-                Transaction.upsert({
-                    ...tx,
-                    networkId: payload.networkId,
-                    blockId: id,
-                    id: TransactionModel.toId({ hash: tx.hash, networkId: payload.networkId }),
-                });
-            });
-        } else {
-            Block.upsert({ ...action.payload, id });
-        }
-    } else if (isUpdateAction(action)) Block.withId(id).update({ ...action.payload, id });
-    else if (isRemoveAction(action)) Block.withId(id).delete();
+        payload.id = id;
+        //transactions created in middleware
+        const insertData = { ...payload, transactions: undefined };
+        //@ts-ignore
+        delete insertData.transactions;
+        Block.upsert(insertData);
+    } else if (isUpdateAction(action)) {
+        const { payload } = action;
+        payload.id = id;
+        //transactions created in middleware
+        const insertData = { ...payload, transactions: undefined };
+        //@ts-ignore
+        delete insertData.transactions;
+        Block.withId(id).update(insertData);
+    } else if (isRemoveAction(action)) Block.withId(id).delete();
 
     return sess;
 }

@@ -98,10 +98,10 @@ class Model extends ORMModel {
     static fields = {
         number: attr(),
     };
+}
 
-    static toId({ number, networkId }: BlockId) {
-        return `${networkId}-${number}`;
-    }
+export function blockId({ number, networkId }: BlockId) {
+    return `${networkId}-${number}`;
 }
 
 export { Model };

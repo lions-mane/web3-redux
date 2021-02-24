@@ -7,7 +7,6 @@ import { TransactionReceipt } from 'web3-eth';
 
 import {
     Contract,
-    Model,
     CALL_BLOCK_SYNC,
     ContractCallSync,
     CALL_TRANSACTION_SYNC,
@@ -15,6 +14,7 @@ import {
     defaultBlockSync,
     eventId,
     callArgsHash,
+    contractId,
 } from './model';
 import { Network } from '../network/model';
 
@@ -43,7 +43,7 @@ export function* contractCall(action: CallAction) {
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
         );
-    const id = Model.toId(payload);
+    const id = contractId(payload);
     const web3 = network.web3;
     //@ts-ignore
     const contract: Contract = yield select(ContractSelector.select, id);
@@ -144,7 +144,7 @@ export function* contractSend(action: SendAction) {
     const network: Network = yield select(NetworkSelector.select, networkId);
     if (!network)
         throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
-    const id = Model.toId(payload);
+    const id = contractId(payload);
     const web3 = network.web3;
     //@ts-ignore
     const contract: Contract = yield select(ContractSelector.select, id);
@@ -194,6 +194,12 @@ export function* contractSend(action: SendAction) {
                     TransactionActions.update({
                         networkId,
                         hash: hash!,
+                        receipt: receipt!,
+                        blockNumber: receipt!.blockNumber,
+                        blockId: `${networkId}-${receipt!.blockNumber}`,
+                        blockHash: receipt!.blockHash,
+                        from: receipt!.from,
+                        to: receipt!.to,
                         confirmations: confirmations!,
                     }),
                 );
@@ -244,7 +250,7 @@ export function* eventSubscribe(action: EventSubscribeAction) {
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
         );
-    const id = Model.toId(payload);
+    const id = contractId(payload);
     //@ts-ignore
     const contract: Contract = yield select(ContractSelector.select, id);
     const web3Contract = contract.web3Contract!;

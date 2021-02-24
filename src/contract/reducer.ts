@@ -1,4 +1,5 @@
 import { ReducerAction, isCreateAction, isUpdateAction, isRemoveAction } from './actions';
+import { contractId } from './model';
 
 export function reducer(sess: any, action: ReducerAction) {
     const { Contract, Network } = sess;
@@ -8,7 +9,7 @@ export function reducer(sess: any, action: ReducerAction) {
             `Could not find Network with id ${action.payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
         );
 
-    const id = Contract.toId(action.payload);
+    const id = contractId(action.payload);
     if (isCreateAction(action)) {
         const methods =
             action.payload.methods ??

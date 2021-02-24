@@ -119,10 +119,10 @@ class Model extends ORMModel {
         address: attr(),
         abi: attr(),
     };
+}
 
-    static toId({ address, networkId }: ContractId) {
-        return `${networkId}-${address}`;
-    }
+export function contractId({ address, networkId }: ContractId) {
+    return `${networkId}-${address}`;
 }
 
 export function eventId(event: EventData) {

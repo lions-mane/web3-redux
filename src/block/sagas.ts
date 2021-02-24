@@ -2,12 +2,14 @@ import { put, call, takeEvery, take, all, cancel, fork, select } from 'redux-sag
 import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
 import Web3 from 'web3';
 
-import { Block, BlockHeader, BlockTransaction } from './model';
+import { Block, BlockHeader, BlockTransaction, isBlockTransactionObject, isBlockTransactionString } from './model';
 import { Network } from '../network/model';
 import { isContractCallBlockSync, Contract } from '../contract/model';
+import { transactionId } from '../transaction/model';
 
 import * as BlockActions from './actions';
 import * as ContractActions from '../contract/actions';
+import * as TransactionActions from '../transaction/actions';
 
 import * as NetworkSelector from '../network/selector';
 import * as ContractSelector from '../contract/selector';
@@ -82,37 +84,6 @@ function subscribeChannel(web3: Web3): EventChannel<ChannelMessage> {
     });
 }
 
-function* handleBlockUpdate(block: Block) {
-    const contracts: Contract[] = yield select(ContractSelector.select);
-    const putContractCall: any[] = [];
-    contracts
-        .filter(contract => contract.networkId === block.networkId)
-        .map(contract => {
-            Object.entries(contract.methods ?? {}).map(([methodName, method]) => {
-                Object.values(method).map(contractCall => {
-                    if (
-                        !!contractCall.sync &&
-                        isContractCallBlockSync(contractCall.sync) &&
-                        contractCall.sync.filter(block)
-                    ) {
-                        putContractCall.push(
-                            put(
-                                ContractActions.call({
-                                    address: contract.address,
-                                    networkId: contract.networkId,
-                                    method: methodName,
-                                    ...contractCall,
-                                }),
-                            ),
-                        );
-                    }
-                });
-            });
-        });
-
-    yield all(putContractCall);
-}
-
 function* subscribe(action: BlockActions.SubscribeAction) {
     const networkId = action.payload.networkId;
     //@ts-ignore
@@ -132,8 +103,6 @@ function* subscribe(action: BlockActions.SubscribeAction) {
                 if (type === SUBSCRIBE_DATA) {
                     const newBlock = { ...block!, networkId };
                     yield put(BlockActions.create(newBlock));
-                    //@ts-ignore
-                    yield fork(handleBlockUpdate, newBlock);
                     if (action.payload.returnTransactionObjects ?? true) {
                         yield fork(
                             fetch,
@@ -149,8 +118,6 @@ function* subscribe(action: BlockActions.SubscribeAction) {
                 } else if (type === SUBSCRIBE_CHANGED) {
                     const newBlock = { ...block!, networkId };
                     yield put(BlockActions.update(newBlock));
-                    //@ts-ignore
-                    yield fork(handleBlockUpdate, newBlock);
                     if (action.payload.returnTransactionObjects) {
                         yield fork(
                             fetch,
@@ -204,6 +171,82 @@ function* subscribeLoop() {
     yield all([subscribeLoopStart(), subscribeLoopEnd()]);
 }
 
+function* createBlockTransactions(block: Block) {
+    if (isBlockTransactionString(block)) {
+        const transactions = block.transactions;
+        const actions = transactions.map((hash: string) => {
+            //@ts-ignore
+            return put(
+                TransactionActions.create({
+                    hash,
+                    networkId: block.networkId,
+                    blockNumber: block.number,
+                    blockId: block.id!,
+                    id: transactionId({ hash, networkId: block.networkId }),
+                }),
+            );
+        });
+        yield all(actions);
+    } else if (isBlockTransactionObject(block)) {
+        const transactions = block.transactions;
+        const actions = transactions.map(tx => {
+            return put(
+                TransactionActions.create({
+                    ...tx,
+                    networkId: block.networkId,
+                    blockId: block.id!,
+                    id: transactionId({ hash: tx.hash, networkId: block.networkId }),
+                }),
+            );
+        });
+        yield all(actions);
+    }
+}
+
+function* contractCallBlockSync(block: Block) {
+    const contracts: Contract[] = yield select(ContractSelector.select);
+    const putContractCall: any[] = [];
+    contracts
+        .filter(contract => contract.networkId === block.networkId)
+        .map(contract => {
+            Object.entries(contract.methods ?? {}).map(([methodName, method]) => {
+                Object.values(method).map(contractCall => {
+                    if (
+                        !!contractCall.sync &&
+                        isContractCallBlockSync(contractCall.sync) &&
+                        contractCall.sync.filter(block)
+                    ) {
+                        putContractCall.push(
+                            put(
+                                ContractActions.call({
+                                    address: contract.address,
+                                    networkId: contract.networkId,
+                                    method: methodName,
+                                    ...contractCall,
+                                }),
+                            ),
+                        );
+                    }
+                });
+            });
+        });
+
+    yield all(putContractCall);
+}
+
+function* onCreate(action: BlockActions.CreateAction) {
+    yield all([createBlockTransactions(action.payload), contractCallBlockSync(action.payload)]);
+}
+
+function* onUpdate(action: BlockActions.CreateAction) {
+    yield all([createBlockTransactions(action.payload), contractCallBlockSync(action.payload)]);
+}
+
 export function* saga() {
-    yield all([fetchLoop(), subscribeLoop()]);
+    yield all([
+        fetchLoop(),
+        subscribeLoop(),
+        takeEvery(BlockActions.CREATE, onCreate),
+        takeEvery(BlockActions.UPDATE, onUpdate),
+    ]);
 }

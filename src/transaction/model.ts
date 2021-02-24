@@ -47,7 +47,7 @@ export interface TransactionId extends NetworkId {
  * @param blockNumber - Number: Block number where this transaction was in. null if pending.
  */
 export interface TransactionBlockId extends NetworkId {
-    blockNumber: string;
+    blockNumber: string | number | null;
 }
 
 class Model extends ORMModel {
@@ -61,13 +61,14 @@ class Model extends ORMModel {
         number: attr(),
         blockId: fk({ to: 'Block', as: 'block', relatedName: 'transactions' }),
     };
+}
 
-    static toId({ hash, networkId }: TransactionId) {
-        return `${networkId}-${hash}`;
-    }
-    static toBlockId({ blockNumber, networkId }: TransactionBlockId) {
-        return `${networkId}-${blockNumber}`;
-    }
+export function transactionId({ hash, networkId }: TransactionId) {
+    return `${networkId}-${hash}`;
+}
+
+export function transactionBlockId({ blockNumber, networkId }: TransactionBlockId) {
+    return `${networkId}-${blockNumber}`;
 }
 
 export { Model };

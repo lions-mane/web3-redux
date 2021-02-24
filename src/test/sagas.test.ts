@@ -41,7 +41,6 @@ describe('Web3ReduxActions', () => {
 
         //Block.select
         assert.isAtLeast(BlockSelector.selectMany(store.getState()).length, 3, 'synced block headers');
-        console.debug(BlockSelector.selectMany(store.getState()));
 
         //Transaction.select
         assert.isAtLeast(TransactionSelector.selectMany(store.getState()).length, 3, 'synced block transactions');
