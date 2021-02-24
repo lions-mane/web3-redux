@@ -175,8 +175,8 @@ export function* contractSend(action: SendAction) {
                 //@ts-ignore
                 yield put(TransactionActions.create({ networkId, hash: hash! }));
             } else if (type === CONTRACT_SEND_RECEIPT) {
-                //@ts-ignore
                 yield put(
+                    //@ts-ignore
                     TransactionActions.update({
                         networkId,
                         hash: hash!,
@@ -189,8 +189,8 @@ export function* contractSend(action: SendAction) {
                     }),
                 );
             } else if (type === CONTRACT_SEND_CONFIRMATION) {
-                //@ts-ignore
                 yield put(
+                    //@ts-ignore
                     TransactionActions.update({
                         networkId,
                         hash: hash!,

@@ -2,7 +2,7 @@ import { put, call, takeEvery, select, all, fork } from 'redux-saga/effects';
 import { Transaction } from './model';
 import { Contract, isContractCallTransactionSync } from '../contract/model';
 
-import { create, FETCH, FetchAction } from './actions';
+import * as TransactionActions from './actions';
 import * as ContractActions from '../contract/actions';
 
 import * as NetworkSelector from '../network/selector';
@@ -39,7 +39,7 @@ function* handleTransactionUpdate(transaction: Transaction) {
     yield all(putContractCall);
 }
 
-export function* fetch(action: FetchAction) {
+export function* fetch(action: TransactionActions.FetchAction) {
     const { payload } = action;
     //@ts-ignore
     const network: Network = yield select(NetworkSelector.select, payload.networkId);
@@ -50,11 +50,25 @@ export function* fetch(action: FetchAction) {
     const web3 = network.web3;
     const transaction: Transaction = yield call(web3.eth.getTransaction, payload.hash);
     const newTransaction = { ...transaction, networkId: payload.networkId };
-    yield put(create(newTransaction));
+    yield put(TransactionActions.create(newTransaction));
     //@ts-ignore
     yield fork(handleTransactionUpdate, newTransaction);
 }
 
+function* fetchLoop() {
+    const cache: { [key: string]: boolean } = {};
+
+    const actionPattern = (action: { type: string }) => {
+        if (!TransactionActions.isFetchAction(action)) return false;
+        const actionId = `${action.payload.networkId}-${action.payload.hash}`;
+        if (cache[actionId]) return false;
+        cache[actionId] = true;
+        return true;
+    };
+
+    yield takeEvery(actionPattern, fetch);
+}
+
 export function* saga() {
-    yield takeEvery(FETCH, fetch);
+    yield all([fetchLoop()]);
 }

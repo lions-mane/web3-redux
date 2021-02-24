@@ -29,6 +29,24 @@ export function* fetch(action: BlockActions.FetchAction) {
     yield put(BlockActions.create({ ...block, networkId: payload.networkId }));
 }
 
+function* fetchLoop() {
+    const cache: { [key: string]: boolean } = {};
+
+    const actionPattern = (action: { type: string }) => {
+        if (!BlockActions.isFetchAction(action)) return false;
+        if (action.payload.blockHashOrBlockNumber === 'latest') return true;
+        if (action.payload.blockHashOrBlockNumber === 'pending') return true;
+        if (action.payload.blockHashOrBlockNumber === 'earliest') return true;
+
+        const actionId = `${action.payload.networkId}-${action.payload.blockHashOrBlockNumber}`;
+        if (cache[actionId]) return false;
+        cache[actionId] = true;
+        return true;
+    };
+
+    yield takeEvery(actionPattern, fetch);
+}
+
 const SUBSCRIBE_CONNECTED = `${BlockActions.SUBSCRIBE}/CONNECTED`;
 const SUBSCRIBE_DATA = `${BlockActions.SUBSCRIBE}/DATA`;
 const SUBSCRIBE_ERROR = `${BlockActions.SUBSCRIBE}/ERROR`;
@@ -187,5 +205,5 @@ function* subscribeLoop() {
 }
 
 export function* saga() {
-    yield all([takeEvery(BlockActions.FETCH, fetch), subscribeLoop()]);
+    yield all([fetchLoop(), subscribeLoop()]);
 }
