@@ -10,11 +10,11 @@ jobs:
     # Dummy env for tests
     env:
       LOCAL_RPC: ws://localhost:8545
-      MAINNET_RPC: ws://localhost:8545
-      ROPSTEN_RPC: ws://localhost:8545
-      KOVAN_RPC: ws://localhost:8545
-      RINKEBY_RPC: ws://localhost:8545
-      GOERLI_RPC: ws://localhost:8545
+      MAINNET_RPC: wss://mainnet.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
+      ROPSTEN_RPC: wss://ropsten.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
+      KOVAN_RPC: wss://kovan.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
+      RINKEBY_RPC: wss://rinkeby.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
+      GOERLI_RPC: wss://goerli.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -34,11 +34,11 @@ jobs:
     # Dummy env for tests
     env:
       LOCAL_RPC: ws://localhost:8545
-      MAINNET_RPC: ws://localhost:8545
-      ROPSTEN_RPC: ws://localhost:8545
-      KOVAN_RPC: ws://localhost:8545
-      RINKEBY_RPC: ws://localhost:8545
-      GOERLI_RPC: ws://localhost:8545
+      MAINNET_RPC: wss://mainnet.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
+      ROPSTEN_RPC: wss://ropsten.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
+      KOVAN_RPC: wss://kovan.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
+      RINKEBY_RPC: wss://rinkeby.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
+      GOERLI_RPC: wss://goerli.infura.io/ws/v3/${{secrets.INFURA_API_KEY}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1

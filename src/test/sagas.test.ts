@@ -1,10 +1,19 @@
 import { assert } from 'chai';
+import ganache from 'ganache-core';
 import { createStore } from '../store';
 import { Web3ReduxActions, NetworkSelector, BlockSelector, TransactionSelector } from '../index';
 import { sleep } from '../utils';
 
 describe('Web3ReduxActions', () => {
     let store: ReturnType<typeof createStore>;
+
+    before(() => {
+        ganache.server({
+            port: 8545,
+            networkId: 1337,
+            blockTime: 1,
+        });
+    });
 
     beforeEach(() => {
         store = createStore();
@@ -26,9 +35,9 @@ describe('Web3ReduxActions', () => {
         await sleep(5000);
 
         //Block.select
-        assert.isAtLeast(BlockSelector.selectMany(store.getState()).length, 6, 'synced block headers');
+        assert.isAtLeast(BlockSelector.selectMany(store.getState()).length, 3, 'synced block headers');
 
         //Transaction.select
-        assert.isAtLeast(TransactionSelector.selectMany(store.getState()).length, 6, 'synced block transactions');
+        assert.isAtLeast(TransactionSelector.selectMany(store.getState()).length, 3, 'synced block transactions');
     });
 });
