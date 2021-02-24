@@ -11,7 +11,6 @@ import BlockNumber from '../abis/BlockNumber.json';
 import { createStore } from '../store';
 import {
     Network,
-    Contract,
     eventId,
     CALL_BLOCK_SYNC,
     CALL_TRANSACTION_SYNC,
@@ -50,8 +49,7 @@ describe('contract.sagas', () => {
     beforeEach(async () => {
         store = createStore();
         store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId, web3: web3Default }] }));
-        //@ts-ignore
-        const network: Network = NetworkSelector.select(store.getState(), networkId) as Network;
+        const network: Network = NetworkSelector.selectSingle(store.getState(), networkId) as Network;
         if (!network)
             throw new Error(
                 `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
@@ -228,13 +226,8 @@ describe('contract.sagas', () => {
         const gas2 = await tx2.estimateGas();
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
-        //@ts-ignore
-        const contractSel: Contract = ContractSelector.select(
-            store.getState(),
-            //@ts-ignore
-            `${networkId}-${contract.options.address}`,
-        );
+        const contractSel = ContractSelector.selectSingle(store.getState(), `${networkId}-${contract.options.address}`);
 
-        assert.deepEqual(contractSel.events!.NewValue, expectedEvents);
+        assert.deepEqual(contractSel!.events!.NewValue, expectedEvents);
     });
 });

@@ -32,11 +32,6 @@ describe('Network', () => {
         );
 
         //Network.select
-        assert.deepEqual(
-            //@ts-ignore
-            NetworkSelector.select(state, network.networkId),
-            expected,
-            'Network.select(networkId)',
-        );
+        assert.deepEqual(NetworkSelector.selectSingle(state, network.networkId), expected, 'Network.select(networkId)');
     });
 });

@@ -68,19 +68,11 @@ describe('block.actions', () => {
         const expectedState = { [expected.id!]: expected };
         assert.deepEqual(state.web3Redux['Block'].itemsById, expectedState, 'state.web3Redux.Block.itemsById');
 
+        const selected = BlockSelector.selectSingle(state, expected.id!);
+
         //Block.select
-        assert.deepEqual(
-            //@ts-ignore
-            BlockSelector.select(state, expected.id!),
-            expected,
-            'Block.select(id)',
-        );
-        assert.deepEqual(
-            //@ts-ignore
-            BlockSelector.select(state, [expected.id!]),
-            [expected],
-            'Block.select([id])',
-        );
+        assert.deepEqual(selected, expected, 'Block.select(id)');
+        assert.deepEqual(BlockSelector.selectMany(state, [expected.id!]), [selected], 'Block.select([id])');
         assert.deepEqual(BlockSelector.select(state), [expected], 'Block.select()');
     });
 
@@ -94,38 +86,34 @@ describe('block.actions', () => {
 
         //Block.selectTransactions
         assert.deepEqual(
-            //@ts-ignore
-            BlockSelector.selectTransactions(state, expectedBlock.id!),
+            BlockSelector.selectSingleTransactions(state, expectedBlock.id!),
             [expectedTransaction],
             'Block.selectTransactions(id)',
         );
         assert.deepEqual(
-            //@ts-ignore
-            BlockSelector.selectTransactions(state, [expectedBlock.id!]),
+            BlockSelector.selectManyTransactions(state, [expectedBlock.id!]),
             [[expectedTransaction]],
             'Block.selectTransactions([id])',
         );
         assert.deepEqual(
-            BlockSelector.selectTransactions(state),
+            BlockSelector.selectManyTransactions(state),
             [[expectedTransaction]],
             'Block.selectTransactions()',
         );
 
         //Block.selectBlockTransaction
         assert.deepEqual(
-            //@ts-ignore
-            BlockSelector.selectBlockTransaction(state, expectedBlock.id!),
+            BlockSelector.selectSingleBlockTransaction(state, expectedBlock.id!),
             { ...expectedBlock, transactions: [expectedTransaction] },
             'Block.selectBlockTransaction(id)',
         );
         assert.deepEqual(
-            //@ts-ignore
-            BlockSelector.selectBlockTransaction(state, [expectedBlock.id!]),
+            BlockSelector.selectManyBlockTransaction(state, [expectedBlock.id!]),
             [{ ...expectedBlock, transactions: [expectedTransaction] }],
             'Block.selectBlockTransaction([id])',
         );
         assert.deepEqual(
-            BlockSelector.selectBlockTransaction(state),
+            BlockSelector.selectManyBlockTransaction(state),
             [{ ...expectedBlock, transactions: [expectedTransaction] }],
             'Block.selectBlockTransaction()',
         );

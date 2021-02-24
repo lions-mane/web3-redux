@@ -45,8 +45,7 @@ describe('block.sagas', () => {
     beforeEach(async () => {
         store = createStore();
         store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId, web3: web3Default }] }));
-        //@ts-ignore
-        const network: Network = NetworkSelector.select(store.getState(), networkId) as Network;
+        const network: Network = NetworkSelector.selectSingle(store.getState(), networkId) as Network;
         if (!network)
             throw new Error(
                 `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
@@ -102,7 +101,7 @@ describe('block.sagas', () => {
         };
 
         assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlockState, 'state.web3Redux.Block.itemsById');
-        assert.deepEqual(BlockSelector.select(state), expectedBlockSelected, 'Block.selectWithId');
+        assert.deepEqual(BlockSelector.selectMany(state), expectedBlockSelected, 'Block.selectWithId');
         //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
     });
 
@@ -148,7 +147,7 @@ describe('block.sagas', () => {
             .reduce((acc, block) => {
                 return { ...acc, [block.id!]: block };
             }, {});
-        const blocks = (BlockSelector.selectBlockTransaction(state) as BlockTransaction[]).reduce((acc, block) => {
+        const blocks = (BlockSelector.selectManyBlockTransaction(state) as BlockTransaction[]).reduce((acc, block) => {
             return { ...acc, [block.id!]: block };
         }, {});
         assert.deepEqual(blocks, expectedBlocks);

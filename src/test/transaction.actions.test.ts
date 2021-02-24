@@ -73,18 +73,8 @@ describe('Transaction', () => {
         );
 
         //Transaction.select
-        assert.deepEqual(
-            //@ts-ignore
-            TransactionSelector.select(state, expected.id!),
-            expected,
-            'Transaction.select(id)',
-        );
-        assert.deepEqual(
-            //@ts-ignore
-            TransactionSelector.select(state, [expected.id!]),
-            [expected],
-            'Transaction.select([id])',
-        );
-        assert.deepEqual(TransactionSelector.select(state), [expected], 'Transaction.select()');
+        assert.deepEqual(TransactionSelector.selectSingle(state, expected.id!), expected, 'Transaction.select(id)');
+        assert.deepEqual(TransactionSelector.selectMany(state, [expected.id!]), [expected], 'Transaction.select([id])');
+        assert.deepEqual(TransactionSelector.selectMany(state), [expected], 'Transaction.select()');
     });
 });

@@ -22,11 +22,6 @@ describe('Web3ReduxActions', () => {
         );
 
         //Network.select
-        assert.equal(
-            //@ts-ignore
-            NetworkSelector.select(state).length,
-            6,
-            'Network.select().length',
-        );
+        assert.equal(NetworkSelector.selectMany(state).length, 6, 'Network.select().length');
     });
 });

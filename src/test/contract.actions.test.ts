@@ -43,15 +43,13 @@ describe('contract.actions', () => {
 
         //Contract.select
         assertDeepEqual(
-            //@ts-ignore
-            ContractSelector.select(state, expected.id!),
+            ContractSelector.selectSingle(state, expected.id!),
             expected,
             ['web3Contract'],
             'Contract.select(id)',
         );
         assertDeepEqual(
-            //@ts-ignore
-            ContractSelector.select(state, [expected.id!]),
+            ContractSelector.selectMany(state, [expected.id!]),
             [expected],
             ['web3Contract'],
             'Contract.select([id])',
