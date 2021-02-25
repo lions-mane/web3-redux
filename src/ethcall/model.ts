@@ -1,4 +1,5 @@
 import { Model as ORMModel } from 'redux-orm';
+import Web3 from 'web3';
 import { NetworkId } from '../network/model';
 
 /**
@@ -8,6 +9,18 @@ import { NetworkId } from '../network/model';
  * @param id - Call id. Computed as `${networkId}-${from}-${to}-${data}-${value}-${gas}-${gasPrice}`.
  */
 export interface EthCall extends NetworkId {
+    id: string;
+    from: string;
+    to: string;
+    defaultBlock: string;
+    data: string;
+    value?: string; //eth value
+    gas?: string;
+    gasPrice?: string;
+    returnValue?: string; //returned value from smart contract
+}
+
+export interface PartialEthCall extends NetworkId {
     id?: string;
     from: string;
     to: string;
@@ -31,9 +44,28 @@ class Model extends ORMModel {
     static fields = {};
 }
 
-export function ethCallId(ethcall: EthCall) {
-    const { networkId, from, to, defaultBlock, data, value, gas, gasPrice } = ethcall;
-    return `${networkId}-${from}-${to}-${defaultBlock ?? 'latest'}-${data}-${value}-${gas}-${gasPrice}`;
+export function validatedEthCall(ethCall: PartialEthCall): EthCall {
+    const { networkId, from, to, defaultBlock, data, value, gas, gasPrice } = ethCall;
+    const block = defaultBlock ?? 'latest';
+    const fromCheckSum = Web3.utils.toChecksumAddress(from);
+    const toCheckSum = Web3.utils.toChecksumAddress(to);
+    const valueHex = value ? Web3.utils.toHex(value) : value;
+    const gasHex = gas ? Web3.utils.toHex(gas) : gas;
+    const gasPriceHex = gasPrice ? Web3.utils.toHex(gasPrice) : gasPrice;
+    const id = `${networkId}-${fromCheckSum}-${toCheckSum}-${block}-${data}-${valueHex}-${gasHex}-${gasPriceHex}`;
+
+    return {
+        ...ethCall,
+        id,
+        networkId,
+        from: fromCheckSum,
+        to: toCheckSum,
+        defaultBlock: block,
+        data,
+        value: valueHex,
+        gas: gasHex,
+        gasPrice: gasPriceHex,
+    };
 }
 
 export { Model };

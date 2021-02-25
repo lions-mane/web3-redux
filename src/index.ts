@@ -14,7 +14,7 @@ import {
     eventId,
     callArgsHash,
 } from './contract/model';
-import { EthCall, EthCallId, ethCallId } from './ethcall/model';
+import { EthCall, EthCallId, validatedEthCall } from './ethcall/model';
 
 import * as NetworkActions from './network/actions';
 import * as BlockActions from './block/actions';
@@ -59,7 +59,7 @@ export {
     CALL_TRANSACTION_SYNC,
     EthCall,
     EthCallId,
-    ethCallId,
+    validatedEthCall,
     NetworkActions,
     BlockActions,
     ContractActions,

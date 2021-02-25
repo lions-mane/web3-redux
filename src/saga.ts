@@ -7,6 +7,7 @@ import { SubscribeActionInput } from './block/actions';
 import { saga as blockSaga } from './block/sagas';
 import { saga as transactionSaga } from './transaction/sagas';
 import { saga as contractSaga } from './contract/sagas';
+import { saga as ethCallSaga } from './ethcall/sagas';
 import { InitializeAction, INITIALIZE } from './actions';
 import * as NetworkActions from './network/actions';
 import * as BlockActions from './block/actions';
@@ -70,5 +71,5 @@ function* web3ReduxSaga() {
 
 //https://redux-saga.js.org/docs/advanced/RootSaga.html
 export default function* rootSaga() {
-    yield all([fork(blockSaga), fork(transactionSaga), fork(contractSaga), fork(web3ReduxSaga)]);
+    yield all([fork(blockSaga), fork(transactionSaga), fork(contractSaga), fork(ethCallSaga), fork(web3ReduxSaga)]);
 }

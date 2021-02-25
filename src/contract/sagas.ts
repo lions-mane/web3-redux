@@ -23,6 +23,7 @@ import * as TransactionActions from '../transaction/actions';
 
 import * as ContractSelector from './selector';
 import * as NetworkSelector from '../network/selector';
+import { ZERO_ADDRESS } from '../utils';
 
 export function* contractCall(action: ContractActions.CallAction) {
     const { payload } = action;
@@ -36,8 +37,7 @@ export function* contractCall(action: ContractActions.CallAction) {
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
     const web3Contract = contract.web3Contract!;
     const defaultBlock = payload.defaultBlock ?? 'latest';
-    const from: string =
-        payload.options?.from ?? web3.eth.defaultAccount ?? '0x0000000000000000000000000000000000000000';
+    const from: string = payload.options?.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
     const gasPrice = payload.options?.gasPrice ?? 0;
 
     //No sync if block isn't set to "latest"
