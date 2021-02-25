@@ -13,19 +13,21 @@ import {
     defaultTransactionSyncForContract,
     defaultBlockSync,
     eventId,
-    callArgsHash,
     contractId,
+    callArgsHash,
 } from './model';
 import { Network } from '../network/model';
+import { validatedEthCall } from '../ethcall/model';
 
 import * as ContractActions from './actions';
 import * as TransactionActions from '../transaction/actions';
+import * as EthCallActions from '../ethcall/actions';
 
 import * as ContractSelector from './selector';
 import * as NetworkSelector from '../network/selector';
 import { ZERO_ADDRESS } from '../utils';
 
-export function* contractCall(action: ContractActions.CallAction) {
+export function* contractCallSynced(action: ContractActions.CallSyncedAction) {
     const { payload } = action;
     const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
@@ -36,16 +38,15 @@ export function* contractCall(action: ContractActions.CallAction) {
 
     const id = contractId(payload);
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
-    const web3Contract = contract.web3Contract!;
-    const defaultBlock = payload.defaultBlock ?? 'latest';
-    const from: string = payload.options?.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
-    const gasPrice = payload.options?.gasPrice ?? 0;
 
-    //No sync if block isn't set to "latest"
+    //Defaults
+    const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+    const defaultBlock = payload.defaultBlock ?? 'latest';
+
     let sync: ContractCallSync | false;
     const defaultTransactionSync = defaultTransactionSyncForContract(contract.address);
 
-    if (defaultBlock === 'latest') {
+    if (payload.defaultBlock === 'latest') {
         if (payload.sync === false) {
             sync = false;
         } else if (payload.sync === true) {
@@ -63,21 +64,61 @@ export function* contractCall(action: ContractActions.CallAction) {
         sync = false;
     }
 
-    if (!payload.args || payload.args.length == 0) {
-        const tx = web3Contract.methods[payload.method]();
-        const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
-        const key = callArgsHash({ from, defaultBlock });
-        const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
-        contract.methods![payload.method][key] = { value, sync, defaultBlock };
-    } else {
-        const tx = web3Contract.methods[payload.method](payload.args);
-        const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
-        const key = callArgsHash({ from, defaultBlock, args: payload.args });
-        const value = yield call(tx.call, { from, gas, gasPrice }, defaultBlock);
-        contract.methods![payload.method][key] = { value, defaultBlock, sync, args: payload.args };
+    //Update contract call sync
+    const key = callArgsHash({ from, defaultBlock, args: payload.args });
+    const contractCallSync = contract.methods[payload.method][key];
+    if (contractCallSync.sync != sync) {
+        contract.methods[payload.method][key].sync = sync;
+        yield put(ContractActions.create({ ...contract }));
+        yield put(ContractActions.call(payload));
     }
+}
 
-    yield put(ContractActions.create({ ...contract }));
+export function* contractCall(action: ContractActions.CallAction) {
+    const { payload } = action;
+    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
+    if (!network)
+        throw new Error(
+            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
+        );
+    const web3 = network.web3;
+
+    const id = contractId(payload);
+    const contract: Contract = yield select(ContractSelector.selectSingle, id);
+
+    //Defaults
+    const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+    const defaultBlock = payload.defaultBlock ?? 'latest';
+    const gas = payload.gas;
+    const gasPrice = payload.gasPrice ?? 0;
+
+    const web3Contract = contract.web3Contract!;
+    let tx: any;
+    if (!payload.args || payload.args.length == 0) {
+        tx = web3Contract.methods[payload.method]();
+    } else {
+        tx = web3Contract.methods[payload.method](payload.args);
+    }
+    const data = tx.encodeAbi();
+
+    const ethCall = validatedEthCall({
+        networkId: network.networkId,
+        from,
+        to: contract.address,
+        defaultBlock,
+        data,
+        gas,
+        gasPrice,
+    });
+    yield put(EthCallActions.fetch(ethCall));
+
+    //Update contract call key if not stored
+    const key = callArgsHash({ from, defaultBlock, args: payload.args });
+    const contractCallSync = contract.methods[payload.method][key];
+    if (contractCallSync.ethCallId != ethCall.id) {
+        contract.methods[payload.method][key].ethCallId = ethCall.id;
+        yield put(ContractActions.create({ ...contract }));
+    }
 }
 
 const CONTRACT_SEND_HASH = `${ContractActions.SEND}/HASH`;
@@ -309,6 +350,7 @@ function* eventSubscribeLoop() {
 export function* saga() {
     yield all([
         takeEvery(ContractActions.CALL, contractCall),
+        takeEvery(ContractActions.CALL_SYNCED, contractCallSynced),
         takeEvery(ContractActions.SEND, contractSend),
         eventSubscribeLoop(),
     ]);

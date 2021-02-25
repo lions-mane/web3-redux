@@ -14,7 +14,6 @@ export interface EthCall extends NetworkId {
     to: string;
     defaultBlock: string;
     data: string;
-    value?: string; //eth value
     gas?: string;
     gasPrice?: string;
     returnValue?: string; //returned value from smart contract
@@ -23,11 +22,10 @@ export interface EthCall extends NetworkId {
 export interface PartialEthCall extends NetworkId {
     from: string;
     to: string;
-    defaultBlock?: string;
+    defaultBlock?: string | number;
     data: string;
-    value?: string; //eth value
-    gas?: string;
-    gasPrice?: string;
+    gas?: string | number;
+    gasPrice?: string | number;
     returnValue?: string; //returned value from smart contract
 }
 
@@ -44,14 +42,13 @@ class Model extends ORMModel {
 }
 
 export function validatedEthCall(ethCall: PartialEthCall): EthCall {
-    const { networkId, from, to, defaultBlock, data, value, gas, gasPrice } = ethCall;
-    const block = defaultBlock ?? 'latest';
+    const { networkId, from, to, defaultBlock, data, gas, gasPrice } = ethCall;
+    const block = defaultBlock ? `${defaultBlock}` : 'latest';
     const fromCheckSum = Web3.utils.toChecksumAddress(from);
     const toCheckSum = Web3.utils.toChecksumAddress(to);
-    const valueHex = value ? Web3.utils.toHex(value) : value;
-    const gasHex = gas ? Web3.utils.toHex(gas) : gas;
-    const gasPriceHex = gasPrice ? Web3.utils.toHex(gasPrice) : gasPrice;
-    const id = `${networkId}-${fromCheckSum}-${toCheckSum}-${block}-${data}-${valueHex}-${gasHex}-${gasPriceHex}`;
+    const gasHex = gas ? Web3.utils.toHex(gas) : undefined;
+    const gasPriceHex = gasPrice ? Web3.utils.toHex(gasPrice) : undefined;
+    const id = `${networkId}-${fromCheckSum}-${toCheckSum}-${block}-${data}-${gasHex}-${gasPriceHex}`;
 
     return {
         ...ethCall,
@@ -59,7 +56,6 @@ export function validatedEthCall(ethCall: PartialEthCall): EthCall {
         from: fromCheckSum,
         to: toCheckSum,
         defaultBlock: block,
-        value: valueHex,
         gas: gasHex,
         gasPrice: gasPriceHex,
     };

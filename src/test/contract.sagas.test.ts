@@ -55,7 +55,7 @@ describe('contract.sagas', () => {
         web3 = network.web3;
     });
 
-    it('store.dispatch(ContractSagas.call({sync:false}))', async () => {
+    it('store.dispatch(ContractSagas.callSynced({sync:false}))', async () => {
         const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
         });
@@ -66,7 +66,7 @@ describe('contract.sagas', () => {
             ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
         );
         store.dispatch(
-            ContractActions.call({
+            ContractActions.callSynced({
                 networkId,
                 address: contract.options.address,
                 method: 'blockNumber',
@@ -85,7 +85,7 @@ describe('contract.sagas', () => {
         assert.approximately(parseInt(value), blockNumber, 1, 'blockNumber');
     });
 
-    it('store.dispatch(ContractSagas.call({sync:CALL_BLOCK_SYNC}))', async () => {
+    it('store.dispatch(ContractSagas.callSynced({sync:CALL_BLOCK_SYNC}))', async () => {
         //Block subsciption used for updates
         store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: false }));
         const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
@@ -98,7 +98,7 @@ describe('contract.sagas', () => {
             ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
         );
         store.dispatch(
-            ContractActions.call({
+            ContractActions.callSynced({
                 networkId,
                 address: contract.options.address,
                 method: 'blockNumber',
@@ -120,7 +120,7 @@ describe('contract.sagas', () => {
         assert.isAtLeast(parseInt(blockNumber2), parseInt(blockNumber1) + 1);
     });
 
-    it('store.dispatch(ContractSagas.call({sync:CALL_TRANSACTION_SYNC})) - TransactionActions.fetch', async () => {
+    it('store.dispatch(ContractSagas.callSynced({sync:CALL_TRANSACTION_SYNC})) - TransactionActions.fetch', async () => {
         const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
         });
@@ -134,7 +134,7 @@ describe('contract.sagas', () => {
             ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
         );
         store.dispatch(
-            ContractActions.call({
+            ContractActions.callSynced({
                 networkId,
                 address: contract.options.address,
                 method: 'getValue',
@@ -170,7 +170,7 @@ describe('contract.sagas', () => {
         assert.equal(value2, 666);
     });
 
-    it('store.dispatch(ContractSagas.call({sync:CALL_TRANSACTION_SYNC})) - BlockActions.subscribe', async () => {
+    it('store.dispatch(ContractSagas.callSynced({sync:CALL_TRANSACTION_SYNC})) - BlockActions.subscribe', async () => {
         //Block subsciption used for updates, must fetch transactions
         store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: true }));
         const tx1 = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
@@ -186,7 +186,7 @@ describe('contract.sagas', () => {
             ContractActions.create({ networkId, address: contract.options.address, abi: BlockNumber.abi as AbiItem[] }),
         );
         store.dispatch(
-            ContractActions.call({
+            ContractActions.callSynced({
                 networkId,
                 address: contract.options.address,
                 method: 'getValue',

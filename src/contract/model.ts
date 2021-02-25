@@ -54,7 +54,7 @@ export const defaultTransactionSyncForContract: (address: string) => ContractCal
     };
 };
 
-export type ContractCallSync = ContractCallBlockSync | ContractCallTransactionSync;
+export type ContractCallSync = ContractCallBlockSync | ContractCallTransactionSync | false;
 
 /**
  * Contract call object. Stores a cached contract call.
@@ -88,7 +88,7 @@ export interface Contract extends NetworkId {
     abi: AbiItem[];
     methods: {
         [callerFunctionName: string]: {
-            [argsHash: string]: ContractCall;
+            [argsHash: string]: { ethCallId: string; sync: ContractCallSync };
         };
     };
     events: {
@@ -104,7 +104,7 @@ export interface ContractPartial extends NetworkId {
     abi: AbiItem[];
     methods?: {
         [callerFunctionName: string]: {
-            [argsHash: string]: ContractCall;
+            [argsHash: string]: { ethCallId: string; sync: ContractCallSync };
         };
     };
     events?: {

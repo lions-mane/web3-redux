@@ -9,12 +9,10 @@ export const REMOVE = `${name}/DELETE`;
 export const FETCH = `${name}/FETCH`;
 
 export interface EthCallFetchInput extends NetworkId {
-    id?: string;
     from?: string; //default to web3.defaultAccount | ZERO_ADDRESS
     to: string;
     defaultBlock?: string; //default to latest
     data: string;
-    value?: string; //eth value
     gas?: string;
     gasPrice?: string;
 }
