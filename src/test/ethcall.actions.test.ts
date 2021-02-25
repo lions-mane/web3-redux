@@ -1,28 +1,36 @@
 import { assert } from 'chai';
 import Web3 from 'web3';
+import ganache from 'ganache-core';
 
 import { createStore } from '../store';
-import { Network, NetworkActions, EthCallSelector, EthCallActions } from '../index';
+import { NetworkActions, EthCallSelector, EthCallActions } from '../index';
 import { validatedEthCall } from '../ethcall/model';
+import { sleepForPort } from '../utils';
 
 const networkId = '1337';
-const web3 = new Web3('http://locahost:8545');
-const network: Network = {
-    networkId,
-    web3,
-};
 
 describe('ethcall.actions', () => {
+    let web3: Web3;
     let store: ReturnType<typeof createStore>;
     let accounts: string[];
 
     before(async () => {
+        const networkIdInt = parseInt(networkId);
+        const server = ganache.server({
+            port: 0,
+            networkId: networkIdInt,
+            blockTime: 1,
+        });
+        const port = await sleepForPort(server, 1000);
+        const rpc = `ws://localhost:${port}`;
+        web3 = new Web3(rpc);
         accounts = await web3.eth.getAccounts();
+        web3.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(() => {
         store = createStore();
-        store.dispatch(NetworkActions.create(network));
+        store.dispatch(NetworkActions.create({ networkId, web3 }));
     });
 
     describe('selectors:empty', () => {

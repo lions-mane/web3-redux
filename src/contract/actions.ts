@@ -1,8 +1,13 @@
 import { CallOptions, SendOptions } from 'web3-eth-contract';
-import { AbiItem } from 'web3-utils';
-import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
 import { actionCreator } from '../utils';
-import { ContractCallSync, ContractId, CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, ContractCall } from './model';
+import {
+    ContractCallSync,
+    ContractId,
+    CALL_BLOCK_SYNC,
+    CALL_TRANSACTION_SYNC,
+    ContractPartial,
+    ContractIdDeconstructed,
+} from './model';
 
 const name = 'Contract';
 
@@ -16,24 +21,10 @@ export const SEND = `${name}/SEND`;
 export const EVENT_SUBSCRIBE = `${name}/EVENT_SUBSCRIBE`;
 export const EVENT_UNSUBSCRIBE = `${name}/EVENT_UNSUBSCRIBE`;
 
-export interface CreateActionInput extends ContractId {
-    abi: AbiItem[];
-    methods?: {
-        [callerFunctionName: string]: {
-            [argsHash: string]: ContractCall;
-        };
-    };
-    events?: {
-        [eventName: string]: {
-            [eventId: string]: EventData;
-        };
-    };
-    web3Contract?: Web3Contract;
-}
-export const create = actionCreator<typeof CREATE, CreateActionInput>(CREATE);
+export const create = actionCreator<typeof CREATE, ContractPartial>(CREATE);
 export const remove = actionCreator<typeof REMOVE, ContractId>(REMOVE);
 
-export interface CallActionInput extends ContractId {
+export interface CallActionInput extends ContractIdDeconstructed {
     method: string;
     args?: any[];
     options?: CallOptions;
@@ -42,21 +33,21 @@ export interface CallActionInput extends ContractId {
 }
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
 
-export interface SendActionInput extends ContractId {
+export interface SendActionInput extends ContractIdDeconstructed {
     method: string;
     args?: any[];
     options?: SendOptions;
 }
 export const send = actionCreator<typeof SEND, SendActionInput>(SEND);
 
-export interface EventSubscribeActionInput extends ContractId {
+export interface EventSubscribeActionInput extends ContractIdDeconstructed {
     eventName: string;
     filter?: { [key: string]: any };
     fromBlock?: number | string;
 }
 export const eventSubscribe = actionCreator<typeof EVENT_SUBSCRIBE, EventSubscribeActionInput>(EVENT_SUBSCRIBE);
 
-export interface EventUnsubscribeActionInput extends ContractId {
+export interface EventUnsubscribeActionInput extends ContractIdDeconstructed {
     eventName: string;
 }
 export const eventUnsubscribe = actionCreator<typeof EVENT_UNSUBSCRIBE, EventUnsubscribeActionInput>(EVENT_UNSUBSCRIBE);

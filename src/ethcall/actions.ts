@@ -17,7 +17,6 @@ export interface EthCallFetchInput extends NetworkId {
     value?: string; //eth value
     gas?: string;
     gasPrice?: string;
-    returnValue?: string; //returned value from smart contract
 }
 
 export const create = actionCreator<typeof CREATE, EthCall>(CREATE);

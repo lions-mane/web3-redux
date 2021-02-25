@@ -32,8 +32,9 @@ export function* contractCall(action: ContractActions.CallAction) {
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
         );
-    const id = contractId(payload);
     const web3 = network.web3;
+
+    const id = contractId(payload);
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
     const web3Contract = contract.web3Contract!;
     const defaultBlock = payload.defaultBlock ?? 'latest';

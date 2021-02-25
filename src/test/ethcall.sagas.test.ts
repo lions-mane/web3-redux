@@ -1,24 +1,21 @@
 import { assert } from 'chai';
 import Web3 from 'web3';
-import dotenv from 'dotenv';
 import ganache from 'ganache-core';
 import BlockNumber from '../abis/BlockNumber.json';
 
 import { createStore } from '../store';
-import { Network, NetworkActions, NetworkSelector, EthCallActions, EthCallSelector } from '../index';
+import { NetworkActions, EthCallActions, EthCallSelector } from '../index';
 import { sleep, sleepForPort } from '../utils';
 import { validatedEthCall } from '../ethcall/model';
 
 const networkId = '1337';
 
 describe('ethcall.sagas', () => {
-    let web3Default: Web3;
-    let web3: Web3; //Web3 loaded from store
+    let web3: Web3;
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
 
     before(async () => {
-        dotenv.config();
         const networkIdInt = parseInt(networkId);
         const server = ganache.server({
             port: 0,
@@ -27,20 +24,14 @@ describe('ethcall.sagas', () => {
         });
         const port = await sleepForPort(server, 1000);
         const rpc = `ws://localhost:${port}`;
-        web3Default = new Web3(rpc);
-        accounts = await web3Default.eth.getAccounts();
-        web3Default.eth.defaultAccount = accounts[0];
+        web3 = new Web3(rpc);
+        accounts = await web3.eth.getAccounts();
+        web3.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(NetworkActions.create({ networkId, web3: web3Default }));
-        const network: Network = NetworkSelector.selectSingle(store.getState(), networkId) as Network;
-        if (!network)
-            throw new Error(
-                `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
-            );
-        web3 = network.web3;
+        store.dispatch(NetworkActions.create({ networkId, web3 }));
     });
 
     it('store.dispatch(EthCallActions.fetch())', async () => {

@@ -21,7 +21,6 @@ export interface EthCall extends NetworkId {
 }
 
 export interface PartialEthCall extends NetworkId {
-    id?: string;
     from: string;
     to: string;
     defaultBlock?: string;
@@ -57,11 +56,9 @@ export function validatedEthCall(ethCall: PartialEthCall): EthCall {
     return {
         ...ethCall,
         id,
-        networkId,
         from: fromCheckSum,
         to: toCheckSum,
         defaultBlock: block,
-        data,
         value: valueHex,
         gas: gasHex,
         gasPrice: gasPriceHex,

@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import { createStore } from '../store';
 import { Network, NetworkActions, ContractActions, ContractSelector } from '../index';
 import { assertDeepEqual } from '../utils';
-import { CreateActionInput } from '../contract/actions';
+import { ContractPartial } from '../contract/model';
 import BlockNumber from '../abis/BlockNumber.json';
 
 const networkId = '1337';
@@ -28,7 +28,7 @@ const events = BlockNumber.abi
         return { ...acc, [m]: {} };
     }, {});
 
-const contract: CreateActionInput = {
+const contract: ContractPartial = {
     networkId,
     address: ZERO_ADDRESS,
     abi: BlockNumber.abi as any,
