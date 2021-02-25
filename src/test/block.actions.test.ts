@@ -3,6 +3,7 @@ import Web3 from 'web3';
 
 import { createStore } from '../store';
 import { Network, Block, Transaction, NetworkActions, BlockActions, TransactionActions, BlockSelector } from '../index';
+import { blockId } from '../block/model';
 
 const networkId = '1337';
 const web3 = new Web3('http://locahost:8545');
@@ -59,34 +60,99 @@ describe('block.actions', () => {
         store.dispatch(NetworkActions.create(network));
     });
 
-    it('BlockSelector.selectSingle(state, id) => undefined', async () => {
-        const selected = BlockSelector.selectSingle(store.getState(), '');
-        assert.equal(selected, undefined);
+    describe('selectors:empty', () => {
+        it('BlockSelector.selectSingle(state, id) => undefined', async () => {
+            const selected = BlockSelector.selectSingle(store.getState(), '');
+            assert.equal(selected, undefined);
+        });
+
+        it('BlockSelector.selectSingle(state, [id]) => []', async () => {
+            const selected = BlockSelector.selectMany(store.getState(), ['']);
+            assert.deepEqual(selected, [null]);
+        });
+
+        it('BlockSelector.selectSingleTransactions(state, blockId) => null', async () => {
+            const selected = BlockSelector.selectSingleTransactions(store.getState(), '');
+            assert.equal(selected, null);
+        });
+
+        it('BlockSelector.selectManyTransactions(state, [blockNo]) => [null]', async () => {
+            const selected = BlockSelector.selectManyTransactions(store.getState(), ['']);
+            assert.deepEqual(selected, [null]);
+        });
+
+        it('BlockSelector.selectSingleTransactions(state, blockId) => null', async () => {
+            const selected = BlockSelector.selectSingleBlockTransaction(store.getState(), '');
+            assert.equal(selected, null);
+        });
+
+        it('BlockSelector.selectManyTransactions(state, [blockNo]) => [null]', async () => {
+            const selected = BlockSelector.selectManyBlockTransaction(store.getState(), ['']);
+            assert.deepEqual(selected, [null]);
+        });
     });
 
-    it('BlockSelector.selectSingle(state, [id]) => []', async () => {
-        const selected = BlockSelector.selectMany(store.getState(), ['']);
-        assert.deepEqual(selected, [null]);
-    });
+    describe('selectors:memoization', () => {
+        it('BlockSelector.selectSingle(state, id)', async () => {
+            //Test payload != selected reference
+            const block1 = { networkId: '1337', number: 1 };
+            store.dispatch(BlockActions.create(block1)); //[redux antipattern] mutates block1 with id
+            const selected1 = BlockSelector.selectSingle(store.getState(), blockId(block1));
 
-    it('BlockSelector.selectSingleTransactions(state, blockId) => null', async () => {
-        const selected = BlockSelector.selectSingleTransactions(store.getState(), '');
-        assert.equal(selected, null);
-    });
+            assert.notEqual(selected1, block1, 'unequal reference');
+            assert.deepEqual(selected1, block1, 'equal deep values');
 
-    it('BlockSelector.selectManyTransactions(state, [blockNo]) => [null]', async () => {
-        const selected = BlockSelector.selectManyTransactions(store.getState(), ['']);
-        assert.deepEqual(selected, [null]);
-    });
+            //Test selected unchanged after new block insert
+            const block2 = { networkId: '1337', number: 2 };
+            store.dispatch(BlockActions.create(block2));
 
-    it('BlockSelector.selectSingleTransactions(state, blockId) => null', async () => {
-        const selected = BlockSelector.selectSingleBlockTransaction(store.getState(), '');
-        assert.equal(selected, null);
-    });
+            const selected2 = BlockSelector.selectSingle(store.getState(), blockId(block1));
+            assert.equal(selected2, selected1, 'memoized selector');
 
-    it('BlockSelector.selectManyTransactions(state, [blockNo]) => [null]', async () => {
-        const selected = BlockSelector.selectManyBlockTransaction(store.getState(), ['']);
-        assert.deepEqual(selected, [null]);
+            //Test selected unchanged after transaction insert
+            const transaction1 = { networkId, hash: '0x1', blockNumber: 1 };
+            store.dispatch(TransactionActions.create(transaction1));
+
+            const selected3 = BlockSelector.selectSingle(store.getState(), blockId(block1));
+            assert.equal(selected3, selected1, 'memoized selector');
+
+            //Test selected changed after block update
+            store.dispatch(BlockActions.create({ ...block1, gasUsed: 1 }));
+
+            const selected4 = BlockSelector.selectSingle(store.getState(), blockId(block1));
+            assert.notEqual(selected4, selected1, 'memoization should be invalidated');
+        });
+
+        it('BlockSelector.selectSingleBlockTransaction(state, id)', async () => {
+            //Create block with transaction
+            const block1 = { networkId: '1337', number: 1 };
+            store.dispatch(BlockActions.create(block1)); //[redux antipattern] mutates block1 with id
+            const transaction1 = { networkId, hash: '0x1', blockNumber: 1 };
+            store.dispatch(TransactionActions.create(transaction1));
+
+            const selected1 = BlockSelector.selectSingleBlockTransaction(store.getState(), blockId(block1));
+
+            //Test selected unchanged after new block insert
+            const block2 = { networkId: '1337', number: 2 };
+            store.dispatch(BlockActions.create(block2));
+
+            const selected2 = BlockSelector.selectSingleBlockTransaction(store.getState(), blockId(block1));
+            assert.equal(selected2, selected1, 'memoized selector');
+
+            //Test selected unchanged after unrelated transaction insert
+            const transaction2 = { networkId, hash: '0x2', blockNumber: 2 };
+            store.dispatch(TransactionActions.create(transaction2));
+
+            const selected3 = BlockSelector.selectSingleBlockTransaction(store.getState(), blockId(block1));
+            assert.equal(selected3, selected1, 'memoized selector');
+
+            //Test selected changed after related transaction insert
+            const transaction3 = { networkId, hash: '0x3', blockNumber: 1 };
+            store.dispatch(TransactionActions.create(transaction3));
+
+            const selected4 = BlockSelector.selectSingleBlockTransaction(store.getState(), blockId(block1));
+            assert.notEqual(selected4, selected1, 'memoization should be invalidated');
+        });
     });
 
     it('BlockActions.create', async () => {
