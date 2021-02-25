@@ -66,7 +66,7 @@ describe('block.actions', () => {
             assert.equal(selected, undefined);
         });
 
-        it('BlockSelector.selectSingle(state, [id]) => []', async () => {
+        it('BlockSelector.selectMany(state, [id]) => []', async () => {
             const selected = BlockSelector.selectMany(store.getState(), ['']);
             assert.deepEqual(selected, [null]);
         });
@@ -81,12 +81,12 @@ describe('block.actions', () => {
             assert.deepEqual(selected, [null]);
         });
 
-        it('BlockSelector.selectSingleTransactions(state, blockId) => null', async () => {
+        it('BlockSelector.selectSingleBlockTransaction(state, blockId) => null', async () => {
             const selected = BlockSelector.selectSingleBlockTransaction(store.getState(), '');
             assert.equal(selected, null);
         });
 
-        it('BlockSelector.selectManyTransactions(state, [blockNo]) => [null]', async () => {
+        it('BlockSelector.selectManyBlockTransaction(state, [blockNo]) => [null]', async () => {
             const selected = BlockSelector.selectManyBlockTransaction(store.getState(), ['']);
             assert.deepEqual(selected, [null]);
         });
@@ -95,7 +95,7 @@ describe('block.actions', () => {
     describe('selectors:memoization', () => {
         it('BlockSelector.selectSingle(state, id)', async () => {
             //Test payload != selected reference
-            const block1 = { networkId: '1337', number: 1 };
+            const block1 = { networkId, number: 1 };
             store.dispatch(BlockActions.create(block1)); //[redux antipattern] mutates block1 with id
             const selected1 = BlockSelector.selectSingle(store.getState(), blockId(block1));
 
@@ -103,7 +103,7 @@ describe('block.actions', () => {
             assert.deepEqual(selected1, block1, 'equal deep values');
 
             //Test selected unchanged after new block insert
-            const block2 = { networkId: '1337', number: 2 };
+            const block2 = { networkId, number: 2 };
             store.dispatch(BlockActions.create(block2));
 
             const selected2 = BlockSelector.selectSingle(store.getState(), blockId(block1));

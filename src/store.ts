@@ -1,14 +1,21 @@
 import { combineReducers, createStore as createReduxStore, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 
+import { Network } from './network/model';
 import { BlockHeader } from './block/model';
 import { Transaction } from './transaction/model';
 import { Contract } from './contract/model';
+import { EthCall } from './ethcall/model';
 
 import { reducer as ormReducer } from './orm';
 import rootSaga from './saga';
 
 export interface Web3ReduxStore {
+    Network: {
+        itemsById: {
+            [id: string]: Network; //`${networkId}`
+        };
+    };
     Block: {
         itemsById: {
             [id: string]: BlockHeader; //`${networkId}-${number}`
@@ -22,6 +29,11 @@ export interface Web3ReduxStore {
     Contract: {
         itemsById: {
             [id: string]: Contract; //`${networkId}-${address}`
+        };
+    };
+    EthCall: {
+        itemsById: {
+            [id: string]: EthCall; //`${networkId}-${from}-${to}-${data}-${value}-${gas}-${gasPrice}`.
         };
     };
 }
