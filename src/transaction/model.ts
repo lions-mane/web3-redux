@@ -1,5 +1,5 @@
 import { attr, fk, Model as ORMModel } from 'redux-orm';
-import { Transaction as Web3Transaction, TransactionReceipt } from 'web3-eth';
+import { TransactionReceipt } from 'web3-eth';
 import { NetworkId } from '../network/model';
 
 /**
@@ -23,9 +23,22 @@ import { NetworkId } from '../network/model';
  * @param gas - Number: Gas provided by the sender.
  * @param input - String: The data sent along with the transaction.
  */
-export interface Transaction extends Web3Transaction, NetworkId {
+export interface Transaction extends NetworkId {
     id?: string;
-    blockId: string;
+    //Web3
+    hash: string;
+    nonce?: number;
+    blockHash?: string | null;
+    blockNumber?: number | null;
+    transactionIndex?: number | null;
+    from?: string;
+    to?: string | null;
+    value?: string;
+    gasPrice?: string;
+    gas?: number;
+    input?: string;
+    //Other
+    blockId?: string | null;
     receipt?: TransactionReceipt;
     confirmations?: number;
 }
@@ -47,7 +60,7 @@ export interface TransactionId extends NetworkId {
  * @param blockNumber - Number: Block number where this transaction was in. null if pending.
  */
 export interface TransactionBlockId extends NetworkId {
-    blockNumber: string | number | null;
+    blockNumber?: string | number | null;
 }
 
 class Model extends ORMModel {
@@ -68,6 +81,8 @@ export function transactionId({ hash, networkId }: TransactionId) {
 }
 
 export function transactionBlockId({ blockNumber, networkId }: TransactionBlockId) {
+    if (!blockNumber) return null;
+
     return `${networkId}-${blockNumber}`;
 }
 

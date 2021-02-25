@@ -18,35 +18,22 @@ import {
 } from './model';
 import { Network } from '../network/model';
 
-import {
-    CALL,
-    CallAction,
-    EventSubscribeAction,
-    EventUnsubscribeAction,
-    EVENT_SUBSCRIBE,
-    isEventSubscribeAction,
-    isEventUnsubscribeAction,
-    SEND,
-    SendAction,
-    update,
-} from './actions';
+import * as ContractActions from './actions';
 import * as TransactionActions from '../transaction/actions';
 
 import * as ContractSelector from './selector';
 import * as NetworkSelector from '../network/selector';
 
-export function* contractCall(action: CallAction) {
+export function* contractCall(action: ContractActions.CallAction) {
     const { payload } = action;
-    //@ts-ignore
-    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
         );
     const id = contractId(payload);
     const web3 = network.web3;
-    //@ts-ignore
-    const contract: Contract = yield select(ContractSelector.select, id);
+    const contract: Contract = yield select(ContractSelector.selectSingle, id);
     const web3Contract = contract.web3Contract!;
     const defaultBlock = payload.defaultBlock ?? 'latest';
     const from: string =
@@ -89,14 +76,14 @@ export function* contractCall(action: CallAction) {
         contract.methods![payload.method][key] = { value, defaultBlock, sync, args: payload.args };
     }
 
-    yield put(update({ ...contract }));
+    yield put(ContractActions.create({ ...contract }));
 }
 
-const CONTRACT_SEND_HASH = `${SEND}/HASH`;
-const CONTRACT_SEND_RECEIPT = `${SEND}/RECEIPT`;
-const CONTRACT_SEND_CONFIRMATION = `${SEND}/CONFIRMATION`;
-const CONTRACT_SEND_ERROR = `${SEND}/ERROR`;
-const CONTRACT_SEND_DONE = `${SEND}/DONE`;
+const CONTRACT_SEND_HASH = `${ContractActions.SEND}/HASH`;
+const CONTRACT_SEND_RECEIPT = `${ContractActions.SEND}/RECEIPT`;
+const CONTRACT_SEND_CONFIRMATION = `${ContractActions.SEND}/CONFIRMATION`;
+const CONTRACT_SEND_ERROR = `${ContractActions.SEND}/ERROR`;
+const CONTRACT_SEND_DONE = `${ContractActions.SEND}/DONE`;
 interface ContractSendChannelMessage {
     type:
         | typeof CONTRACT_SEND_HASH
@@ -143,17 +130,15 @@ function contractSendChannel(tx: PromiEvent<TransactionReceipt>): EventChannel<C
     });
 }
 
-export function* contractSend(action: SendAction) {
+export function* contractSend(action: ContractActions.SendAction) {
     const { payload } = action;
     const networkId = payload.networkId;
-    //@ts-ignore
-    const network: Network = yield select(NetworkSelector.select, networkId);
+    const network: Network = yield select(NetworkSelector.selectSingle, networkId);
     if (!network)
         throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
     const id = contractId(payload);
     const web3 = network.web3;
-    //@ts-ignore
-    const contract: Contract = yield select(ContractSelector.select, id);
+    const contract: Contract = yield select(ContractSelector.selectSingle, id);
     const web3Contract = contract.web3Contract!;
 
     const from = payload.options?.from ?? web3.eth.defaultAccount;
@@ -178,12 +163,10 @@ export function* contractSend(action: SendAction) {
             const message: ContractSendChannelMessage = yield take(channel);
             const { type, hash, receipt, confirmations } = message;
             if (type === CONTRACT_SEND_HASH) {
-                //@ts-ignore
                 yield put(TransactionActions.create({ networkId, hash: hash! }));
             } else if (type === CONTRACT_SEND_RECEIPT) {
                 yield put(
-                    //@ts-ignore
-                    TransactionActions.update({
+                    TransactionActions.create({
                         networkId,
                         hash: hash!,
                         receipt: receipt!,
@@ -196,8 +179,7 @@ export function* contractSend(action: SendAction) {
                 );
             } else if (type === CONTRACT_SEND_CONFIRMATION) {
                 yield put(
-                    //@ts-ignore
-                    TransactionActions.update({
+                    TransactionActions.create({
                         networkId,
                         hash: hash!,
                         receipt: receipt!,
@@ -218,10 +200,10 @@ export function* contractSend(action: SendAction) {
     }
 }
 
-const SUBSCRIBE_DATA = `${EVENT_SUBSCRIBE}/DATA`;
-const SUBSCRIBE_ERROR = `${EVENT_SUBSCRIBE}/ERROR`;
-const SUBSCRIBE_CHANGED = `${EVENT_SUBSCRIBE}/CHANGED`;
-const SUBSCRIBE_DONE = `${EVENT_SUBSCRIBE}/DONE`;
+const SUBSCRIBE_DATA = `${ContractActions.EVENT_SUBSCRIBE}/DATA`;
+const SUBSCRIBE_ERROR = `${ContractActions.EVENT_SUBSCRIBE}/ERROR`;
+const SUBSCRIBE_CHANGED = `${ContractActions.EVENT_SUBSCRIBE}/CHANGED`;
+const SUBSCRIBE_DONE = `${ContractActions.EVENT_SUBSCRIBE}/DONE`;
 interface EventSubscribeChannelMessage {
     type: typeof SUBSCRIBE_DATA | typeof SUBSCRIBE_ERROR | typeof SUBSCRIBE_CHANGED;
     error?: any;
@@ -248,17 +230,15 @@ function eventSubscribeChannel(subscription: Subscription<EventData>): EventChan
     });
 }
 
-export function* eventSubscribe(action: EventSubscribeAction) {
+export function* eventSubscribe(action: ContractActions.EventSubscribeAction) {
     const { payload } = action;
-    //@ts-ignore
-    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
         );
     const id = contractId(payload);
-    //@ts-ignore
-    const contract: Contract = yield select(ContractSelector.select, id);
+    const contract: Contract = yield select(ContractSelector.selectSingle, id);
     const web3Contract = contract.web3Contract!;
     const eventName = payload.eventName;
     const filter = payload.filter ?? {};
@@ -273,14 +253,12 @@ export function* eventSubscribe(action: EventSubscribeAction) {
             const id = eventId(event!);
             if (type === SUBSCRIBE_DATA) {
                 contract.events![eventName][id] = event!;
-                yield put(update(contract));
-                //@ts-ignore
-                yield fork(handleBlockUpdate, newBlock);
+                yield put(ContractActions.create(contract));
             } else if (type === SUBSCRIBE_ERROR) {
                 yield put({ type: SUBSCRIBE_ERROR, error });
             } else if (type === SUBSCRIBE_CHANGED) {
                 delete contract.events![eventName][id];
-                yield put(update(contract));
+                yield put(ContractActions.create(contract));
             }
         }
     } catch (error) {
@@ -297,13 +275,13 @@ function* eventSubscribeLoop() {
     function* eventSubscribeLoopStart() {
         while (true) {
             const subscribePattern = (action: { type: string }) => {
-                if (!isEventSubscribeAction(action)) return false;
+                if (!ContractActions.isEventSubscribeAction(action)) return false;
                 const eventId = `${action.payload.networkId}-${action.payload.address}-${action.payload.eventName}`;
                 if (subscribed[eventId]) return false;
                 subscribed[eventId] = true;
                 return true;
             };
-            const action: EventSubscribeAction = yield take(subscribePattern);
+            const action: ContractActions.EventSubscribeAction = yield take(subscribePattern);
             tasks[action.payload.networkId] = yield fork(eventSubscribe, action);
         }
     }
@@ -311,14 +289,14 @@ function* eventSubscribeLoop() {
     function* eventSubscribeLoopEnd() {
         while (true) {
             const unsubscribePattern = (action: { type: string }) => {
-                if (!isEventUnsubscribeAction(action)) return false;
+                if (!ContractActions.isEventUnsubscribeAction(action)) return false;
                 const eventId = `${action.payload.networkId}-${action.payload.address}-${action.payload.eventName}`;
 
                 if (!subscribed[eventId]) return false;
                 subscribed[eventId] = false;
                 return true;
             };
-            const action: EventUnsubscribeAction = yield take(unsubscribePattern);
+            const action: ContractActions.EventUnsubscribeAction = yield take(unsubscribePattern);
             const eventId = `${action.payload.networkId}-${action.payload.address}-${action.payload.eventName}`;
             yield cancel(tasks[eventId]);
         }
@@ -328,5 +306,9 @@ function* eventSubscribeLoop() {
 }
 
 export function* saga() {
-    yield all([takeEvery(CALL, contractCall), takeEvery(SEND, contractSend), eventSubscribeLoop()]);
+    yield all([
+        takeEvery(ContractActions.CALL, contractCall),
+        takeEvery(ContractActions.SEND, contractSend),
+        eventSubscribeLoop(),
+    ]);
 }

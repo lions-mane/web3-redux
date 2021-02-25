@@ -16,8 +16,7 @@ import * as ContractSelector from '../contract/selector';
 
 export function* fetch(action: BlockActions.FetchAction) {
     const { payload } = action;
-    //@ts-ignore
-    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
@@ -86,8 +85,7 @@ function subscribeChannel(web3: Web3): EventChannel<ChannelMessage> {
 
 function* subscribe(action: BlockActions.SubscribeAction) {
     const networkId = action.payload.networkId;
-    //@ts-ignore
-    const network: Network = yield select(NetworkSelector.select, networkId);
+    const network: Network = yield select(NetworkSelector.selectSingle, networkId);
 
     if (!network)
         throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
@@ -117,7 +115,7 @@ function* subscribe(action: BlockActions.SubscribeAction) {
                     yield put({ type: SUBSCRIBE_ERROR, error });
                 } else if (type === SUBSCRIBE_CHANGED) {
                     const newBlock = { ...block!, networkId };
-                    yield put(BlockActions.update(newBlock));
+                    yield put(BlockActions.create(newBlock));
                     if (action.payload.returnTransactionObjects) {
                         yield fork(
                             fetch,
@@ -176,7 +174,6 @@ function* createBlockTransactions(block: Block) {
         const transactions = block.transactions;
         const actions = transactions.map((hash: string) => {
             return put(
-                //@ts-ignore
                 TransactionActions.create({
                     hash,
                     networkId: block.networkId,
@@ -238,15 +235,6 @@ function* onCreate(action: BlockActions.CreateAction) {
     yield all([createBlockTransactions(action.payload), contractCallBlockSync(action.payload)]);
 }
 
-function* onUpdate(action: BlockActions.CreateAction) {
-    yield all([createBlockTransactions(action.payload), contractCallBlockSync(action.payload)]);
-}
-
 export function* saga() {
-    yield all([
-        fetchLoop(),
-        subscribeLoop(),
-        takeEvery(BlockActions.CREATE, onCreate),
-        takeEvery(BlockActions.UPDATE, onUpdate),
-    ]);
+    yield all([fetchLoop(), subscribeLoop(), takeEvery(BlockActions.CREATE, onCreate)]);
 }
