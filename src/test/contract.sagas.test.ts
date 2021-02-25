@@ -10,10 +10,6 @@ import BlockNumber from '../abis/BlockNumber.json';
 
 import { createStore } from '../store';
 import {
-    Network,
-    eventId,
-    CALL_BLOCK_SYNC,
-    CALL_TRANSACTION_SYNC,
     BlockActions,
     TransactionActions,
     ContractActions,
@@ -22,6 +18,8 @@ import {
     NetworkActions,
 } from '../index';
 import { sleep, sleepForPort } from '../utils';
+import { Network } from '../network/model';
+import { eventId, CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC } from '../contract/model';
 
 const networkId = '1337';
 

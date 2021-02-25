@@ -2,7 +2,10 @@ import { assert } from 'chai';
 import Web3 from 'web3';
 
 import { createStore } from '../store';
-import { Network, Block, Transaction, NetworkActions, TransactionActions, TransactionSelector } from '../index';
+import { NetworkActions, TransactionActions, TransactionSelector } from '../index';
+import { Network } from '../network/model';
+import { Block } from '../block/model';
+import { Transaction } from '../transaction/model';
 
 const networkId = '1337';
 const web3 = new Web3('http://locahost:8545');

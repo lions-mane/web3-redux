@@ -5,18 +5,10 @@ import dotenv from 'dotenv';
 import ganache from 'ganache-core';
 
 import { createStore } from '../store';
-import {
-    Network,
-    Block,
-    BlockHeader,
-    BlockTransaction,
-    BlockTransactionObject,
-    NetworkActions,
-    BlockActions,
-    NetworkSelector,
-    BlockSelector,
-} from '../index';
+import { NetworkActions, BlockActions, NetworkSelector, BlockSelector } from '../index';
 import { sleep, sleepForPort } from '../utils';
+import { Network } from '../network/model';
+import { Block, BlockHeader, BlockTransaction, BlockTransactionObject } from '../block/model';
 
 const networkId = '1337';
 

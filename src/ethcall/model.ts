@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import { NetworkId } from '../network/model';
 
 /**
- * EthCall object. Used to index web3.eth.call() and enable better contract memoization.
+ * EthCall object. Used to index web3.eth.call().
  * {@link https://web3js.readthedocs.io/en/v1.3.4/web3-eth.html#call}
  *
  * @param id - Call id. Computed as `${networkId}-${from}-${to}-${data}-${value}-${gas}-${gasPrice}`.

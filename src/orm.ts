@@ -40,10 +40,10 @@ type Action =
 
 export function reducer(state: any, action: Action) {
     const sess = orm.session(state || initializeState(orm));
-    if (BlockActions.isReducerAction(action)) blockReducer(sess, action);
+    if (NetworkActions.isReducerAction(action)) networkReducer(sess, action);
+    else if (BlockActions.isReducerAction(action)) blockReducer(sess, action);
     else if (TransactionActions.isReducerAction(action)) transactionReducer(sess, action);
     else if (ContractActions.isReducerAction(action)) contractReducer(sess, action);
-    else if (NetworkActions.isReducerAction(action)) networkReducer(sess, action);
     else if (EthCallActions.isReducerAction(action)) ethCallReducer(sess, action);
 
     return sess.state;
