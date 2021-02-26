@@ -2,7 +2,14 @@ import { put, call, takeEvery, take, all, cancel, fork, select } from 'redux-sag
 import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
 import Web3 from 'web3';
 
-import { Block, BlockHeader, BlockTransaction, isBlockTransactionObject, isBlockTransactionString } from './model';
+import {
+    Block,
+    BlockHeader,
+    blockId,
+    BlockTransaction,
+    isBlockTransactionObject,
+    isBlockTransactionString,
+} from './model';
 import { Network } from '../network/model';
 import { isContractCallBlockSync, Contract } from '../contract/model';
 import { transactionId } from '../transaction/model';
@@ -231,10 +238,22 @@ function* contractCallBlockSync(block: Block) {
     yield all(putContractCall);
 }
 
-function* onCreate(action: BlockActions.CreateAction) {
-    yield all([createBlockTransactions(action.payload), contractCallBlockSync(action.payload)]);
+function* onCreateLoop() {
+    const cache: { [key: string]: string | undefined } = {};
+    while (true) {
+        const action: BlockActions.CreateAction = yield take(BlockActions.CREATE);
+        const block = action.payload;
+        const id = blockId(block);
+        if (cache[id] != block.hash) {
+            //Call block sync on first create or block hash update (new block)
+            cache[id] = block.hash;
+            yield all([createBlockTransactions(block), contractCallBlockSync(block)]);
+        } else {
+            yield createBlockTransactions(block);
+        }
+    }
 }
 
 export function* saga() {
-    yield all([fetchLoop(), subscribeLoop(), takeEvery(BlockActions.CREATE, onCreate)]);
+    yield all([fetchLoop(), subscribeLoop(), onCreateLoop()]);
 }

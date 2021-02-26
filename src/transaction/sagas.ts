@@ -1,4 +1,4 @@
-import { put, call, takeEvery, select, all } from 'redux-saga/effects';
+import { put, call, take, takeEvery, select, all } from 'redux-saga/effects';
 import { Transaction, transactionId } from './model';
 import { Network } from '../network/model';
 import { Contract, isContractCallTransactionSync } from '../contract/model';
@@ -68,25 +68,19 @@ function* contractCallTransactionSync(transaction: Transaction) {
     yield all(putContractCall);
 }
 
-function* onCreate(action: TransactionActions.CreateAction) {
-    if (action.payload.blockNumber) {
-        yield contractCallTransactionSync(action.payload);
-    }
-}
-
 /** Yields for each transaction on creation and blockNumber update */
 function* onCreateLoop() {
-    const cache: { [key: string]: boolean } = {};
-
-    const actionPattern = (action: { type: string }) => {
-        if (!TransactionActions.isCreateAction(action)) return false;
-        const actionId = `${transactionId(action.payload)}-${action.payload.blockNumber}`;
-        if (cache[actionId]) return false;
-        cache[actionId] = true;
-        return true;
-    };
-
-    yield takeEvery(actionPattern, onCreate);
+    const cache: { [key: string]: number } = {};
+    while (true) {
+        const action: TransactionActions.CreateAction = yield take(TransactionActions.CREATE);
+        const transaction = action.payload;
+        const id = transactionId(transaction);
+        if (transaction.blockNumber && cache[id] != transaction.blockNumber) {
+            //Call transaction sync on first confirmed create or block update
+            cache[id] = transaction.blockNumber;
+            yield contractCallTransactionSync(transaction);
+        }
+    }
 }
 
 export function* saga() {

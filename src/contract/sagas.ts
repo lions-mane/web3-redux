@@ -101,7 +101,7 @@ function* contractCall(action: ContractActions.CallAction) {
     if (!payload.args || payload.args.length == 0) {
         tx = web3Contract.methods[payload.method]();
     } else {
-        tx = web3Contract.methods[payload.method](payload.args);
+        tx = web3Contract.methods[payload.method](...payload.args);
     }
     const data = tx.encodeABI();
 
@@ -185,16 +185,14 @@ function* contractSend(action: ContractActions.SendAction) {
         throw new Error('contractSend: Missing from address. Make sure to set options.from or web3.eth.defaultAccount');
     const gasPrice = payload.options?.gasPrice ?? 0;
 
-    let txPromiEvent: PromiEvent<TransactionReceipt>;
+    let tx: any;
     if (!payload.args || payload.args.length == 0) {
-        const tx = web3Contract.methods[payload.method]();
-        const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
-        txPromiEvent = tx.send({ from, gas, gasPrice });
+        tx = web3Contract.methods[payload.method]();
     } else {
-        const tx = web3Contract.methods[payload.method](payload.args);
-        const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
-        txPromiEvent = tx.send({ from, gas, gasPrice });
+        tx = web3Contract.methods[payload.method](...payload.args);
     }
+    const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
+    const txPromiEvent: PromiEvent<TransactionReceipt> = tx.send({ from, gas, gasPrice });
 
     const channel: TakeableChannel<ContractSendChannelMessage> = yield call(contractSendChannel, txPromiEvent);
     try {
