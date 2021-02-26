@@ -9,7 +9,7 @@ import * as BlockActions from './block/actions';
 import * as TransactionActions from './transaction/actions';
 import * as ContractActions from './contract/actions';
 import * as EthCallActions from './ethcall/actions';
-import * as Web3ReduxActions from './actions';
+import * as Web3ReduxActions from './web3Redux/actions';
 import { reducer as networkReducer } from './network/reducer';
 import { reducer as blockReducer } from './block/reducer';
 import { reducer as transactionReducer } from './transaction/reducer';

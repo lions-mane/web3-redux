@@ -9,7 +9,7 @@ import * as ContractActions from '../contract/actions';
 import * as NetworkSelector from '../network/selector';
 import * as ContractSelector from '../contract/selector';
 
-export function* fetch(action: TransactionActions.FetchAction) {
+function* fetch(action: TransactionActions.FetchAction) {
     const { payload } = action;
     const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
