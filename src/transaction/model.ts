@@ -1,5 +1,7 @@
 import { attr, fk, Model as ORMModel } from 'redux-orm';
-import { Transaction as Web3Transaction, TransactionReceipt } from 'web3-eth';
+import Web3 from 'web3';
+import { TransactionReceipt } from 'web3-eth';
+import { blockId } from '../block/model';
 import { NetworkId } from '../network/model';
 
 /**
@@ -23,9 +25,22 @@ import { NetworkId } from '../network/model';
  * @param gas - Number: Gas provided by the sender.
  * @param input - String: The data sent along with the transaction.
  */
-export interface Transaction extends Web3Transaction, NetworkId {
+export interface Transaction extends NetworkId {
     id?: string;
-    blockId: string;
+    //Web3
+    hash: string;
+    nonce?: number;
+    blockHash?: string | null;
+    blockNumber?: number | null;
+    transactionIndex?: number | null;
+    from?: string;
+    to?: string | null;
+    value?: string;
+    gasPrice?: string;
+    gas?: string;
+    input?: string;
+    //Other
+    blockId?: string | null;
     receipt?: TransactionReceipt;
     confirmations?: number;
 }
@@ -47,7 +62,7 @@ export interface TransactionId extends NetworkId {
  * @param blockNumber - Number: Block number where this transaction was in. null if pending.
  */
 export interface TransactionBlockId extends NetworkId {
-    blockNumber: string;
+    blockNumber?: string | number | null;
 }
 
 class Model extends ORMModel {
@@ -61,13 +76,30 @@ class Model extends ORMModel {
         number: attr(),
         blockId: fk({ to: 'Block', as: 'block', relatedName: 'transactions' }),
     };
+}
 
-    static toId({ hash, networkId }: TransactionId) {
-        return `${networkId}-${hash}`;
-    }
-    static toBlockId({ blockNumber, networkId }: TransactionBlockId) {
-        return `${networkId}-${blockNumber}`;
-    }
+export function transactionId({ hash, networkId }: TransactionId) {
+    return `${networkId}-${hash}`;
+}
+
+export function validatedTransaction(transaction: Transaction): Transaction {
+    const { networkId, hash, from, to, gas, gasPrice, blockNumber } = transaction;
+    const fromCheckSum = from ? Web3.utils.toChecksumAddress(from) : undefined;
+    const toCheckSum = to ? Web3.utils.toChecksumAddress(to) : undefined;
+    const gasHex = gas ? Web3.utils.toHex(gas) : undefined;
+    const gasPriceHex = gasPrice ? Web3.utils.toHex(gasPrice) : undefined;
+    const id = transactionId({ networkId, hash });
+    const transactionBlockId = blockNumber ? blockId({ networkId, number: blockNumber }) : undefined;
+
+    return {
+        ...transaction,
+        id,
+        blockId: transactionBlockId,
+        from: fromCheckSum,
+        to: toCheckSum,
+        gas: gasHex,
+        gasPrice: gasPriceHex,
+    };
 }
 
 export { Model };

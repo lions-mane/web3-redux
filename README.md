@@ -62,7 +62,7 @@ While a block subscription is optional, it is in most cases necessary to enable 
 You can dispatch a `WEB3_REDUX/INITIALIZE` action to initialize multiple networks.
 
 ```typescript
-store.dispatch(Web3ReduxActions.initialize());
+store.dispatch(Web3Redux.initialize());
 ```
 
 A set of default ethereum networks will be initialized if an environment variable with the rpc endpoint value is set. We strongly recommend using a websocket rpc as otherwise subscriptions will not be possible.
@@ -80,7 +80,7 @@ The environment variables are also supported with the prefixes `REACT_APP_*` and
 Alternatively, you can pass your own set of networks with web3 instances to the initialize action:
 
 ```typescript
-store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId: '1', web3 }] }));
+store.dispatch(Web3Redux.initialize({ networks: [{ networkId: '1', web3 }] }));
 ```
 
 <b>Block Sync</b>
@@ -88,13 +88,13 @@ By default, the initialize action will also start a block sync for each network.
 You can disable this with:
 
 ```typescript
-store.dispatch(Web3ReduxActions.initialize({ blockSubscribe: false }));
+store.dispatch(Web3Redux.initialize({ blockSubscribe: false }));
 ```
 
 Or customize it with:
 
 ```typescript
-store.dispatch(Web3ReduxActions.initialize({ blockSubscribe: [{ networkId: '1' }] }));
+store.dispatch(Web3Redux.initialize({ blockSubscribe: [{ networkId: '1' }] }));
 ```
 
 #### Manual
@@ -103,14 +103,14 @@ store.dispatch(Web3ReduxActions.initialize({ blockSubscribe: [{ networkId: '1' }
 All entities in the web3-redux stored are indexed by networkId. web3-redux let's you sync multiple networks concurrently (eg. sync Mainnet & Ropsten blocks). To enable this however, you must first configure a network by adding it to the store and passing it a web3 instance.
 
 ```typescript
-store.dispatch(NetworkActions.create({ networkId: '1', web3 }));
+store.dispatch(Network.create({ networkId: '1', web3 }));
 ```
 
 <b>Start a block subscription</b>
 To sync with on-chain events, it's a good idea to start a block subscription as it can be used as a reference point to keep data fresh. This is recommended but not required as some apps might use a different refresh mechanism.
 
 ```typescript
-store.dispatch(BlockActions.subscribe({ networkId: '1' }));
+store.dispatch(Block.subscribe({ networkId: '1' }));
 ```
 
 ### Add a contract
@@ -118,20 +118,20 @@ store.dispatch(BlockActions.subscribe({ networkId: '1' }));
 One you've add a network and started the block sync, add a contract and make a call.
 
 ```typescript
-store.dispatch(ContractActions.create({ networkId: '1', address: '0x000...', abi: ERC20ABI }));
-store.dispatch(ContractActions.call({
+store.dispatch(Contract.create({ networkId: '1', address: '0x000...', abi: ERC20ABI }));
+store.dispatch(Contract.call({
     networkId: '1',
     address: '0x000...',
     method: 'balanceOf',
     args: ['0x111...'],
 }));
 
-const balance = ContractSelector.selectContractCall(state, '1-0x000...', 'balanceOf', { args: ['0x0111...', from: web3.eth.defaultAccount ]})
+const balance = Contract.selectContractCall(state, '1-0x000...', 'balanceOf', { args: ['0x0111...', from: web3.eth.defaultAccount ]})
 
 //Alternatively, fetch things manually
-const contract = ContractSelector.select(state, '1-0x000...')
+const contract = Contract.selectSingle(state, '1-0x000...')
 const balanceOf = contract.methods.balanceOf
-const argsHash = callArgsHash({ args: ['0x111...'] }) //([0x111...]).call(latest,web3.eth.defaultAccount)
+const argsHash = Contract.callArgsHash({ args: ['0x111...'] }) //([0x111...]).call(latest,web3.eth.defaultAccount)
 const value = balanceOf['([0x111...]).call(latest,0x222...)'].value
 ```
 
@@ -144,11 +144,10 @@ Below a short example component using the BlockSelector to display all blocks.
 ```typescript
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { Block, BlockSelector } from '@lions-mane/web3-redux';
+import { Block } from '@lions-mane/web3-redux';
 
 export default function Blocks() {
-    //@ts-ignore
-    const blocks: Block[] = useSelector(BlockSelector.select);
+    const blocks: Block.Block[] = useSelector(BlockSelector.selectMany);
     return (
         <div>
             <h1>Blocks</h1>
@@ -172,9 +171,9 @@ Dispatch a `Block/SUBSCRIBE` action to start a block sync. Only one active block
 
 ```typescript
 //Subscribe blocks
-store.dispatch(BlockActions.subscribe({ networkId }));
+store.dispatch(Block.subscribe({ networkId }));
 //Unsubscribe blocks
-store.dispatch(BlockActions.unsubscribe({ networkId }));
+store.dispatch(Block.unsubscribe({ networkId }));
 ```
 
 ### Event Sync
@@ -184,13 +183,13 @@ This uses [web3.eth.Contract.events.MyEvent()](https://web3js.readthedocs.io/en/
 Before intiating an event sync you must first create a contract with a `Contract/CREATE` action:
 
 ```typescript
-store.dispatch(ContractActions.create({ networkId, address, abi});
+store.dispatch(Contract.create({ networkId, address, abi});
 ```
 
 Dispatch a `Contract/EVENT_SUBSCRIBE` action to start an event sync. Event syncs are unique by contract address and event name. Duplicate actions will be ignored. Unsubscribe with a `Contract/EVENT_UNSUBSCRIBE` action.
 
 ```typescript
-store.dispatch(ContractActions.eventSubscribe({ networkId, address, eventName }));
+store.dispatch(Contract.eventSubscribe({ networkId, address, eventName }));
 ```
 
 ### Contract Call Sync
@@ -212,37 +211,42 @@ By default we use Transaction syncing. See [Advanced/Optimising Contract Call Sy
 web3-redux exports a set of [reselect](https://github.com/reduxjs/reselect) selectors to let you easily read data from the store.
 
 ```typescript
-import { BlockSelector, TransactionSelector, ContractSelector } from '@lions-mane/web3-redux';
+import { Block, Transaction, Contract } from '@lions-mane/web3-redux';
 import store from './store.ts';
 
 const state = store.getState();
 
 //Default Redux-ORM selectors
 //Select full collections
-const blocks: BlockHeader[] = BlockSelector.select(state);
-const transactions: Transaction[] = TransactionSelector.select(state);
-const contracts: Contract[] = ContractSelector.select(state);
+const blocks: Block.BlockHeader[] = Block.selectMany(state);
+const transactions: Transaction.Transaction[] = Transaction.selectMany(state);
+const contracts: Contract.Contract[] = Contract.selectMany(state);
 
 //Select single instance by id
 const networkId = 1;
-const block42: Block = BlockSelector.select(state, [`${networkId}-42`]); //block 42 on networkId 1
+const block42: Block.BlockHeader = Block.selectSingle(state, [`${networkId}-42`]); //block 42 on networkId 1
 
 //Select multiple instances by id
 const networkId = 1;
-const [block43, block44]: [BlockHeader, BlockHeader] = BlockSelector.select(state, [
+const [block43, block44]: [Block.BlockHeader, Block.BlockHeader] = Block.selectMany(state, [
     `${networkId}-43`,
     `${networkId}-44`,
 ]);
 
 //Custom selectors
 //Select blocks with transactions (also works with id/[id] filtering)
-const blocksWithTransactions: BlockTransactionObject[] = BlockSelector.selectBlockTransaction(state);
+const blocksWithTransactions: Block.BlockTransactionObject[] = Block.selectManyBlockTransaction(state);
 ```
 
 ## Redux State
 
 ```typescript
-interface Web3ReduxStore {
+export interface Web3ReduxStore {
+    Network: {
+        itemsById: {
+            [id: string]: Network; //`${networkId}`
+        };
+    };
     Block: {
         itemsById: {
             [id: string]: BlockHeader; //`${networkId}-${number}`
@@ -256,6 +260,11 @@ interface Web3ReduxStore {
     Contract: {
         itemsById: {
             [id: string]: Contract; //`${networkId}-${address}`
+        };
+    };
+    EthCall: {
+        itemsById: {
+            [id: string]: EthCall; //`${networkId}-${from}-${to}-${data}-${gas}-${gasPrice}`.
         };
     };
 }

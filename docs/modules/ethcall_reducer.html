@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ContractId | @lions-mane/web3-redux - v0.1.0-beta.2</title>
+	<title>ethcall/reducer | @lions-mane/web3-redux - v0.1.0-beta.3</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.2</a>
+					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.3</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -55,10 +55,7 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules/contract_model.html">contract/model</a>
-				</li>
-				<li>
-					<a href="contract_model.contractid.html">ContractId</a>
+					<a href="ethcall_reducer.html">ethcall/reducer</a>
 				</li>
 			</ul>
 		</div>
@@ -75,83 +72,46 @@
 			</nav>
 		</div>
 		<div class="col-7 offset-3 col-content">
-			<h1>Interface ContractId</h1>
-			<section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography tsd-comment-shorttext">
-					<div class="lead">
-						<p>Contract Id object.</p>
-					</div>
-					</div><div class="tsd-comment tsd-typography tsd-comment-tags">
-					<dl class="tsd-comment-tags"><dt>param</dt>
-						<dd><p>A network id.</p>
-						</dd><dt>param</dt>
-						<dd><p>Contract address.</p>
-					</dd></dl>
-			</div></section>
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<a href="network_model.networkid.html" class="tsd-signature-type">NetworkId</a>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">ContractId</span>
-								<ul class="tsd-hierarchy">
-									<li>
-										<a href="contract_actions.createactioninput.html" class="tsd-signature-type">CreateActionInput</a>
-									</li>
-									<li>
-										<a href="contract_actions.callactioninput.html" class="tsd-signature-type">CallActionInput</a>
-									</li>
-									<li>
-										<a href="contract_actions.sendactioninput.html" class="tsd-signature-type">SendActionInput</a>
-									</li>
-									<li>
-										<a href="contract_actions.eventsubscribeactioninput.html" class="tsd-signature-type">EventSubscribeActionInput</a>
-									</li>
-									<li>
-										<a href="contract_actions.eventunsubscribeactioninput.html" class="tsd-signature-type">EventUnsubscribeActionInput</a>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-				</ul>
-			</section>
+			<h1>Module ethcall/reducer</h1>
 			<section class="tsd-panel-group tsd-index-group">
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Properties</h3>
+							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_model.contractid.html#address" class="tsd-kind-icon">address</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_model.contractid.html#networkid" class="tsd-kind-icon">network<wbr>Id</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="ethcall_reducer.html#reducer" class="tsd-kind-icon">reducer</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="address" class="tsd-anchor"></a>
-					<h3>address</h3>
-					<div class="tsd-signature tsd-kind-icon">address<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/contract/model.ts:108</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="networkid" class="tsd-anchor"></a>
-					<h3>network<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">network<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="network_model.networkid.html">NetworkId</a>.<a href="network_model.networkid.html#networkid">networkId</a></p>
-						<ul>
-							<li>Defined in src/network/model.ts:10</li>
-						</ul>
-					</aside>
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="reducer" class="tsd-anchor"></a>
+					<h3>reducer</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">reducer<span class="tsd-signature-symbol">(</span>sess<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, action<span class="tsd-signature-symbol">: </span><a href="ethcall_actions.html#reduceraction" class="tsd-signature-type">ReducerAction</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/ethcall/reducer.ts:4</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sess: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>action: <a href="ethcall_actions.html#reduceraction" class="tsd-signature-type">ReducerAction</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 			<!--{&quot;options&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;tsconfig&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;entryPoints&quot;:[&quot;src&quot;],&quot;exclude&quot;:[],&quot;externalPattern&quot;:[&quot;**/node_modules/**&quot;],&quot;excludeExternals&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludeInternal&quot;:false,&quot;excludePrivate&quot;:false,&quot;excludeProtected&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;watch&quot;:false,&quot;preserveWatchOutput&quot;:false,&quot;emit&quot;:false,&quot;out&quot;:&quot;docs&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;./node_modules/typedoc-neo-theme/bin/default&quot;,&quot;highlightTheme&quot;:&quot;light-plus&quot;,&quot;name&quot;:&quot;&quot;,&quot;includeVersion&quot;:true,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;showConfig&quot;:false,&quot;plugin&quot;:[&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;logLevel&quot;:1,&quot;listInvalidSymbolLinks&quot;:false,&quot;outline&quot;:[{&quot;Web3Redux&quot;:{&quot;actions&quot;:&quot;actions&quot;,&quot;sagas&quot;:&quot;saga&quot;,&quot;store&quot;:&quot;store&quot;,&quot;orm&quot;:&quot;orm&quot;},&quot;Block&quot;:{&quot;model&quot;:&quot;block_model&quot;,&quot;actions&quot;:&quot;block_actions&quot;,&quot;selector&quot;:&quot;block_selector&quot;,&quot;reducer&quot;:&quot;block_reducer&quot;,&quot;sagas&quot;:&quot;block_sagas&quot;},&quot;Transaction&quot;:{&quot;model&quot;:&quot;transaction_model&quot;,&quot;actions&quot;:&quot;transaction_actions&quot;,&quot;selector&quot;:&quot;transaction_selector&quot;,&quot;reducer&quot;:&quot;transaction_reducer&quot;,&quot;sagas&quot;:&quot;transaction_sagas&quot;},&quot;Network&quot;:{&quot;model&quot;:&quot;network_model&quot;,&quot;actions&quot;:&quot;network_actions&quot;,&quot;selector&quot;:&quot;network_selector&quot;,&quot;reducer&quot;:&quot;network_reducer&quot;},&quot;Contract&quot;:{&quot;model&quot;:&quot;contract_model&quot;,&quot;actions&quot;:&quot;contract_actions&quot;,&quot;selector&quot;:&quot;contract_selector&quot;,&quot;reducer&quot;:&quot;contract_reducer&quot;,&quot;sagas&quot;:&quot;contract_sagas&quot;}}]}-->
@@ -159,65 +119,8 @@
 		<div class="col-2 col-menu secondary-menu">
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-module root">
-						<a href="../classes/contract_model.model.html" class="tsd-kind-icon">Model</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_model.callargshash.html" class="tsd-kind-icon">Call<wbr>Args<wbr>Hash</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_model.contract.html" class="tsd-kind-icon">Contract</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_model.contractcall.html" class="tsd-kind-icon">Contract<wbr>Call</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_model.contractcallblocksync.html" class="tsd-kind-icon">Contract<wbr>Call<wbr>Block<wbr>Sync</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_model.contractcalltransactionsync.html" class="tsd-kind-icon">Contract<wbr>Call<wbr>Transaction<wbr>Sync</a>
-					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_model.contractid.html" class="tsd-kind-icon">Contract<wbr>Id</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="contract_model.contractid.html#address" class="tsd-kind-icon">address</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="contract_model.contractid.html#networkid" class="tsd-kind-icon">network<wbr>Id</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#contractcallsync" class="tsd-kind-icon">Contract<wbr>Call<wbr>Sync</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#call_block_sync" class="tsd-kind-icon">CALL_<wbr>BLOCK_<wbr>SYNC</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#call_transaction_sync" class="tsd-kind-icon">CALL_<wbr>TRANSACTION_<wbr>SYNC</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#defaultblocksync" class="tsd-kind-icon">default<wbr>Block<wbr>Sync</a>
-					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#callargshash-1" class="tsd-kind-icon">call<wbr>Args<wbr>Hash</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#defaulttransactionsyncforcontract" class="tsd-kind-icon">default<wbr>Transaction<wbr>Sync<wbr>For<wbr>Contract</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#eventid" class="tsd-kind-icon">event<wbr>Id</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#iscontractcallblocksync" class="tsd-kind-icon">is<wbr>Contract<wbr>Call<wbr>Block<wbr>Sync</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_model.html#iscontractcalltransactionsync" class="tsd-kind-icon">is<wbr>Contract<wbr>Call<wbr>Transaction<wbr>Sync</a>
+						<a href="ethcall_reducer.html#reducer" class="tsd-kind-icon">reducer</a>
 					</li>
 				</ul>
 			</nav>

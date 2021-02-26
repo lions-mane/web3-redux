@@ -5,14 +5,12 @@ import { Block, BlockId } from './model';
 const name = 'Block';
 
 export const CREATE = `${name}/CREATE`;
-export const UPDATE = `${name}/UPDATE`;
 export const REMOVE = `${name}/DELETE`;
 export const FETCH = `${name}/FETCH`;
 export const SUBSCRIBE = `${name}/SUBSCRIBE`;
 export const UNSUBSCRIBE = `${name}/UNSUBSCRIBE`;
 
 export const create = actionCreator<typeof CREATE, Block>(CREATE);
-export const update = actionCreator<typeof UPDATE, Block>(UPDATE);
 export const remove = actionCreator<typeof REMOVE, BlockId>(REMOVE);
 
 /** Block fetch action.  Uses web3.eth.getBlock(). */
@@ -42,10 +40,6 @@ export type CreateAction = ReturnType<typeof create>;
 export function isCreateAction(action: { type: string }): action is CreateAction {
     return action.type === CREATE;
 }
-export type UpdateAction = ReturnType<typeof update>;
-export function isUpdateAction(action: { type: string }): action is UpdateAction {
-    return action.type === UPDATE;
-}
 export type RemoveAction = ReturnType<typeof remove>;
 export function isRemoveAction(action: { type: string }): action is RemoveAction {
     return action.type === REMOVE;
@@ -63,9 +57,9 @@ export function isUnsubscribeAction(action: { type: string }): action is Unsubsc
     return action.type === UNSUBSCRIBE;
 }
 
-export type ReducerAction = CreateAction | UpdateAction | RemoveAction;
+export type ReducerAction = CreateAction | RemoveAction;
 export function isReducerAction(action: { type: string }): action is ReducerAction {
-    return isCreateAction(action) || isUpdateAction(action) || isRemoveAction(action);
+    return isCreateAction(action) || isRemoveAction(action);
 }
 
 export type SagaAction = FetchAction | SubscribeAction | UnsubscribeAction;

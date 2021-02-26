@@ -1,7 +1,5 @@
-import dotenv from 'dotenv';
 import { assert } from 'chai';
 import { AddressInfo, Server } from 'net';
-dotenv.config();
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 

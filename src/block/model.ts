@@ -1,5 +1,4 @@
 import { attr, Model as ORMModel } from 'redux-orm';
-import { BlockHeader as Web3BlockHeader } from 'web3-eth';
 import { NetworkId } from '../network/model';
 import { Transaction } from '../transaction/model';
 import { isStrings } from '../utils';
@@ -25,9 +24,23 @@ import { isStrings } from '../utils';
  * @param gasUsed- Number: The total used gas by all transactions in this block.
  * @param timestamp - Number: The unix timestamp for when the block was collated.
  */
-export interface BlockHeader extends Web3BlockHeader, NetworkId {
+export interface BlockHeader extends NetworkId {
     /** Block id. Used to index blocks in redux-orm. Computed as `${networkId}-${number}`. */
     id?: string;
+    number: number;
+    hash?: string;
+    parentHash?: string;
+    nonce?: string;
+    sha3Uncles?: string;
+    logsBloom?: string;
+    transactionRoot?: string;
+    stateRoot?: string;
+    receiptRoot?: string;
+    miner?: string;
+    extraData?: string;
+    gasLimit?: number;
+    gasUsed?: number;
+    timestamp?: number | string;
 }
 
 /**
@@ -88,7 +101,7 @@ export function isBlockTransactionObject(block: Block): block is BlockTransactio
     return isBlockTransaction(block) && !isStrings(block.transactions);
 }
 
-class Model extends ORMModel {
+export class Model extends ORMModel {
     static options = {
         idAttribute: 'id',
     };
@@ -98,10 +111,15 @@ class Model extends ORMModel {
     static fields = {
         number: attr(),
     };
-
-    static toId({ number, networkId }: BlockId) {
-        return `${networkId}-${number}`;
-    }
 }
 
-export { Model };
+export function blockId({ number, networkId }: BlockId) {
+    return `${networkId}-${number}`;
+}
+
+export function validatedBlock(block: Block): Block {
+    return {
+        ...block,
+        id: blockId(block),
+    };
+}

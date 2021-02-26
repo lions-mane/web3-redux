@@ -2,11 +2,11 @@ import { assert } from 'chai';
 import Web3 from 'web3';
 
 import { createStore } from '../store';
-import { Network, NetworkSelector, NetworkActions } from '../index';
+import { Network } from '../index';
 
 const networkId = '1337';
 const web3 = new Web3('http://locahost:8545');
-const network: Network = {
+const network = {
     networkId,
     web3,
 };
@@ -18,18 +18,18 @@ describe('Network', () => {
         store = createStore();
     });
 
-    it('NetworkSelector.selectSingle(state, id) => undefined', async () => {
-        const selected = NetworkSelector.selectSingle(store.getState(), '');
+    it('Network.selectSingle(state, id) => undefined', async () => {
+        const selected = Network.selectSingle(store.getState(), '');
         assert.equal(selected, undefined);
     });
 
-    it('NetworkSelector.selectSingle(state, [id]) => []', async () => {
-        const selected = NetworkSelector.selectMany(store.getState(), ['']);
+    it('Network.selectSingle(state, [id]) => []', async () => {
+        const selected = Network.selectMany(store.getState(), ['']);
         assert.deepEqual(selected, [null]);
     });
 
-    it('NetworkActions.create', async () => {
-        store.dispatch(NetworkActions.create(network));
+    it('Network.create', async () => {
+        store.dispatch(Network.create(network));
 
         const expected = network;
 
@@ -42,7 +42,7 @@ describe('Network', () => {
 
         //Network.select
         assert.deepEqual(
-            NetworkSelector.selectSingle(store.getState(), network.networkId),
+            Network.selectSingle(store.getState(), network.networkId),
             expected,
             'Network.select(networkId)',
         );
