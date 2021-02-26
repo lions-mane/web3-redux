@@ -7,8 +7,8 @@ import { Transaction } from './transaction/model';
 import { Contract } from './contract/model';
 import { EthCall } from './ethcall/model';
 
-import { reducer as ormReducer } from './orm';
-import rootSaga from './saga';
+import { rootReducer } from './reducer';
+import { rootSaga } from './saga';
 
 export interface Web3ReduxStore {
     Network: {
@@ -39,7 +39,7 @@ export interface Web3ReduxStore {
 }
 
 const reducers = combineReducers({
-    web3Redux: ormReducer,
+    web3Redux: rootReducer,
 });
 
 export const createStore = () => {

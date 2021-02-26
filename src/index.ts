@@ -5,4 +5,6 @@ import * as Contract from './contract';
 import * as EthCall from './ethcall';
 import * as Web3Redux from './web3Redux';
 
+export { rootReducer } from './reducer';
+export { rootSaga } from './saga';
 export { Network, Block, Transaction, Contract, EthCall, Web3Redux };
