@@ -1,13 +1,10 @@
 import { put, all, takeEvery } from 'redux-saga/effects';
 import Web3 from 'web3';
-import dotenv from 'dotenv';
 import * as NetworkActions from '../network/actions';
 import * as BlockActions from '../block/actions';
 import { SubscribeActionInput } from '../block/actions';
 import { Network } from '../network/model';
 import { InitializeAction, INITIALIZE } from './actions';
-
-dotenv.config();
 
 function* initialize(action: InitializeAction) {
     let blockSubscribe: { [networkId: string]: SubscribeActionInput } | boolean;
