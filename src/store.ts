@@ -33,7 +33,7 @@ export interface Web3ReduxStore {
     };
     EthCall: {
         itemsById: {
-            [id: string]: EthCall; //`${networkId}-${from}-${to}-${data}-${value}-${gas}-${gasPrice}`.
+            [id: string]: EthCall; //`${networkId}-${from}-${to}-${data}-${gas}-${gasPrice}`.
         };
     };
 }
