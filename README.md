@@ -7,7 +7,7 @@ Web3 Redux Library.
 -   [ ] Accounts: balance, nonce
 -   [ ] Track latestBlock in store
 -   [ ] ContractEvent: Separate entity in store to avoid Contract mutations
--   [ ] ContractCall: Use regular web3 contract call as opposed to encoding/decoding (allows more flexibility)
+-   [x] ContractCall: Use regular web3 contract call as opposed to encoding/decoding (allows more flexibility)
 -   [ ] Usage with Metamask example: Use metamask as wallet provider + custom rpc
 -   [ ] Network add without id, fetch chainId with request
 -   [ ] Batched Multicall.js https://github.com/makerdao/multicall

@@ -129,7 +129,7 @@ describe('contract.actions', () => {
             store.dispatch(
                 EthCall.create({
                     ...ethCall1,
-                    returnValue: '0x000000000000000000000000000000000000000000000000000000000000002a',
+                    returnValue: '42',
                 }),
             );
 

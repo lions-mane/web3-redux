@@ -19,10 +19,10 @@ function* fetch(action: EthCallActions.FetchAction) {
     const validated = validatedEthCall({ ...payload, from });
     yield put(EthCallActions.create(validated));
 
-    const gas = validated.gas ?? (yield call(web3.eth.estimateGas, validated)); //default gas
+    const gas = validated.gas ?? (yield call(web3.eth.estimateGas, { ...validated })); //default gas
 
     //@ts-ignore
-    const returnValue = yield call(web3.eth.call, { ...validated, gas });
+    const returnValue = yield call(web3.eth.call, { ...validated, gas }, validated.defaultBlock);
     yield put(EthCallActions.create({ ...validated, returnValue }));
 }
 

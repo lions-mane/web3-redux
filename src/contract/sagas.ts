@@ -93,7 +93,6 @@ function* contractCall(action: ContractActions.CallAction) {
     //Defaults
     const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
     const defaultBlock = payload.defaultBlock ?? 'latest';
-    const gas = payload.gas;
     const gasPrice = payload.gasPrice ?? 0;
 
     const web3Contract = contract.web3Contract!;
@@ -111,10 +110,15 @@ function* contractCall(action: ContractActions.CallAction) {
         to: contract.address,
         defaultBlock,
         data,
-        gas,
+        gas: payload.gas,
         gasPrice,
     });
-    yield put(EthCallActions.fetch(ethCall));
+
+    //Create base call
+    yield put(EthCallActions.create(ethCall));
+
+    //Instead of the web3.eth.call we use web3.eth.Contract.myMethod.call
+    //yield put(EthCallActions.fetch(ethCall)); DEPRECATED
 
     //Update contract call key if not stored
     const key = callArgsHash({ from, defaultBlock, args: payload.args });
@@ -126,6 +130,10 @@ function* contractCall(action: ContractActions.CallAction) {
         contract.methods[payload.method][key].ethCallId = ethCall.id;
         yield put(ContractActions.create({ ...contract }));
     }
+
+    const gas = ethCall.gas ?? (yield call(tx.estimateGas, { ...ethCall })); //default gas
+    const returnValue = yield call(tx.call, { ...ethCall, gas }, ethCall.defaultBlock);
+    yield put(EthCallActions.create({ ...ethCall, returnValue }));
 }
 
 const CONTRACT_SEND_HASH = `${ContractActions.SEND}/HASH`;
