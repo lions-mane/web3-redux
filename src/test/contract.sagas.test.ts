@@ -7,7 +7,7 @@ import ganache from 'ganache-core';
 import BlockNumber from '../abis/BlockNumber.json';
 
 import { createStore } from '../store';
-import { BlockActions, ContractActions, ContractSelector, NetworkActions, TransactionActions } from '../index';
+import { Block, Contract, Network, Transaction } from '../index';
 import { sleep, sleepForPort } from '../utils';
 import { TransactionReceipt } from 'web3-core';
 import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, eventId } from '../contract/model';
@@ -36,7 +36,7 @@ describe('contract.sagas', () => {
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(NetworkActions.create({ networkId, web3 }));
+        store.dispatch(Network.create({ networkId, web3 }));
 
         const tx = new web3.eth.Contract(BlockNumber.abi as AbiItem[]).deploy({
             data: BlockNumber.bytecode,
@@ -51,14 +51,14 @@ describe('contract.sagas', () => {
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
         store.dispatch(
-            ContractActions.create({
+            Contract.create({
                 networkId,
                 address: web3Contract.options.address,
                 abi: BlockNumber.abi as AbiItem[],
             }),
         );
         store.dispatch(
-            ContractActions.callSynced({
+            Contract.callSynced({
                 networkId,
                 address: web3Contract.options.address,
                 method: 'getValue',
@@ -70,7 +70,7 @@ describe('contract.sagas', () => {
         const contractId = `${networkId}-${web3Contract.options.address}`;
 
         //Selector
-        const value = ContractSelector.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
 
@@ -80,16 +80,16 @@ describe('contract.sagas', () => {
 
     it('store.dispatch(ContractSagas.callSynced({sync:CALL_BLOCK_SYNC}))', async () => {
         //Block subsciption used for updates
-        store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: false }));
+        store.dispatch(Block.subscribe({ networkId, returnTransactionObjects: false }));
         store.dispatch(
-            ContractActions.create({
+            Contract.create({
                 networkId,
                 address: web3Contract.options.address,
                 abi: BlockNumber.abi as AbiItem[],
             }),
         );
         store.dispatch(
-            ContractActions.callSynced({
+            Contract.callSynced({
                 networkId,
                 address: web3Contract.options.address,
                 method: 'blockNumber',
@@ -100,31 +100,31 @@ describe('contract.sagas', () => {
 
         const contractId = `${networkId}-${web3Contract.options.address}`;
 
-        const blockNumber1 = ContractSelector.selectContractCall(store.getState(), contractId, 'blockNumber', {
+        const blockNumber1 = Contract.selectContractCall(store.getState(), contractId, 'blockNumber', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         await sleep(2000);
-        const blockNumber2 = ContractSelector.selectContractCall(store.getState(), contractId, 'blockNumber', {
+        const blockNumber2 = Contract.selectContractCall(store.getState(), contractId, 'blockNumber', {
             from: web3.eth.defaultAccount ?? undefined,
         });
 
         assert.isAtLeast(parseInt(blockNumber2), parseInt(blockNumber1) + 1);
     });
 
-    it('store.dispatch(ContractSagas.callSynced({sync:CALL_TRANSACTION_SYNC})) - TransactionActions.fetch', async () => {
+    it('store.dispatch(ContractSagas.callSynced({sync:CALL_TRANSACTION_SYNC})) - Transaction.fetch', async () => {
         const tx2 = await web3Contract.methods.setValue(42);
         const gas2 = await tx2.estimateGas();
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
         store.dispatch(
-            ContractActions.create({
+            Contract.create({
                 networkId,
                 address: web3Contract.options.address,
                 abi: BlockNumber.abi as AbiItem[],
             }),
         );
         store.dispatch(
-            ContractActions.callSynced({
+            Contract.callSynced({
                 networkId,
                 address: web3Contract.options.address,
                 method: 'getValue',
@@ -135,7 +135,7 @@ describe('contract.sagas', () => {
 
         const contractId = `${networkId}-${web3Contract.options.address}`;
 
-        const value1 = ContractSelector.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value1 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value1, 42);
@@ -146,7 +146,7 @@ describe('contract.sagas', () => {
         const receipt: TransactionReceipt = await tx3.send({ from: accounts[0], gas: gas3, gasPrice: '10000' });
         //Fetch transaction, triggering a refresh
         store.dispatch(
-            TransactionActions.fetch({
+            Transaction.fetch({
                 networkId,
                 hash: receipt.transactionHash,
             }),
@@ -154,28 +154,28 @@ describe('contract.sagas', () => {
 
         //Updated from transaction sync
         await sleep(2000);
-        const value2 = ContractSelector.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value2 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value2, 666);
     });
 
-    it('store.dispatch(ContractSagas.callSynced({sync:CALL_TRANSACTION_SYNC})) - BlockActions.subscribe', async () => {
+    it('store.dispatch(ContractSagas.callSynced({sync:CALL_TRANSACTION_SYNC})) - Block.subscribe', async () => {
         //Block subsciption used for updates, must fetch transactions
-        store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: true }));
+        store.dispatch(Block.subscribe({ networkId, returnTransactionObjects: true }));
         const tx2 = await web3Contract.methods.setValue(42);
         const gas2 = await tx2.estimateGas();
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
         store.dispatch(
-            ContractActions.create({
+            Contract.create({
                 networkId,
                 address: web3Contract.options.address,
                 abi: BlockNumber.abi as AbiItem[],
             }),
         );
         store.dispatch(
-            ContractActions.callSynced({
+            Contract.callSynced({
                 networkId,
                 address: web3Contract.options.address,
                 method: 'getValue',
@@ -186,7 +186,7 @@ describe('contract.sagas', () => {
 
         const contractId = `${networkId}-${web3Contract.options.address}`;
 
-        const value1 = ContractSelector.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value1 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value1, 42);
@@ -198,7 +198,7 @@ describe('contract.sagas', () => {
 
         //Updated from transaction sync
         await sleep(2000);
-        const value2 = ContractSelector.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value2 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value2, 666);
@@ -206,7 +206,7 @@ describe('contract.sagas', () => {
 
     it('store.dispatch(ContractSagas.send())', async () => {
         store.dispatch(
-            ContractActions.create({
+            Contract.create({
                 networkId,
                 address: web3Contract.options.address,
                 abi: BlockNumber.abi as AbiItem[],
@@ -214,7 +214,7 @@ describe('contract.sagas', () => {
         );
 
         store.dispatch(
-            ContractActions.send({
+            Contract.send({
                 networkId,
                 address: web3Contract.options.address,
                 method: 'setValue',
@@ -230,7 +230,7 @@ describe('contract.sagas', () => {
 
     it('store.dispatch(ContractSagas.eventSubscribe())', async (): Promise<void> => {
         store.dispatch(
-            ContractActions.create({
+            Contract.create({
                 networkId,
                 address: web3Contract.options.address,
                 abi: BlockNumber.abi as AbiItem[],
@@ -242,7 +242,7 @@ describe('contract.sagas', () => {
             expectedEvents[eventId(event)] = event;
         });
         store.dispatch(
-            ContractActions.eventSubscribe({
+            Contract.eventSubscribe({
                 networkId,
                 address: web3Contract.options.address,
                 eventName: 'NewValue',
@@ -253,10 +253,7 @@ describe('contract.sagas', () => {
         const gas2 = await tx2.estimateGas();
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
-        const contractSel = ContractSelector.selectSingle(
-            store.getState(),
-            `${networkId}-${web3Contract.options.address}`,
-        );
+        const contractSel = Contract.selectSingle(store.getState(), `${networkId}-${web3Contract.options.address}`);
 
         assert.deepEqual(contractSel!.events!.NewValue, expectedEvents);
     });

@@ -27,7 +27,7 @@ import * as ContractSelector from './selector';
 import * as NetworkSelector from '../network/selector';
 import { ZERO_ADDRESS } from '../utils';
 
-export function* contractCallSynced(action: ContractActions.CallSyncedAction) {
+function* contractCallSynced(action: ContractActions.CallSyncedAction) {
     const { payload } = action;
     const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
@@ -78,7 +78,7 @@ export function* contractCallSynced(action: ContractActions.CallSyncedAction) {
     }
 }
 
-export function* contractCall(action: ContractActions.CallAction) {
+function* contractCall(action: ContractActions.CallAction) {
     const { payload } = action;
     const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
@@ -169,7 +169,7 @@ function contractSendChannel(tx: PromiEvent<TransactionReceipt>): EventChannel<C
     });
 }
 
-export function* contractSend(action: ContractActions.SendAction) {
+function* contractSend(action: ContractActions.SendAction) {
     const { payload } = action;
     const networkId = payload.networkId;
     const network: Network = yield select(NetworkSelector.selectSingle, networkId);
@@ -267,7 +267,7 @@ function eventSubscribeChannel(subscription: Subscription<EventData>): EventChan
     });
 }
 
-export function* eventSubscribe(action: ContractActions.EventSubscribeAction) {
+function* eventSubscribe(action: ContractActions.EventSubscribeAction) {
     const { payload } = action;
     const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)

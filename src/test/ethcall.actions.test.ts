@@ -3,8 +3,7 @@ import Web3 from 'web3';
 import ganache from 'ganache-core';
 
 import { createStore } from '../store';
-import { NetworkActions, EthCallSelector, EthCallActions } from '../index';
-import { validatedEthCall } from '../ethcall/model';
+import { Network, EthCall } from '../index';
 import { sleepForPort } from '../utils';
 
 const networkId = '1337';
@@ -30,36 +29,36 @@ describe('ethcall.actions', () => {
 
     beforeEach(() => {
         store = createStore();
-        store.dispatch(NetworkActions.create({ networkId, web3 }));
+        store.dispatch(Network.create({ networkId, web3 }));
     });
 
     describe('selectors:empty', () => {
-        it('EthCallSelector.selectSingle(state, id) => undefined', async () => {
-            const selected = EthCallSelector.selectSingle(store.getState(), '');
+        it('EthCall.selectSingle(state, id) => undefined', async () => {
+            const selected = EthCall.selectSingle(store.getState(), '');
             assert.equal(selected, undefined);
         });
 
-        it('EthCallSelector.selectSingle(state, [id]) => []', async () => {
-            const selected = EthCallSelector.selectMany(store.getState(), ['']);
+        it('EthCall.selectSingle(state, [id]) => []', async () => {
+            const selected = EthCall.selectMany(store.getState(), ['']);
             assert.deepEqual(selected, [null]);
         });
     });
 
     describe('selectors:memoization', () => {
-        it('EthCallSelector.selectSingle(state, id)', async () => {
+        it('EthCall.selectSingle(state, id)', async () => {
             //Test payload != selected reference
-            const ethCall1 = validatedEthCall({ networkId, from: accounts[0], to: accounts[1], data: '0x1' });
-            store.dispatch(EthCallActions.create(ethCall1));
-            const selected1 = EthCallSelector.selectSingle(store.getState(), ethCall1.id);
+            const ethCall1 = EthCall.validatedEthCall({ networkId, from: accounts[0], to: accounts[1], data: '0x1' });
+            store.dispatch(EthCall.create(ethCall1));
+            const selected1 = EthCall.selectSingle(store.getState(), ethCall1.id);
 
             assert.notEqual(selected1, ethCall1, 'unequal reference');
             assert.deepEqual(selected1, ethCall1, 'equal deep values');
 
             //Test selected unchanged after new insert
-            const ethCall2 = validatedEthCall({ networkId, from: accounts[0], to: accounts[1], data: '0x2' });
-            store.dispatch(EthCallActions.create(ethCall2));
+            const ethCall2 = EthCall.validatedEthCall({ networkId, from: accounts[0], to: accounts[1], data: '0x2' });
+            store.dispatch(EthCall.create(ethCall2));
 
-            const selected2 = EthCallSelector.selectSingle(store.getState(), ethCall1.id);
+            const selected2 = EthCall.selectSingle(store.getState(), ethCall1.id);
             assert.equal(selected2, selected1, 'memoized selector');
         });
     });

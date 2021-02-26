@@ -1,10 +1,10 @@
 import { assert } from 'chai';
 import ganache from 'ganache-core';
 import { createStore } from '../store';
-import { Web3ReduxActions, NetworkSelector, BlockSelector, TransactionSelector } from '../index';
+import { Network, Web3Redux, Block, Transaction } from '../index';
 import { sleep, sleepForPort } from '../utils';
 
-describe('Web3ReduxActions', () => {
+describe('Web3Redux', () => {
     let store: ReturnType<typeof createStore>;
 
     before(async () => {
@@ -24,8 +24,8 @@ describe('Web3ReduxActions', () => {
         store = createStore();
     });
 
-    it('Web3ReduxActions.initialize', async () => {
-        store.dispatch(Web3ReduxActions.initialize());
+    it('Web3Redux.initialize', async () => {
+        store.dispatch(Web3Redux.initialize());
 
         //State
         assert.equal(
@@ -35,14 +35,14 @@ describe('Web3ReduxActions', () => {
         );
 
         //Network.select
-        assert.equal(NetworkSelector.selectMany(store.getState()).length, 6, 'Network.select().length');
+        assert.equal(Network.selectMany(store.getState()).length, 6, 'Network.select().length');
 
         await sleep(5000);
 
         //Block.select
-        assert.isAtLeast(BlockSelector.selectMany(store.getState()).length, 3, 'synced block headers');
+        assert.isAtLeast(Block.selectMany(store.getState()).length, 3, 'synced block headers');
 
         //Transaction.select
-        assert.isAtLeast(TransactionSelector.selectMany(store.getState()).length, 3, 'synced block transactions');
+        assert.isAtLeast(Transaction.selectMany(store.getState()).length, 3, 'synced block transactions');
     });
 });

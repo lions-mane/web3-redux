@@ -1,7 +1,8 @@
 import { put, all, takeEvery } from 'redux-saga/effects';
 import Web3 from 'web3';
 import dotenv from 'dotenv';
-import { NetworkActions, BlockActions } from '..';
+import * as NetworkActions from '../network/actions';
+import * as BlockActions from '../block/actions';
 import { SubscribeActionInput } from '../block/actions';
 import { Network } from '../network/model';
 import { InitializeAction, INITIALIZE } from './actions';

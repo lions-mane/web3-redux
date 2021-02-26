@@ -6,7 +6,7 @@ import { ZERO_ADDRESS } from '../utils';
 import { Network } from '../network/model';
 import * as NetworkSelector from '../network/selector';
 
-export function* fetch(action: EthCallActions.FetchAction) {
+function* fetch(action: EthCallActions.FetchAction) {
     const { payload } = action;
     const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)

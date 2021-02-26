@@ -101,7 +101,7 @@ export function isBlockTransactionObject(block: Block): block is BlockTransactio
     return isBlockTransaction(block) && !isStrings(block.transactions);
 }
 
-class Model extends ORMModel {
+export class Model extends ORMModel {
     static options = {
         idAttribute: 'id',
     };
@@ -123,5 +123,3 @@ export function validatedBlock(block: Block): Block {
         id: blockId(block),
     };
 }
-
-export { Model };
