@@ -46,7 +46,7 @@ export function* contractCallSynced(action: ContractActions.CallSyncedAction) {
     let sync: ContractCallSync | false;
     const defaultTransactionSync = defaultTransactionSyncForContract(contract.address);
 
-    if (payload.defaultBlock === 'latest') {
+    if (defaultBlock === 'latest') {
         if (payload.sync === false) {
             sync = false;
         } else if (payload.sync === true) {
@@ -67,7 +67,11 @@ export function* contractCallSynced(action: ContractActions.CallSyncedAction) {
     //Update contract call sync
     const key = callArgsHash({ from, defaultBlock, args: payload.args });
     const contractCallSync = contract.methods[payload.method][key];
-    if (contractCallSync.sync != sync) {
+    if (!contractCallSync) {
+        contract.methods[payload.method][key] = { sync };
+        yield put(ContractActions.create({ ...contract }));
+        yield put(ContractActions.call(payload));
+    } else if (contractCallSync.sync != sync) {
         contract.methods[payload.method][key].sync = sync;
         yield put(ContractActions.create({ ...contract }));
         yield put(ContractActions.call(payload));
@@ -99,7 +103,7 @@ export function* contractCall(action: ContractActions.CallAction) {
     } else {
         tx = web3Contract.methods[payload.method](payload.args);
     }
-    const data = tx.encodeAbi();
+    const data = tx.encodeABI();
 
     const ethCall = validatedEthCall({
         networkId: network.networkId,
@@ -115,7 +119,10 @@ export function* contractCall(action: ContractActions.CallAction) {
     //Update contract call key if not stored
     const key = callArgsHash({ from, defaultBlock, args: payload.args });
     const contractCallSync = contract.methods[payload.method][key];
-    if (contractCallSync.ethCallId != ethCall.id) {
+    if (!contractCallSync) {
+        contract.methods[payload.method][key] = { ethCallId: ethCall.id };
+        yield put(ContractActions.create({ ...contract }));
+    } else if (contractCallSync.ethCallId != ethCall.id) {
         contract.methods[payload.method][key].ethCallId = ethCall.id;
         yield put(ContractActions.create({ ...contract }));
     }
@@ -140,29 +147,19 @@ interface ContractSendChannelMessage {
 
 function contractSendChannel(tx: PromiEvent<TransactionReceipt>): EventChannel<ContractSendChannelMessage> {
     return eventChannel(emitter => {
-        let savedHash: string;
-        let savedReceipt: TransactionReceipt;
-        let savedConfirmations: number;
-
         tx.on('transactionHash', (hash: string) => {
-            savedHash = hash;
             emitter({ type: CONTRACT_SEND_HASH, hash });
         })
             .on('receipt', (receipt: TransactionReceipt) => {
-                savedReceipt = receipt;
-                emitter({ type: CONTRACT_SEND_RECEIPT, hash: savedHash, receipt });
+                emitter({ type: CONTRACT_SEND_RECEIPT, receipt });
             })
             .on('confirmation', (confirmations: number) => {
-                savedConfirmations = confirmations;
-                emitter({ type: CONTRACT_SEND_CONFIRMATION, hash: savedHash, receipt: savedReceipt, confirmations });
+                emitter({ type: CONTRACT_SEND_CONFIRMATION, confirmations });
                 if (confirmations == 24) emitter(END);
             })
             .on('error', (error: any) => {
                 emitter({
                     type: CONTRACT_SEND_ERROR,
-                    hash: savedHash,
-                    receipt: savedReceipt,
-                    confirmations: savedConfirmations,
                     error,
                 });
                 emitter(END);
@@ -201,20 +198,22 @@ export function* contractSend(action: ContractActions.SendAction) {
 
     const channel: TakeableChannel<ContractSendChannelMessage> = yield call(contractSendChannel, txPromiEvent);
     try {
+        let savedHash: string | undefined;
         while (true) {
             const message: ContractSendChannelMessage = yield take(channel);
             const { type, hash, receipt, confirmations } = message;
+            if (hash) savedHash = hash;
+
             if (type === CONTRACT_SEND_HASH) {
                 yield put(TransactionActions.create({ networkId, hash: hash! }));
             } else if (type === CONTRACT_SEND_RECEIPT) {
                 yield put(
                     TransactionActions.create({
                         networkId,
-                        hash: hash!,
-                        receipt: receipt!,
-                        blockNumber: receipt!.blockNumber,
-                        blockId: `${networkId}-${receipt!.blockNumber}`,
-                        blockHash: receipt!.blockHash,
+                        hash: savedHash!,
+                        receipt: receipt,
+                        blockNumber: receipt?.blockNumber,
+                        blockHash: receipt?.blockHash,
                         from: receipt!.from,
                         to: receipt!.to,
                     }),
@@ -223,20 +222,16 @@ export function* contractSend(action: ContractActions.SendAction) {
                 yield put(
                     TransactionActions.create({
                         networkId,
-                        hash: hash!,
-                        receipt: receipt!,
-                        blockNumber: receipt!.blockNumber,
-                        blockId: `${networkId}-${receipt!.blockNumber}`,
-                        blockHash: receipt!.blockHash,
-                        from: receipt!.from,
-                        to: receipt!.to,
-                        confirmations: confirmations!,
+                        hash: savedHash!,
+                        confirmations: confirmations,
                     }),
                 );
+            } else if (type === CONTRACT_SEND_ERROR) {
+                throw new Error(JSON.stringify(message));
             }
         }
     } catch (error) {
-        yield put({ type: CONTRACT_SEND_ERROR, error });
+        throw error;
     } finally {
         yield put({ type: CONTRACT_SEND_DONE });
     }

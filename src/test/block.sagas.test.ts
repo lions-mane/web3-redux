@@ -1,25 +1,21 @@
 import { assert } from 'chai';
 import { before } from 'mocha';
 import Web3 from 'web3';
-import dotenv from 'dotenv';
 import ganache from 'ganache-core';
 
 import { createStore } from '../store';
-import { NetworkActions, BlockActions, NetworkSelector, BlockSelector } from '../index';
+import { NetworkActions, BlockActions, BlockSelector } from '../index';
 import { sleep, sleepForPort } from '../utils';
-import { Network } from '../network/model';
 import { Block, BlockHeader, BlockTransaction, BlockTransactionObject } from '../block/model';
 
 const networkId = '1337';
 
 describe('block.sagas', () => {
-    let web3Default: Web3;
     let web3: Web3; //Web3 loaded from store
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
 
     before(async () => {
-        dotenv.config();
         const networkIdInt = parseInt(networkId);
         const server = ganache.server({
             port: 0,
@@ -28,20 +24,14 @@ describe('block.sagas', () => {
         });
         const port = await sleepForPort(server, 1000);
         const rpc = `ws://localhost:${port}`;
-        web3Default = new Web3(rpc);
-        accounts = await web3Default.eth.getAccounts();
-        web3Default.eth.defaultAccount = accounts[0];
+        web3 = new Web3(rpc);
+        accounts = await web3.eth.getAccounts();
+        web3.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(NetworkActions.create({ networkId, web3: web3Default }));
-        const network: Network = NetworkSelector.selectSingle(store.getState(), networkId) as Network;
-        if (!network)
-            throw new Error(
-                `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
-            );
-        web3 = network.web3;
+        store.dispatch(NetworkActions.create({ networkId, web3 }));
     });
 
     /*
@@ -171,8 +161,8 @@ describe('block.sagas', () => {
     it('store.dispatch(unsubscribe()) - multiple networks', async () => {
         const network1 = `${networkId}-1`;
         const network2 = `${networkId}-2`;
-        store.dispatch(NetworkActions.create({ networkId: network1, web3: web3Default }));
-        store.dispatch(NetworkActions.create({ networkId: network2, web3: web3Default }));
+        store.dispatch(NetworkActions.create({ networkId: network1, web3 }));
+        store.dispatch(NetworkActions.create({ networkId: network2, web3 }));
         store.dispatch(BlockActions.subscribe({ networkId: network1, returnTransactionObjects: false }));
         store.dispatch(BlockActions.subscribe({ networkId: network2, returnTransactionObjects: false }));
 

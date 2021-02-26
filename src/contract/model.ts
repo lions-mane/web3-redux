@@ -88,7 +88,7 @@ export interface Contract extends NetworkId {
     abi: AbiItem[];
     methods: {
         [callerFunctionName: string]: {
-            [argsHash: string]: { ethCallId: string; sync: ContractCallSync };
+            [argsHash: string]: { ethCallId?: string; sync?: ContractCallSync };
         };
     };
     events: {
@@ -104,7 +104,7 @@ export interface ContractPartial extends NetworkId {
     abi: AbiItem[];
     methods?: {
         [callerFunctionName: string]: {
-            [argsHash: string]: { ethCallId: string; sync: ContractCallSync };
+            [argsHash: string]: { ethCallId?: string; sync?: ContractCallSync };
         };
     };
     events?: {
