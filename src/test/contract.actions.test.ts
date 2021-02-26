@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { assert } from 'chai';
 import { createStore } from '../store';
 import { Network, Contract, EthCall } from '../index';
-import { assertDeepEqual } from '../utils';
+import { assertDeepEqual } from './utils';
 import BlockNumber from '../abis/BlockNumber.json';
 
 const networkId = '1337';

@@ -73,6 +73,7 @@
     },
     "files": [
         "lib",
+        "!lib/test",
         "!lib/**/*.test.*"
     ],
     "main": "lib/index.js",
