@@ -34,7 +34,7 @@ const contract: ContractPartial = {
     abi: BlockNumber.abi as any,
 };
 
-const accounts = [
+const addressList = [
     '0x0000000000000000000000000000000000000001',
     '0x0000000000000000000000000000000000000002',
     '0x0000000000000000000000000000000000000003',
@@ -82,7 +82,7 @@ describe('contract.actions', () => {
             //Test payload != selected reference
             const contract1 = {
                 networkId,
-                address: accounts[0],
+                address: addressList[0],
                 abi: BlockNumber.abi as any[],
             };
             const contract1Id = contractId(contract1);
@@ -100,7 +100,7 @@ describe('contract.actions', () => {
             //Test selected unchanged after insert
             const contract2 = {
                 networkId,
-                address: accounts[1],
+                address: addressList[1],
                 abi: BlockNumber.abi as any[],
             };
             store.dispatch(ContractActions.create(contract2));
@@ -113,14 +113,14 @@ describe('contract.actions', () => {
             //Test selected unchanged after eth call
             const contract1 = validatedContract({
                 networkId,
-                address: accounts[0],
+                address: addressList[0],
                 abi: BlockNumber.abi as any[],
             });
             const contract1Id = contractId(contract1);
             const methodAbi = contract1.abi.filter(f => f.name === 'getValue')[0];
             const data = web3.eth.abi.encodeFunctionCall(methodAbi, []);
 
-            const ethCall1 = validatedEthCall({ networkId, from: accounts[2], to: accounts[3], data });
+            const ethCall1 = validatedEthCall({ networkId, from: addressList[2], to: addressList[3], data });
             const argsHash = callArgsHash();
 
             contract1.methods['getValue'][argsHash] = { ethCallId: ethCall1.id, sync: false };
@@ -129,12 +129,18 @@ describe('contract.actions', () => {
 
             const selected1 = ContractSelector.selectSingle(store.getState(), contract1Id);
             const selectedCall1 = ContractSelector.selectContractCall(store.getState(), contract1Id, 'getValue');
-            store.dispatch(EthCallActions.create({ ...ethCall1, returnValue: '0x1' }));
+            store.dispatch(
+                EthCallActions.create({
+                    ...ethCall1,
+                    returnValue: '0x000000000000000000000000000000000000000000000000000000000000002a',
+                }),
+            );
 
             const selected2 = ContractSelector.selectSingle(store.getState(), contract1Id);
             const selectedCall2 = ContractSelector.selectContractCall(store.getState(), contract1Id, 'getValue');
             assert.equal(selected2, selected1, 'equal reference: contract unchanged');
-            assert.notEqual(selectedCall1, selectedCall2, 'unequal reference: contract call changed');
+            assert.notEqual(selectedCall2, selectedCall1, 'unequal reference: contract call changed');
+            assert.equal(selectedCall2, '42', 'invalid decoding');
         });
     });
 

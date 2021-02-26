@@ -1,5 +1,7 @@
 import { attr, fk, Model as ORMModel } from 'redux-orm';
+import Web3 from 'web3';
 import { TransactionReceipt } from 'web3-eth';
+import { blockId } from '../block/model';
 import { NetworkId } from '../network/model';
 
 /**
@@ -35,7 +37,7 @@ export interface Transaction extends NetworkId {
     to?: string | null;
     value?: string;
     gasPrice?: string;
-    gas?: number;
+    gas?: string;
     input?: string;
     //Other
     blockId?: string | null;
@@ -80,10 +82,24 @@ export function transactionId({ hash, networkId }: TransactionId) {
     return `${networkId}-${hash}`;
 }
 
-export function transactionBlockId({ blockNumber, networkId }: TransactionBlockId) {
-    if (!blockNumber) return null;
+export function validatedTransaction(transaction: Transaction): Transaction {
+    const { networkId, hash, from, to, gas, gasPrice, blockNumber } = transaction;
+    const fromCheckSum = from ? Web3.utils.toChecksumAddress(from) : undefined;
+    const toCheckSum = to ? Web3.utils.toChecksumAddress(to) : undefined;
+    const gasHex = gas ? Web3.utils.toHex(gas) : undefined;
+    const gasPriceHex = gasPrice ? Web3.utils.toHex(gasPrice) : undefined;
+    const id = transactionId({ networkId, hash });
+    const transactionBlockId = blockNumber ? blockId({ networkId, number: blockNumber }) : undefined;
 
-    return `${networkId}-${blockNumber}`;
+    return {
+        ...transaction,
+        id,
+        blockId: transactionBlockId,
+        from: fromCheckSum,
+        to: toCheckSum,
+        gas: gasHex,
+        gasPrice: gasPriceHex,
+    };
 }
 
 export { Model };

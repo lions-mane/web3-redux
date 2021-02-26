@@ -117,4 +117,11 @@ export function blockId({ number, networkId }: BlockId) {
     return `${networkId}-${number}`;
 }
 
+export function validatedBlock(block: Block): Block {
+    return {
+        ...block,
+        id: blockId(block),
+    };
+}
+
 export { Model };

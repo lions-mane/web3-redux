@@ -53,7 +53,7 @@ describe('ethcall.actions', () => {
             const selected1 = EthCallSelector.selectSingle(store.getState(), ethCall1.id);
 
             assert.notEqual(selected1, ethCall1, 'unequal reference');
-            assert.deepEqual(selected1, { ...ethCall1, id: ethCall1.id }, 'equal deep values');
+            assert.deepEqual(selected1, ethCall1, 'equal deep values');
 
             //Test selected unchanged after new insert
             const ethCall2 = validatedEthCall({ networkId, from: accounts[0], to: accounts[1], data: '0x2' });

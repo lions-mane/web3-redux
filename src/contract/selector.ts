@@ -34,9 +34,17 @@ export const selectContractCall: selectContractCall = createSelector(
         if (!ethCall) return undefined;
 
         let returnValue: any = ethCall.returnValue;
+        if (!returnValue) return undefined;
+
         const methodAbi = contract.abi.filter(v => v.name === methodName)[0];
         if (methodAbi?.outputs) {
-            returnValue = web3.eth.abi.decodeParameters(methodAbi.outputs, returnValue);
+            try {
+                returnValue = web3.eth.abi.decodeParameters(methodAbi.outputs, returnValue);
+            } catch (error) {
+                console.debug(returnValue);
+                throw error;
+            }
+
             if (returnValue.__length__ == 0) {
                 returnValue = undefined;
             } else if (returnValue.__length__ == 1) {

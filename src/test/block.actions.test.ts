@@ -3,9 +3,9 @@ import Web3 from 'web3';
 
 import { createStore } from '../store';
 import { NetworkActions, BlockActions, TransactionActions, BlockSelector } from '../index';
-import { blockId } from '../block/model';
+import { blockId, validatedBlock } from '../block/model';
 import { Network } from '../network/model';
-import { transactionId } from '../transaction/model';
+import { validatedTransaction } from '../transaction/model';
 
 const networkId = '1337';
 const web3 = new Web3('http://locahost:8545');
@@ -146,8 +146,8 @@ describe('block.actions', () => {
             store.dispatch(BlockActions.create(block1));
             store.dispatch(TransactionActions.create(transaction1));
 
-            const expectedBlock = { ...block1, id: blockId(block1) };
-            const expectedTransaction = { ...transaction1, id: transactionId(transaction1), blockId: expectedBlock.id };
+            const expectedBlock = validatedBlock(block1);
+            const expectedTransaction = validatedTransaction(transaction1);
 
             assert.deepEqual(
                 BlockSelector.selectManyTransactions(store.getState(), [expectedBlock.id!]),
@@ -167,8 +167,8 @@ describe('block.actions', () => {
             store.dispatch(BlockActions.create(block1));
             store.dispatch(TransactionActions.create(transaction1));
 
-            const expectedBlock = { ...block1, id: blockId(block1) };
-            const expectedTransaction = { ...transaction1, id: transactionId(transaction1), blockId: expectedBlock.id };
+            const expectedBlock = validatedBlock(block1);
+            const expectedTransaction = validatedTransaction(transaction1);
 
             assert.deepEqual(
                 BlockSelector.selectManyBlockTransaction(store.getState(), [expectedBlock.id!]),

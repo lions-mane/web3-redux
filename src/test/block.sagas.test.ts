@@ -7,6 +7,7 @@ import { createStore } from '../store';
 import { NetworkActions, BlockActions, BlockSelector } from '../index';
 import { sleep, sleepForPort } from '../utils';
 import { Block, BlockHeader, BlockTransaction, BlockTransactionObject } from '../block/model';
+import { validatedTransaction } from '../transaction/model';
 
 const networkId = '1337';
 
@@ -122,7 +123,7 @@ describe('block.sagas', () => {
             .map(block => {
                 const id = `${networkId}-${block.number}`;
                 block.transactions = block.transactions.map(tx => {
-                    return { ...tx, networkId, blockId: id, id: `${networkId}-${tx.hash}` };
+                    return validatedTransaction({ ...tx, networkId });
                 });
                 block.networkId = networkId;
                 block.id = id;
