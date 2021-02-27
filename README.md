@@ -8,7 +8,7 @@ Web3 Redux Library.
 -   [ ] Track latestBlock in store
 -   [ ] ContractEvent: Separate entity in store to avoid Contract mutations
 -   [x] ContractCall: Use regular web3 contract call as opposed to encoding/decoding (allows more flexibility)
--   [ ] Usage with Metamask example: Use metamask as wallet provider + custom rpc
+-   [x] Usage with Metamask example: Use metamask as wallet provider + custom rpc
 -   [ ] Network add without id, fetch chainId with request
 -   [ ] Batched Multicall.js https://github.com/makerdao/multicall
 -   [ ] Error handling and test error handling
@@ -67,6 +67,9 @@ export default store;
 
 To start web3-redux, you can either use the helper `WEB3_REDUX/INITIALIZE` action or manually add networks and block subscriptions.
 While a block subscription is optional, it is in most cases necessary to enable syncing the latest on-chain data for your smart contracts.
+
+#### Usage with metamask
+TODO: Add web3Sender
 
 #### Automatic
 
