@@ -5,32 +5,24 @@ import BlockNumber from '../abis/BlockNumber.json';
 
 import { createStore } from '../store';
 import { Network, EthCall } from '../index';
-import { sleep, sleepForPort } from '../utils';
+import { sleep } from './utils';
 
 const networkId = '1337';
 
 describe('ethcall.sagas', () => {
-    let server: ganache.Server;
     let web3: Web3;
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
 
     before(async () => {
         const networkIdInt = parseInt(networkId);
-        server = ganache.server({
-            port: 0,
+        const provider = ganache.provider({
             networkId: networkIdInt,
-            blockTime: 1,
         });
-        const port = await sleepForPort(server, 1000);
-        const rpc = `ws://localhost:${port}`;
-        web3 = new Web3(rpc);
+        //@ts-ignore
+        web3 = new Web3(provider);
         accounts = await web3.eth.getAccounts();
         web3.eth.defaultAccount = accounts[0];
-    });
-
-    after(() => {
-        server.close();
     });
 
     beforeEach(async () => {

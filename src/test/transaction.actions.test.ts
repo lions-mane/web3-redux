@@ -3,6 +3,7 @@ import Web3 from 'web3';
 
 import { createStore } from '../store';
 import { Network, Transaction } from '../index';
+import { addressList } from './utils';
 
 const networkId = '1337';
 const web3 = new Web3('http://locahost:8545');
@@ -10,15 +11,6 @@ const network = {
     networkId,
     web3,
 };
-
-const addressList = [
-    '0x0000000000000000000000000000000000000001',
-    '0x0000000000000000000000000000000000000002',
-    '0x0000000000000000000000000000000000000003',
-    '0x0000000000000000000000000000000000000004',
-    '0x0000000000000000000000000000000000000005',
-    '0x0000000000000000000000000000000000000006',
-];
 
 describe('Transaction', () => {
     let store: ReturnType<typeof createStore>;

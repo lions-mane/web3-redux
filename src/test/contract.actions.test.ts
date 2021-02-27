@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { assert } from 'chai';
 import { createStore } from '../store';
 import { Network, Contract, EthCall } from '../index';
-import { assertDeepEqual } from './utils';
+import { addressList, assertDeepEqual } from './utils';
 import BlockNumber from '../abis/BlockNumber.json';
 
 const networkId = '1337';
@@ -17,15 +17,6 @@ const contract = {
     address: '0x0000000000000000000000000000000000000001',
     abi: BlockNumber.abi as any,
 };
-
-const addressList = [
-    '0x0000000000000000000000000000000000000001',
-    '0x0000000000000000000000000000000000000002',
-    '0x0000000000000000000000000000000000000003',
-    '0x0000000000000000000000000000000000000004',
-    '0x0000000000000000000000000000000000000005',
-    '0x0000000000000000000000000000000000000006',
-];
 
 describe('contract.actions', () => {
     let store: ReturnType<typeof createStore>;

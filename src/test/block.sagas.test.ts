@@ -1,36 +1,28 @@
 import { assert } from 'chai';
-import { before } from 'mocha';
 import Web3 from 'web3';
 import ganache from 'ganache-core';
 
 import { createStore } from '../store';
 import { Network, Block, Transaction } from '../index';
-import { sleep, sleepForPort } from '../utils';
+import { mineBlock } from './utils';
 
 const networkId = '1337';
 
 describe('block.sagas', () => {
-    let server: ganache.Server;
     let web3: Web3; //Web3 loaded from store
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
 
     before(async () => {
         const networkIdInt = parseInt(networkId);
-        server = ganache.server({
-            port: 0,
-            networkId: networkIdInt,
+        const provider = ganache.provider({
             blockTime: 1,
+            networkId: networkIdInt,
         });
-        const port = await sleepForPort(server, 1000);
-        const rpc = `ws://localhost:${port}`;
-        web3 = new Web3(rpc);
+        //@ts-ignore
+        web3 = new Web3(provider);
         accounts = await web3.eth.getAccounts();
         web3.eth.defaultAccount = accounts[0];
-    });
-
-    after(() => {
-        server.close();
     });
 
     beforeEach(async () => {
@@ -70,12 +62,10 @@ describe('block.sagas', () => {
     */
 
     it('store.dispatch(Block.fetch({returnTransactionObjects:false}))', async () => {
+        await mineBlock(web3);
         store.dispatch(Block.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: false }));
         const block = await web3.eth.getBlock('latest');
         const expectedBlock: Block.Block = { ...block, networkId, id: `${networkId}-${block.number}` };
-
-        await sleep(100);
-
         const expectedBlockSelected = [expectedBlock];
         //@ts-ignore
         delete expectedBlock.transactions;
@@ -101,7 +91,8 @@ describe('block.sagas', () => {
             expectedBlocks[id] = { ...block, networkId, id };
         });
 
-        await sleep(2000);
+        await mineBlock(web3);
+        await mineBlock(web3);
 
         assert.deepEqual(store.getState().web3Redux['Block'].itemsById, expectedBlocks);
     });
@@ -116,7 +107,7 @@ describe('block.sagas', () => {
         });
 
         await web3.eth.sendTransaction({ from: accounts[0], to: accounts[0], value: '100' });
-        await sleep(2000);
+        await mineBlock(web3);
 
         subscription.unsubscribe();
 
@@ -151,20 +142,31 @@ describe('block.sagas', () => {
             expectedBlocks[id] = { ...block, networkId, id };
         });
 
-        await sleep(2000);
+        await mineBlock(web3);
+        await mineBlock(web3);
+
         store.dispatch(Block.unsubscribe({ networkId }));
         subscription.unsubscribe();
-        await sleep(2000);
+
+        ///Block ignored
+        await mineBlock(web3);
 
         const blockState = store.getState().web3Redux['Block'].itemsById;
         assert.deepEqual(blockState, expectedBlocks);
     });
 
     it('store.dispatch(unsubscribe()) - multiple networks', async () => {
-        const network1 = `${networkId}-1`;
-        const network2 = `${networkId}-2`;
+        const network1 = networkId;
+        const network2 = '2';
+        const provider2 = ganache.provider({
+            blockTime: 1,
+            networkId: 2,
+        });
+        //@ts-ignore
+        const web3Network2 = new Web3(provider2);
+
         store.dispatch(Network.create({ networkId: network1, web3 }));
-        store.dispatch(Network.create({ networkId: network2, web3 }));
+        store.dispatch(Network.create({ networkId: network2, web3: web3Network2 }));
         store.dispatch(Block.subscribe({ networkId: network1, returnTransactionObjects: false }));
         store.dispatch(Block.subscribe({ networkId: network2, returnTransactionObjects: false }));
 
@@ -175,18 +177,22 @@ describe('block.sagas', () => {
         });
 
         const expectedBlocks2: { [key: string]: Block.BlockHeader } = {};
-        const subscription2 = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
+        const subscription2 = web3Network2.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
             const id = `${network2}-${block.number}`;
             expectedBlocks2[id] = { ...block, networkId: network2, id };
         });
 
-        await sleep(2000);
+        await mineBlock(web3);
+        await mineBlock(web3Network2);
+
         store.dispatch(Block.unsubscribe({ networkId: network1 }));
         subscription1.unsubscribe();
         let state = store.getState();
         assert.deepEqual(state.web3Redux['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
 
-        await sleep(2000);
+        await mineBlock(web3);
+        await mineBlock(web3Network2);
+
         store.dispatch(Block.unsubscribe({ networkId: network2 }));
         subscription2.unsubscribe();
         state = store.getState();
