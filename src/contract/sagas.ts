@@ -134,6 +134,109 @@ function* contractCall(action: ContractActions.CallAction) {
     yield put(EthCallActions.create({ ...ethCall, returnValue }));
 }
 
+function* contractCallBatched(action: ContractActions.CallBatchedAction) {
+    const { payload } = action;
+    const requests = payload;
+    //group by network
+    const fetchByNetwork: { [key: string]: ContractActions.CallActionInput[] } = {};
+    requests.forEach(f => {
+        if (!fetchByNetwork[f.networkId]) {
+            fetchByNetwork[f.networkId] = [];
+        }
+        fetchByNetwork[f.networkId].push(f);
+    });
+
+    const networkIds = Object.keys(fetchByNetwork);
+    const networks: Network[] = yield select(NetworkSelector.selectMany, networkIds);
+    const networksById: { [key: string]: Network } = {};
+    networkIds.forEach((networkId, idx) => (networksById[networkId] = networks[idx]));
+
+    const contractIds = Array.from(
+        new Set(requests.map(f => contractId({ address: f.address, networkId: f.networkId }))),
+    );
+    const contracts: Contract[] = yield select(ContractSelector.selectMany, contractIds);
+    const contractsById: { [key: string]: Contract } = {};
+    contractIds.forEach((contractId, idx) => (contractsById[contractId] = contracts[idx]));
+
+    const batchResultTasks = Object.entries(fetchByNetwork).map(([networkId, fetchRequests]) => {
+        const network: Network = networksById[networkId];
+        if (!network)
+            throw new Error(
+                `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
+            );
+        let regularFetchRequests: ContractActions.CallActionInput[];
+        let multicallFetchRequests: ContractActions.CallActionInput[];
+
+        if (!network.multicallContract) {
+            regularFetchRequests = fetchRequests;
+            multicallFetchRequests = [];
+        } else {
+            regularFetchRequests = fetchRequests.filter(
+                f => !(!f.from && (!f.defaultBlock || f.defaultBlock == 'latest')),
+            );
+            multicallFetchRequests = fetchRequests.filter(
+                f => !f.from && (!f.defaultBlock || f.defaultBlock == 'latest'),
+            );
+        }
+
+        //TODO: Investigate potential issue if gas not specified
+        //TODO: Investigate potential issue max batch size
+        const web3 = network.web3;
+        const batch = new web3.eth.BatchRequest();
+
+        //TODO: Multicall
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        multicallFetchRequests.forEach(f => {
+            //@ts-ignore
+            //batch.add(web3.eth.call.request(f, f.defaultBlock));
+        });
+
+        const fetchRequestPromises = regularFetchRequests.map(f => {
+            const contract = contractsById[contractId({ address: f.address, networkId: f.networkId })];
+            const web3Contract = contract.web3Contract!;
+
+            let tx: any;
+            if (!f.args || f.args.length == 0) {
+                tx = web3Contract.methods[f.method]();
+            } else {
+                tx = web3Contract.methods[f.method](...f.args);
+            }
+
+            /*
+            const data = tx.encodeABI();
+            const ethCall = validatedEthCall({
+                networkId: network.networkId,
+                from,
+                to: contract.address,
+                defaultBlock,
+                data,
+                gas: payload.gas,
+            });
+
+            //Create base call
+            const initialPutAction = put(EthCallActions.create(ethCall));
+            */
+
+            //@ts-ignore
+            return new Promise((resolve, reject) => {
+                batch.add(
+                    tx.call.request(f, (error: any, result: any) => {
+                        if (error) reject(error);
+                        resolve(result);
+                    }),
+                );
+            });
+        });
+
+        batch.execute();
+        return all(fetchRequestPromises);
+    });
+
+    const batchResults = yield all(batchResultTasks);
+
+    console.debug(batchResults);
+}
+
 const CONTRACT_SEND_HASH = `${ContractActions.SEND}/HASH`;
 const CONTRACT_SEND_RECEIPT = `${ContractActions.SEND}/RECEIPT`;
 const CONTRACT_SEND_CONFIRMATION = `${ContractActions.SEND}/CONFIRMATION`;
@@ -349,6 +452,7 @@ function* eventSubscribeLoop() {
 export function* saga() {
     yield all([
         takeEvery(ContractActions.CALL, contractCall),
+        takeEvery(ContractActions.CALL_BATCHED, contractCallBatched),
         takeEvery(ContractActions.CALL_SYNCED, contractCallSynced),
         takeEvery(ContractActions.SEND, contractSend),
         eventSubscribeLoop(),

@@ -10,7 +10,7 @@ import { NetworkId } from '../network/model';
  */
 export interface EthCall extends NetworkId {
     id: string;
-    from: string;
+    from?: string;
     to: string;
     defaultBlock: string;
     data: string;
@@ -19,7 +19,7 @@ export interface EthCall extends NetworkId {
 }
 
 export interface PartialEthCall extends NetworkId {
-    from: string;
+    from?: string;
     to: string;
     defaultBlock?: string | number;
     data: string;
@@ -42,7 +42,7 @@ class Model extends ORMModel {
 export function validatedEthCall(ethCall: PartialEthCall): EthCall {
     const { networkId, from, to, defaultBlock, data, gas } = ethCall;
     const block = defaultBlock ? `${defaultBlock}` : 'latest';
-    const fromCheckSum = Web3.utils.toChecksumAddress(from);
+    const fromCheckSum = from ? Web3.utils.toChecksumAddress(from) : undefined;
     const toCheckSum = Web3.utils.toChecksumAddress(to);
     const gasHex = gas ? Web3.utils.toHex(gas) : undefined;
     const id = `${networkId}-${fromCheckSum}-${toCheckSum}-${block}-${data}-${gasHex}`;

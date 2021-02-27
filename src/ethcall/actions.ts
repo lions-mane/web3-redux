@@ -11,14 +11,14 @@ export const FETCH = `${name}/FETCH`;
 export const create = actionCreator<typeof CREATE, EthCall>(CREATE);
 export const remove = actionCreator<typeof REMOVE, EthCallId>(REMOVE);
 
-export interface EthCallFetchInput extends NetworkId {
+export interface FetchActionInput extends NetworkId {
     from?: string; //default to web3.defaultAccount | ZERO_ADDRESS
     to: string;
     defaultBlock?: string; //default to latest
     data: string;
     gas?: string;
 }
-export const fetch = actionCreator<typeof FETCH, EthCallFetchInput>(FETCH);
+export const fetch = actionCreator<typeof FETCH, FetchActionInput>(FETCH);
 
 export type CreateAction = ReturnType<typeof create>;
 export function isCreateAction(action: { type: string }): action is CreateAction {

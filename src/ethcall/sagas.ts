@@ -6,7 +6,7 @@ import { ZERO_ADDRESS } from '../utils';
 import { Network } from '../network/model';
 import * as NetworkSelector from '../network/selector';
 
-function* fetch(action: EthCallActions.FetchAction) {
+function* fetchSaga(action: EthCallActions.FetchAction) {
     const { payload } = action;
     const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
@@ -27,5 +27,5 @@ function* fetch(action: EthCallActions.FetchAction) {
 }
 
 export function* saga() {
-    yield all([takeEvery(EthCallActions.FETCH, fetch)]);
+    yield all([takeEvery(EthCallActions.FETCH, fetchSaga)]);
 }
