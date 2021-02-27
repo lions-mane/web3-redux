@@ -10,13 +10,14 @@ import { sleep, sleepForPort } from '../utils';
 const networkId = '1337';
 
 describe('block.sagas', () => {
+    let server: ganache.Server;
     let web3: Web3; //Web3 loaded from store
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
 
     before(async () => {
         const networkIdInt = parseInt(networkId);
-        const server = ganache.server({
+        server = ganache.server({
             port: 0,
             networkId: networkIdInt,
             blockTime: 1,
@@ -26,6 +27,10 @@ describe('block.sagas', () => {
         web3 = new Web3(rpc);
         accounts = await web3.eth.getAccounts();
         web3.eth.defaultAccount = accounts[0];
+    });
+
+    after(() => {
+        server.close();
     });
 
     beforeEach(async () => {

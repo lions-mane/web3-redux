@@ -15,6 +15,7 @@ import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, eventId } from '../contract/mod
 const networkId = '1337';
 
 describe('contract.sagas', () => {
+    let server: ganache.Server;
     let web3: Web3; //Web3 loaded from store
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
@@ -22,7 +23,7 @@ describe('contract.sagas', () => {
 
     before(async () => {
         const networkIdInt = parseInt(networkId);
-        const server = ganache.server({
+        server = ganache.server({
             port: 0,
             networkId: networkIdInt,
             blockTime: 1,
@@ -32,6 +33,10 @@ describe('contract.sagas', () => {
         web3 = new Web3(rpc);
         accounts = await web3.eth.getAccounts();
         web3.eth.defaultAccount = accounts[0];
+    });
+
+    after(() => {
+        server.close();
     });
 
     beforeEach(async () => {
