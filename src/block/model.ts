@@ -1,4 +1,4 @@
-import { attr, Model as ORMModel } from 'redux-orm';
+import { attr, fk, Model as ORMModel } from 'redux-orm';
 import { NetworkId } from '../network/model';
 import { Transaction } from '../transaction/model';
 import { isStrings } from '../utils';
@@ -110,6 +110,7 @@ export class Model extends ORMModel {
 
     static fields = {
         number: attr(),
+        networkId: fk({ to: 'Network', as: 'network', relatedName: 'blocks' }),
     };
 }
 

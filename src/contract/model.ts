@@ -1,4 +1,4 @@
-import { attr, Model as ORMModel } from 'redux-orm';
+import { attr, fk, Model as ORMModel } from 'redux-orm';
 import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
@@ -139,6 +139,7 @@ class Model extends ORMModel {
 
     static fields = {
         address: attr(),
+        networkId: fk({ to: 'Network', as: 'network', relatedName: 'contracts' }),
         abi: attr(),
     };
 }

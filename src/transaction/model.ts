@@ -73,7 +73,8 @@ class Model extends ORMModel {
     static modelName = 'Transaction';
 
     static fields = {
-        number: attr(),
+        hash: attr(),
+        networkId: fk({ to: 'Network', as: 'network', relatedName: 'transactions' }),
         blockId: fk({ to: 'Block', as: 'block', relatedName: 'transactions' }),
     };
 }

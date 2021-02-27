@@ -129,8 +129,12 @@ describe('block.actions', () => {
             );
 
             //Block.selectMany
-            assert.deepEqual(Block.selectMany(store.getState(), [validated1.id!]), [validated1], 'Block.select([id])');
-            assert.deepEqual(Block.selectMany(store.getState()), [validated1], 'Block.select()');
+            assert.deepEqual(
+                Block.selectMany(store.getState(), [validated1.id!]),
+                [validated1],
+                'Block.selectMany([id])',
+            );
+            assert.deepEqual(Block.selectMany(store.getState()), [validated1], 'Block.selectMany()');
         });
 
         it('Block.selectManyTransactions', async () => {
