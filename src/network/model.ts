@@ -16,11 +16,19 @@ export interface NetworkId {
  *
  * @param networkId - A network id.
  * @param web3 - A web3 object.
+ * @param web3Sender - A web3 object used for send transactions.
  */
-export type Network = {
+export interface Network {
     networkId: string;
     web3: Web3;
-};
+    web3Sender: Web3;
+}
+
+export interface NetworkPartial {
+    networkId: string;
+    web3: Web3;
+    web3Sender?: Web3;
+}
 
 class Model extends ORMModel {
     static options = {

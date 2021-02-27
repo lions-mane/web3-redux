@@ -186,7 +186,7 @@ function* contractSend(action: ContractActions.SendAction) {
     const id = contractId(payload);
     const web3 = network.web3;
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
-    const web3Contract = contract.web3Contract!;
+    const web3Contract = contract.web3SenderContract!;
 
     const from = payload.options?.from ?? web3.eth.defaultAccount;
     if (!from)

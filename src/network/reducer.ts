@@ -1,19 +1,17 @@
 import { ZERO_ADDRESS } from '../utils';
-import { Action, CREATE, REMOVE, CreateAction, RemoveAction } from './actions';
+import { Action, isCreateAction, isRemoveAction } from './actions';
 
 export function reducer(sess: any, action: Action) {
     const Model = sess.Network;
-    switch (action.type) {
-        case CREATE:
-            const createAction = action as CreateAction;
-            if (!createAction.payload.web3.eth.defaultAccount) {
-                createAction.payload.web3.eth.defaultAccount = ZERO_ADDRESS;
-            }
-            Model.upsert({ ...(action as CreateAction).payload });
-            break;
-        case REMOVE:
-            Model.withId((action as RemoveAction).payload).delete();
-            break;
+    if (isCreateAction(action)) {
+        const payload = { ...action.payload };
+        if (!payload.web3.eth.defaultAccount) {
+            payload.web3.eth.defaultAccount = ZERO_ADDRESS;
+        }
+        if (!payload.web3Sender) payload.web3Sender = payload.web3;
+        Model.upsert(payload);
+    } else if (isRemoveAction(action)) {
+        Model.withId(action.payload).delete();
     }
 
     return sess;

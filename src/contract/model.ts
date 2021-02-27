@@ -81,6 +81,7 @@ export interface ContractCall {
  * @param methods - Contract call store. Call data is stored at [methodName][`(${...args}).call(${defaultBlock},${from})`]
  * @param events - Contract event subscription store
  * @param web3Contract - Web3 Contract instance
+ * @param web3SenderContract - Web3 Contract instance used for send transactions.
  */
 export interface Contract extends NetworkId {
     id: string;
@@ -97,6 +98,7 @@ export interface Contract extends NetworkId {
         };
     };
     web3Contract?: Web3Contract;
+    web3SenderContract?: Web3Contract;
 }
 
 export interface ContractPartial extends NetworkId {
@@ -113,6 +115,7 @@ export interface ContractPartial extends NetworkId {
         };
     };
     web3Contract?: Web3Contract;
+    web3SenderContract?: Web3Contract;
 }
 
 /**

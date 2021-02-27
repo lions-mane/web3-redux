@@ -1,5 +1,5 @@
 import { actionCreator } from '../utils';
-import { Network } from './model';
+import { Network, NetworkPartial } from './model';
 
 const name = 'Network';
 
@@ -7,7 +7,7 @@ export const CREATE = `${name}/CREATE`;
 export const UPDATE = `${name}/UPDATE`;
 export const REMOVE = `${name}/DELETE`;
 
-export const create = actionCreator<typeof CREATE, Network>(CREATE);
+export const create = actionCreator<typeof CREATE, NetworkPartial>(CREATE);
 export const remove = actionCreator<typeof REMOVE, Network['networkId']>(REMOVE);
 
 export type CreateAction = ReturnType<typeof create>;

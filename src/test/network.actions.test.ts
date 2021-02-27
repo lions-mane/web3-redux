@@ -9,6 +9,7 @@ const web3 = new Web3('http://locahost:8545');
 const network = {
     networkId,
     web3,
+    web3Sender: web3,
 };
 
 describe('Network', () => {

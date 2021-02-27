@@ -14,6 +14,8 @@ export function reducer(sess: any, action: ReducerAction) {
         const validated = validatedContract(action.payload);
         validated.web3Contract =
             validated.web3Contract ?? new network.web3.eth.Contract(validated.abi, validated.address);
+        validated.web3SenderContract =
+            validated.web3SenderContract ?? new network.web3Sender.eth.Contract(validated.abi, validated.address);
         Contract.upsert(validated);
     } else if (isRemoveAction(action)) {
         if (typeof action.payload === 'string') {
