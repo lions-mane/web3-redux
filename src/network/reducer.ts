@@ -1,5 +1,7 @@
+import { Contract as Web3Contract } from 'web3-eth-contract';
 import { ZERO_ADDRESS } from '../utils';
 import { Action, isCreateAction, isRemoveAction } from './actions';
+import Multicall from '../abis/Multicall.json';
 
 export function reducer(sess: any, action: Action) {
     const Model = sess.Network;
@@ -9,7 +11,10 @@ export function reducer(sess: any, action: Action) {
             payload.web3.eth.defaultAccount = ZERO_ADDRESS;
         }
         if (!payload.web3Sender) payload.web3Sender = payload.web3;
-        Model.upsert(payload);
+        let multicallContract: Web3Contract | undefined;
+        if (payload.multicallAddress)
+            multicallContract = new payload.web3.eth.Contract(Multicall.abi as any, payload.multicallAddress);
+        Model.upsert({ ...payload, multicallContract, gasLimit: payload.gasLimit ?? 12000000 });
     } else if (isRemoveAction(action)) {
         Model.withId(action.payload).delete();
     }

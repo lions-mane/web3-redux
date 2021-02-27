@@ -6,7 +6,7 @@ import { NetworkId } from '../network/model';
  * EthCall object. Used to index web3.eth.call().
  * {@link https://web3js.readthedocs.io/en/v1.3.4/web3-eth.html#call}
  *
- * @param id - Call id. Computed as `${networkId}-${from}-${to}-${data}-${value}-${gas}-${gasPrice}`.
+ * @param id - Call id. Computed as `${networkId}-${from}-${to}-${data}-${gas}`.
  */
 export interface EthCall extends NetworkId {
     id: string;
@@ -15,7 +15,6 @@ export interface EthCall extends NetworkId {
     defaultBlock: string;
     data: string;
     gas?: string;
-    gasPrice?: string;
     returnValue?: string; //returned value from smart contract
 }
 
@@ -25,7 +24,6 @@ export interface PartialEthCall extends NetworkId {
     defaultBlock?: string | number;
     data: string;
     gas?: string | number;
-    gasPrice?: string | number;
     returnValue?: string; //returned value from smart contract
 }
 
@@ -42,13 +40,12 @@ class Model extends ORMModel {
 }
 
 export function validatedEthCall(ethCall: PartialEthCall): EthCall {
-    const { networkId, from, to, defaultBlock, data, gas, gasPrice } = ethCall;
+    const { networkId, from, to, defaultBlock, data, gas } = ethCall;
     const block = defaultBlock ? `${defaultBlock}` : 'latest';
     const fromCheckSum = Web3.utils.toChecksumAddress(from);
     const toCheckSum = Web3.utils.toChecksumAddress(to);
     const gasHex = gas ? Web3.utils.toHex(gas) : undefined;
-    const gasPriceHex = gasPrice ? Web3.utils.toHex(gasPrice) : undefined;
-    const id = `${networkId}-${fromCheckSum}-${toCheckSum}-${block}-${data}-${gasHex}-${gasPriceHex}`;
+    const id = `${networkId}-${fromCheckSum}-${toCheckSum}-${block}-${data}-${gasHex}`;
 
     return {
         ...ethCall,
@@ -57,7 +54,6 @@ export function validatedEthCall(ethCall: PartialEthCall): EthCall {
         to: toCheckSum,
         defaultBlock: block,
         gas: gasHex,
-        gasPrice: gasPriceHex,
     };
 }
 

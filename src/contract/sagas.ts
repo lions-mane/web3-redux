@@ -93,7 +93,6 @@ function* contractCall(action: ContractActions.CallAction) {
     //Defaults
     const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
     const defaultBlock = payload.defaultBlock ?? 'latest';
-    const gasPrice = payload.gasPrice ?? 0;
 
     const web3Contract = contract.web3Contract!;
     let tx: any;
@@ -111,7 +110,6 @@ function* contractCall(action: ContractActions.CallAction) {
         defaultBlock,
         data,
         gas: payload.gas,
-        gasPrice,
     });
 
     //Create base call

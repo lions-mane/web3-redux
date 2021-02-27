@@ -31,7 +31,6 @@ export interface CallActionInput extends ContractIdDeconstructed {
     from?: string;
     defaultBlock?: number | string;
     gas?: string;
-    gasPrice?: string;
 }
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
 

@@ -12,6 +12,7 @@ const network = {
     networkId,
     web3,
     web3Sender: web3,
+    gasLimit: 12000000,
 };
 
 function removeWeb3Contract(contract: Contract.Contract): Contract.Contract {
