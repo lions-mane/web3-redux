@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import Web3 from 'web3';
-import BlockNumber from '../abis/BlockNumber.json';
+import BlockNumber from './abis/BlockNumber.json';
 
 import { createStore } from '../store';
 import { Network, Block, Transaction, Contract } from '../index';

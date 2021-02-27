@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import { createStore } from '../store';
 import { Network, Contract, EthCall } from '../index';
 import { addressList, assertDeepEqual } from './utils';
-import BlockNumber from '../abis/BlockNumber.json';
+import BlockNumber from './abis/BlockNumber.json';
 
 const networkId = '1337';
 const web3 = new Web3('http://locahost:8545');

@@ -4,7 +4,7 @@ import { Contract as Web3Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import ganache from 'ganache-core';
 
-import BlockNumber from '../abis/BlockNumber.json';
+import BlockNumber from './abis/BlockNumber.json';
 
 import { createStore } from '../store';
 import { Block, Contract, Network, Transaction } from '../index';

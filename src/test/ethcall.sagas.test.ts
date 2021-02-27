@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import Web3 from 'web3';
 import ganache from 'ganache-core';
-import BlockNumber from '../abis/BlockNumber.json';
+import BlockNumber from './abis/BlockNumber.json';
 
 import { createStore } from '../store';
 import { Network, EthCall } from '../index';
