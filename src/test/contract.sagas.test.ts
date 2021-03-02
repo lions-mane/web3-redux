@@ -11,7 +11,7 @@ import { createStore } from '../store';
 import { Block, Contract, Network, Transaction } from '../index';
 import { TransactionReceipt } from 'web3-core';
 import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, contractId, eventId } from '../contract/model';
-import { mineBlock, sleep } from './utils';
+import { mineBlock, sleep, ganacheLogger } from './utils';
 
 const networkId = '1337';
 
@@ -21,11 +21,16 @@ describe('contract.sagas', () => {
     let store: ReturnType<typeof createStore>;
     let web3Contract: Web3Contract;
     let testContractId: string;
+    let rpcLogger: ReturnType<typeof ganacheLogger>;
 
     before(async () => {
         const networkIdInt = parseInt(networkId);
+        rpcLogger = ganacheLogger();
+
         const provider = ganache.provider({
             networkId: networkIdInt,
+            logger: rpcLogger,
+            verbose: true,
         });
         //@ts-ignore
         web3 = new Web3(provider);
@@ -151,7 +156,7 @@ describe('contract.sagas', () => {
 
         assert.equal(getValue, 42, 'getValue');
         assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
-    })
+    });
 
     it('store.dispatch(ContractSagas.callSynced({sync:false}))', async () => {
         const tx2 = await web3Contract.methods.setValue(42);

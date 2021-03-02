@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import Web3 from 'web3';
 import { AddressInfo, Server } from 'net';
+import { EventEmitter } from 'events';
 
 export const addressList = [
     '0x0000000000000000000000000000000000000001',
@@ -66,4 +67,28 @@ export async function mineBlock(web3: Web3) {
         web3?.currentProvider.send({ method: 'evm_mine', params: [] }, resolve);
     });
     await sleep(100);
+}
+
+interface LogEmitter extends EventEmitter {
+    log(msg: string): any;
+}
+export function ganacheLogger(): LogEmitter {
+    //@ts-ignore
+    const emitter: LogEmitter = new EventEmitter();
+    emitter.log = (message: string) => {
+        message = message.replace(/</g, '').replace(/>/g, '');
+        emitter.emit('log', message);
+
+        try {
+            const rpcMessage = JSON.parse(message);
+            if (!!rpcMessage.jsonrpc) {
+                emitter.emit('rpc', rpcMessage);
+            }
+            if (!!rpcMessage.method) {
+                emitter.emit(rpcMessage.method, rpcMessage);
+            }
+        } catch {}
+    };
+
+    return emitter;
 }
