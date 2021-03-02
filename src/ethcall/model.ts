@@ -15,7 +15,7 @@ export interface EthCall extends NetworkId {
     defaultBlock: string;
     data: string;
     gas?: string;
-    returnValue?: string; //returned value from smart contract
+    returnValue?: any; //returned value from smart contract
 }
 
 export interface PartialEthCall extends NetworkId {
@@ -24,7 +24,7 @@ export interface PartialEthCall extends NetworkId {
     defaultBlock?: string | number;
     data: string;
     gas?: string | number;
-    returnValue?: string; //returned value from smart contract
+    returnValue?: any; //returned value from smart contract
 }
 
 export type EthCallId = string | EthCall;

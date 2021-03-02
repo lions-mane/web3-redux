@@ -5,6 +5,7 @@ import { AbiItem } from 'web3-utils';
 import ganache from 'ganache-core';
 
 import BlockNumber from './abis/BlockNumber.json';
+import Multicall from '../abis/Multicall.json';
 
 import { createStore } from '../store';
 import { Block, Contract, Network, Transaction } from '../index';
@@ -113,6 +114,45 @@ describe('contract.sagas', () => {
         assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
     });
 
+    it('store.dispatch(Contract.callBatched(multicall:true))', async () => {
+        const tx2 = await web3Contract.methods.setValue(42);
+        await tx2.send({ from: accounts[0], gas: await tx2.estimateGas() });
+        await sleep(100);
+
+        const tx3 = new web3.eth.Contract(Multicall.abi as AbiItem[]).deploy({
+            data: Multicall.bytecode,
+        });
+        const gas3 = await tx3.estimateGas();
+        const multiCallContract = await tx3.send({ from: accounts[0], gas: gas3, gasPrice: '10000' });
+        store.dispatch(Network.create({ networkId, web3, multicallAddress: multiCallContract.options.address }));
+        await sleep(100);
+
+        const expectedBlockNumber = await web3.eth.getBlockNumber();
+
+        const ethCall1 = {
+            address: web3Contract.options.address,
+            method: 'getValue',
+        };
+        const ethCall2 = {
+            address: web3Contract.options.address,
+            method: 'blockNumber',
+        };
+        store.dispatch(Contract.callBatched({ networkId, requests: [ethCall1, ethCall2] }));
+        await sleep(100);
+
+        //Selector
+        const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
+            from: web3.eth.defaultAccount ?? undefined,
+        });
+
+        const blockNumber = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber', {
+            from: web3.eth.defaultAccount ?? undefined,
+        });
+
+        assert.equal(getValue, 42, 'getValue');
+        assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
+    })
+
     it('store.dispatch(ContractSagas.callSynced({sync:false}))', async () => {
         const tx2 = await web3Contract.methods.setValue(42);
         const gas2 = await tx2.estimateGas();
@@ -128,10 +168,8 @@ describe('contract.sagas', () => {
         );
         await sleep(100);
 
-        const contractId = `${networkId}-${web3Contract.options.address}`;
-
         //Selector
-        const value = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
 
@@ -152,16 +190,14 @@ describe('contract.sagas', () => {
         );
         await sleep(100);
 
-        const contractId = `${networkId}-${web3Contract.options.address}`;
-
-        const blockNumber1 = Contract.selectContractCall(store.getState(), contractId, 'blockNumber', {
+        const blockNumber1 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber', {
             from: web3.eth.defaultAccount ?? undefined,
         });
 
         //Increment block
         await mineBlock(web3);
 
-        const blockNumber2 = Contract.selectContractCall(store.getState(), contractId, 'blockNumber', {
+        const blockNumber2 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber', {
             from: web3.eth.defaultAccount ?? undefined,
         });
 
@@ -183,9 +219,7 @@ describe('contract.sagas', () => {
         );
         await sleep(100);
 
-        const contractId = `${networkId}-${web3Contract.options.address}`;
-
-        const value1 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value1, 42);
@@ -204,7 +238,7 @@ describe('contract.sagas', () => {
 
         //Updated from transaction sync
         await sleep(100);
-        const value2 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value2, 666);
@@ -227,9 +261,7 @@ describe('contract.sagas', () => {
         );
         await sleep(100);
 
-        const contractId = `${networkId}-${web3Contract.options.address}`;
-
-        const value1 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value1, 42);
@@ -241,7 +273,7 @@ describe('contract.sagas', () => {
 
         //Updated from transaction sync
         await sleep(100);
-        const value2 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
+        const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
             from: web3.eth.defaultAccount ?? undefined,
         });
         assert.equal(value2, 666);
@@ -280,7 +312,7 @@ describe('contract.sagas', () => {
         const gas2 = await tx2.estimateGas();
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
-        const contractSel = Contract.selectSingle(store.getState(), `${networkId}-${web3Contract.options.address}`);
+        const contractSel = Contract.selectSingle(store.getState(), testContractId);
 
         assert.deepEqual(contractSel!.events!.NewValue, expectedEvents);
     });

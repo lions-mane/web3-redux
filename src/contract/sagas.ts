@@ -152,15 +152,6 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
     //TODO: Investigate save eth call by setting default to block limit as opposed to estimate
     //TODO: Investigate potential issue if gas not specified
     //TODO: Investigate potential issue max batch size
-
-    /**
-     * struct Call {
-        address target;
-        bytes callData;
-    }
-    function aggregate(Call[] memory calls) public returns (uint256 blockNumber, bytes[] memory returnData) {
-     */
-
     const preCallTasks = requests.map(f => {
         const contract = contractsByAddress[f.address];
         const web3Contract = contract.web3Contract!;
@@ -198,7 +189,11 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
             contract.methods[f.method][key].ethCallId = ethCall.id;
         }
 
-        return { tx, ethCall, putEthCallTask };
+        //Output decoder for multicall
+        const methodAbi = contract.abi.find(m => m.name === f.method)!;
+        const methodAbiOutput = methodAbi.outputs;
+
+        return { tx, ethCall, putEthCallTask, methodAbiOutput };
     });
 
     //All update eth call
@@ -206,33 +201,68 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
     //All update contract
     yield all(contracts.map(c => put(ContractActions.create(c))));
 
-    const callTasks = preCallTasks.map(t => {
-        if (!multicallContract || t.ethCall.from || t.ethCall.defaultBlock != 'latest') {
-            //@ts-ignore
-            const batchFetchTask = new Promise((resolve, reject) => {
-                batch.add(
-                    t.tx.call.request({ from: t.ethCall.from }, (error: any, result: any) => {
-                        if (error) reject(error);
-                        resolve(result);
-                    }),
-                );
-            });
+    const regularCallTasks = preCallTasks.filter(
+        t => !multicallContract || t.ethCall.from || t.ethCall.defaultBlock != 'latest',
+    );
+    const multiCallTasks = preCallTasks.filter(
+        t => !(!multicallContract || t.ethCall.from || t.ethCall.defaultBlock != 'latest'),
+    );
 
-            return batchFetchTask;
-        } else {
-            return Promise.resolve(); //multicall
-        }
+    const regularCalls = regularCallTasks.map(t => {
+        //@ts-ignore
+        const batchFetchTask = new Promise((resolve, reject) => {
+            batch.add(
+                t.tx.call.request({ from: t.ethCall.from }, (error: any, result: any) => {
+                    if (error) reject(error);
+                    resolve(result);
+                }),
+            );
+        });
+
+        return batchFetchTask;
     });
 
+    const multicallCallsInput = multiCallTasks.map(t => {
+        return { address: t.ethCall.to, callData: t.ethCall.data };
+    });
+    if (!!multicallContract && multicallCallsInput.length > 0) {
+        const tx = multicallContract.methods.aggregate(multicallCallsInput);
+        const batchFetchTask = new Promise((resolve, reject) => {
+            batch.add(
+                tx.call.request((error: any, result: any) => {
+                    if (error) reject(error);
+                    resolve(result);
+                }),
+            );
+        });
+    }
+
     //All return call result
-    const batchCallTasks = all(callTasks);
+    const batchCallTasks = all(regularCalls);
     batch.execute();
 
     const batchResults: any[] = yield batchCallTasks;
+    //Track call task
+    let callTaskIdx = 0;
     const updateEthCallTasks = all(
-        batchResults.map((returnValue, idx) => {
-            const ethCall = preCallTasks[idx].ethCall;
-            return put(EthCallActions.create({ ...ethCall, returnValue }));
+        batchResults.map(returnValue => {
+            if (callTaskIdx < regularCallTasks.length) {
+                const ethCall = preCallTasks[callTaskIdx].ethCall;
+                callTaskIdx += 1;
+                return put(EthCallActions.create({ ...ethCall, returnValue }));
+            } else {
+                const [, returnData]: [any, string[]] = returnValue;
+                const putActions = returnData.map(data => {
+                    const task = preCallTasks[callTaskIdx]
+                    const ethCall = task.ethCall;
+                    //TODO: Format based on __length
+                    const multicallReturnValue = task.methodAbiOutput ? web3.eth.abi.decodeParameters(task.methodAbiOutput, data) : undefined;
+                    callTaskIdx += 1;
+                    return put(EthCallActions.create({ ...ethCall, returnValue: multicallReturnValue }));
+                });
+
+                return all(putActions);
+            }
         }),
     );
 
@@ -246,10 +276,10 @@ const CONTRACT_SEND_ERROR = `${ContractActions.SEND}/ERROR`;
 const CONTRACT_SEND_DONE = `${ContractActions.SEND}/DONE`;
 interface ContractSendChannelMessage {
     type:
-        | typeof CONTRACT_SEND_HASH
-        | typeof CONTRACT_SEND_RECEIPT
-        | typeof CONTRACT_SEND_CONFIRMATION
-        | typeof CONTRACT_SEND_ERROR;
+    | typeof CONTRACT_SEND_HASH
+    | typeof CONTRACT_SEND_RECEIPT
+    | typeof CONTRACT_SEND_CONFIRMATION
+    | typeof CONTRACT_SEND_ERROR;
     error?: any;
     hash?: string;
     receipt?: TransactionReceipt;
@@ -276,7 +306,7 @@ function contractSendChannel(tx: PromiEvent<TransactionReceipt>): EventChannel<C
                 emitter(END);
             });
         // The subscriber must return an unsubscribe function
-        return () => {}; //eslint-disable-line @typescript-eslint/no-empty-function
+        return () => { }; //eslint-disable-line @typescript-eslint/no-empty-function
     });
 }
 
