@@ -115,18 +115,15 @@ function* contractCall(action: ContractActions.CallAction) {
     //Create base call
     yield put(EthCallActions.create(ethCall));
 
-    //Instead of the web3.eth.call we use web3.eth.Contract.myMethod.call
-    //yield put(EthCallActions.fetch(ethCall)); DEPRECATED
-
     //Update contract call key if not stored
     const key = callArgsHash({ from, defaultBlock, args: payload.args });
     const contractCallSync = contract.methods[payload.method][key];
     if (!contractCallSync) {
         contract.methods[payload.method][key] = { ethCallId: ethCall.id };
-        yield put(ContractActions.create({ ...contract }));
+        yield put(ContractActions.create(contract));
     } else if (contractCallSync.ethCallId != ethCall.id) {
         contract.methods[payload.method][key].ethCallId = ethCall.id;
-        yield put(ContractActions.create({ ...contract }));
+        yield put(ContractActions.create(contract));
     }
 
     const gas = ethCall.gas ?? (yield call(tx.estimateGas, { ...ethCall })); //default gas
@@ -136,105 +133,115 @@ function* contractCall(action: ContractActions.CallAction) {
 
 function* contractCallBatched(action: ContractActions.CallBatchedAction) {
     const { payload } = action;
-    const requests = payload;
-    //group by network
-    const fetchByNetwork: { [key: string]: ContractActions.CallActionInput[] } = {};
-    requests.forEach(f => {
-        if (!fetchByNetwork[f.networkId]) {
-            fetchByNetwork[f.networkId] = [];
-        }
-        fetchByNetwork[f.networkId].push(f);
-    });
+    const { networkId, requests } = payload;
 
-    const networkIds = Object.keys(fetchByNetwork);
-    const networks: Network[] = yield select(NetworkSelector.selectMany, networkIds);
-    const networksById: { [key: string]: Network } = {};
-    networkIds.forEach((networkId, idx) => (networksById[networkId] = networks[idx]));
+    const network: Network = yield select(NetworkSelector.selectSingle, networkId);
+    if (!network)
+        throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
+    const web3 = network.web3;
 
-    const contractIds = Array.from(
-        new Set(requests.map(f => contractId({ address: f.address, networkId: f.networkId }))),
-    );
+    const contractIds = Array.from(new Set(requests.map(f => contractId({ address: f.address, networkId }))));
     const contracts: Contract[] = yield select(ContractSelector.selectMany, contractIds);
-    const contractsById: { [key: string]: Contract } = {};
-    contractIds.forEach((contractId, idx) => (contractsById[contractId] = contracts[idx]));
+    const contractsByAddress: { [key: string]: Contract } = {};
+    contracts.forEach(c => (contractsByAddress[c.address] = c));
 
-    const batchResultTasks = Object.entries(fetchByNetwork).map(([networkId, fetchRequests]) => {
-        const network: Network = networksById[networkId];
-        if (!network)
-            throw new Error(
-                `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
-            );
-        let regularFetchRequests: ContractActions.CallActionInput[];
-        let multicallFetchRequests: ContractActions.CallActionInput[];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let regularFetchRequests: ContractActions.CallBatchedActionInput['requests'];
+    let multicallFetchRequests: ContractActions.CallBatchedActionInput['requests'];
 
-        if (!network.multicallContract) {
-            regularFetchRequests = fetchRequests;
-            multicallFetchRequests = [];
-        } else {
-            regularFetchRequests = fetchRequests.filter(
-                f => !(!f.from && (!f.defaultBlock || f.defaultBlock == 'latest')),
-            );
-            multicallFetchRequests = fetchRequests.filter(
-                f => !f.from && (!f.defaultBlock || f.defaultBlock == 'latest'),
-            );
-        }
+    if (!network.multicallContract) {
+        regularFetchRequests = requests;
+        multicallFetchRequests = [];
+    } else {
+        regularFetchRequests = requests.filter(f => !(!f.from && (!f.defaultBlock || f.defaultBlock == 'latest')));
+        multicallFetchRequests = requests.filter(f => !f.from && (!f.defaultBlock || f.defaultBlock == 'latest'));
+    }
 
-        //TODO: Investigate potential issue if gas not specified
-        //TODO: Investigate potential issue max batch size
-        const web3 = network.web3;
-        const batch = new web3.eth.BatchRequest();
+    const batch = new web3.eth.BatchRequest();
 
-        //TODO: Multicall
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        multicallFetchRequests.forEach(f => {
-            //@ts-ignore
-            //batch.add(web3.eth.call.request(f, f.defaultBlock));
-        });
+    //TODO: Multicall
+    //TODO: Investigate save eth call by setting default to block limit as opposed to estimate
+    //TODO: Investigate potential issue if gas not specified
+    //TODO: Investigate potential issue max batch size
 
-        const fetchRequestPromises = regularFetchRequests.map(f => {
-            const contract = contractsById[contractId({ address: f.address, networkId: f.networkId })];
-            const web3Contract = contract.web3Contract!;
-
-            let tx: any;
-            if (!f.args || f.args.length == 0) {
-                tx = web3Contract.methods[f.method]();
-            } else {
-                tx = web3Contract.methods[f.method](...f.args);
-            }
-
-            /*
-            const data = tx.encodeABI();
-            const ethCall = validatedEthCall({
-                networkId: network.networkId,
-                from,
-                to: contract.address,
-                defaultBlock,
-                data,
-                gas: payload.gas,
-            });
-
-            //Create base call
-            const initialPutAction = put(EthCallActions.create(ethCall));
-            */
-
-            //@ts-ignore
-            return new Promise((resolve, reject) => {
-                batch.add(
-                    tx.call.request(f, (error: any, result: any) => {
-                        if (error) reject(error);
-                        resolve(result);
-                    }),
-                );
-            });
-        });
-
-        batch.execute();
-        return all(fetchRequestPromises);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    multicallFetchRequests.forEach(f => {
+        //@ts-ignore
+        //batch.add(web3.eth.call.request(f, f.defaultBlock));
     });
 
-    const batchResults = yield all(batchResultTasks);
+    const batchResultTasks = requests.map(f => {
+        const contract = contractsByAddress[f.address];
 
-    console.debug(batchResults);
+        //Defaults
+        const from: string = f.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+        const defaultBlock = f.defaultBlock ?? 'latest';
+
+        const web3Contract = contract.web3Contract!;
+
+        let tx: any;
+        if (!f.args || f.args.length == 0) {
+            tx = web3Contract.methods[f.method]();
+        } else {
+            tx = web3Contract.methods[f.method](...f.args);
+        }
+
+        const data = tx.encodeABI();
+        const ethCall = validatedEthCall({
+            networkId: network.networkId,
+            from,
+            to: f.address,
+            defaultBlock,
+            data,
+            gas: f.gas,
+        });
+
+        //Create base call
+        const putEthCallTask = put(EthCallActions.create(ethCall));
+
+        //Update contract call key if not stored
+        const key = callArgsHash({ from, defaultBlock, args: f.args });
+        const contractCallSync = contract.methods[f.method][key];
+        if (!contractCallSync) {
+            contract.methods[f.method][key] = { ethCallId: ethCall.id };
+        } else if (contractCallSync.ethCallId != ethCall.id) {
+            contract.methods[f.method][key].ethCallId = ethCall.id;
+        }
+
+        //@ts-ignore
+        const batchFetchTask = new Promise((resolve, reject) => {
+            batch.add(
+                tx.call.request(f, (error: any, result: any) => {
+                    if (error) reject(error);
+                    resolve(result);
+                }),
+            );
+        });
+
+        return { ethCall, putEthCallTask, batchFetchTask };
+    });
+
+    //All update eth call
+    const putEthCallTasks = all(batchResultTasks.map(x => x.putEthCallTask));
+    //All update contract
+    const putContractTasks = all(contracts.map(c => put(ContractActions.create(c))));
+    //All return call result
+    const batchFetchTasks = all(batchResultTasks.map(x => x.batchFetchTask));
+
+    batch.execute();
+
+    yield putEthCallTasks;
+    yield putContractTasks;
+
+    const batchResults: any[] = yield batchFetchTasks;
+    const updateEthCallTasks = all(
+        batchResults.map((returnValue, idx) => {
+            const ethCall = batchResultTasks[idx].ethCall;
+            return put(EthCallActions.create({ ...ethCall, returnValue }));
+        }),
+    );
+
+    yield updateEthCallTasks;
 }
 
 const CONTRACT_SEND_HASH = `${ContractActions.SEND}/HASH`;

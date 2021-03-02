@@ -35,7 +35,17 @@ export interface CallActionInput extends ContractIdDeconstructed {
 }
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
 
-export type CallBatchedActionInput = CallActionInput[];
+export interface CallBatchedActionInput {
+    networkId: string;
+    requests: {
+        address: string;
+        method: string;
+        args?: any[];
+        from?: string;
+        defaultBlock?: number | string;
+        gas?: string;
+    }[];
+}
 /**
  * Optimally batched call requests.
  * Requests are grouped by network and batched with web3.BatchRequest().
