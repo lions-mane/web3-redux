@@ -35,7 +35,6 @@ describe('contract.sagas', () => {
         //@ts-ignore
         web3 = new Web3(provider);
         accounts = await web3.eth.getAccounts();
-        web3.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(async () => {
@@ -80,9 +79,7 @@ describe('contract.sagas', () => {
         await sleep(100);
 
         //Selector
-        const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
 
         assert.equal(value, 42, 'getValue');
         assert.strictEqual(value, '42', 'getValue');
@@ -107,13 +104,9 @@ describe('contract.sagas', () => {
         await sleep(100);
 
         //Selector
-        const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
 
-        const blockNumber = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const blockNumber = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
 
         assert.equal(getValue, 42, 'getValue');
         assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
@@ -146,13 +139,9 @@ describe('contract.sagas', () => {
         await sleep(100);
 
         //Selector
-        const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
 
-        const blockNumber = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const blockNumber = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
 
         assert.equal(getValue, 42, 'getValue');
         assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
@@ -174,9 +163,7 @@ describe('contract.sagas', () => {
         await sleep(100);
 
         //Selector
-        const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
 
         assert.equal(value, 42, 'getValue');
         assert.strictEqual(value, '42', 'getValue');
@@ -195,16 +182,12 @@ describe('contract.sagas', () => {
         );
         await sleep(100);
 
-        const blockNumber1 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const blockNumber1 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
 
         //Increment block
         await mineBlock(web3);
 
-        const blockNumber2 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const blockNumber2 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
 
         assert.equal(parseInt(blockNumber2), parseInt(blockNumber1) + 1);
     });
@@ -224,9 +207,7 @@ describe('contract.sagas', () => {
         );
         await sleep(100);
 
-        const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value1, 42);
 
         //Send transaction to contract, triggering a refresh
@@ -243,9 +224,7 @@ describe('contract.sagas', () => {
 
         //Updated from transaction sync
         await sleep(100);
-        const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value2, 666);
     });
 
@@ -266,9 +245,7 @@ describe('contract.sagas', () => {
         );
         await sleep(100);
 
-        const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value1, 42);
 
         //Send transaction to contract, triggering a refresh
@@ -278,9 +255,7 @@ describe('contract.sagas', () => {
 
         //Updated from transaction sync
         await sleep(100);
-        const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value2, 666);
     });
 
@@ -288,6 +263,7 @@ describe('contract.sagas', () => {
         store.dispatch(
             Contract.send({
                 networkId,
+                from: accounts[0],
                 address: web3Contract.options.address,
                 method: 'setValue',
                 args: [42],

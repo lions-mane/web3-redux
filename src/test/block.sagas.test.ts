@@ -22,7 +22,6 @@ describe('block.sagas', () => {
         //@ts-ignore
         web3 = new Web3(provider);
         accounts = await web3.eth.getAccounts();
-        web3.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(async () => {

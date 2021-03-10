@@ -22,7 +22,6 @@ describe('ethcall.sagas', () => {
         //@ts-ignore
         web3 = new Web3(provider);
         accounts = await web3.eth.getAccounts();
-        web3.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(async () => {
@@ -42,7 +41,7 @@ describe('ethcall.sagas', () => {
 
         const ethCall1 = EthCall.validatedEthCall({
             networkId,
-            from: web3.eth.defaultAccount!,
+            from: accounts[0],
             to: contract.options.address,
             data: '0x20965255',
         });

@@ -15,7 +15,7 @@ function* fetchSaga(action: EthCallActions.FetchAction) {
         );
     const web3 = network.web3;
 
-    const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+    const from: string = payload.from ?? ZERO_ADDRESS;
     const validated = validatedEthCall({ ...payload, from });
     yield put(EthCallActions.create(validated));
 

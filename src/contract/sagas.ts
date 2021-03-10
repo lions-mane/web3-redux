@@ -29,18 +29,11 @@ import { ZERO_ADDRESS } from '../utils';
 
 function* contractCallSynced(action: ContractActions.CallSyncedAction) {
     const { payload } = action;
-    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
-    if (!network)
-        throw new Error(
-            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
-        );
-    const web3 = network.web3;
-
     const id = contractId(payload);
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
 
     //Defaults
-    const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+    const from: string = payload.from ?? ZERO_ADDRESS;
     const defaultBlock = payload.defaultBlock ?? 'latest';
 
     let sync: ContractCallSync | false;
@@ -80,18 +73,11 @@ function* contractCallSynced(action: ContractActions.CallSyncedAction) {
 
 function* contractCall(action: ContractActions.CallAction) {
     const { payload } = action;
-    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
-    if (!network)
-        throw new Error(
-            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
-        );
-    const web3 = network.web3;
-
     const id = contractId(payload);
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
 
     //Defaults
-    const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+    const from: string = payload.from ?? ZERO_ADDRESS;
     const defaultBlock = payload.defaultBlock ?? 'latest';
 
     const web3Contract = contract.web3Contract!;
@@ -104,7 +90,7 @@ function* contractCall(action: ContractActions.CallAction) {
     const data = tx.encodeABI();
 
     const ethCall = validatedEthCall({
-        networkId: network.networkId,
+        networkId: payload.networkId,
         from,
         to: contract.address,
         defaultBlock,
@@ -157,7 +143,7 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
         const web3Contract = contract.web3Contract!;
 
         //Defaults
-        const from: string = f.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+        const from: string = f.from ?? ZERO_ADDRESS;
         const defaultBlock = f.defaultBlock ?? 'latest';
 
         let tx: any;
@@ -235,6 +221,7 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
                 }),
             );
         });
+        regularCalls.push(batchFetchTask);
     }
 
     //All return call result
@@ -253,10 +240,12 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
             } else {
                 const [, returnData]: [any, string[]] = returnValue;
                 const putActions = returnData.map(data => {
-                    const task = preCallTasks[callTaskIdx]
+                    const task = preCallTasks[callTaskIdx];
                     const ethCall = task.ethCall;
                     //TODO: Format based on __length
-                    const multicallReturnValue = task.methodAbiOutput ? web3.eth.abi.decodeParameters(task.methodAbiOutput, data) : undefined;
+                    const multicallReturnValue = task.methodAbiOutput
+                        ? web3.eth.abi.decodeParameters(task.methodAbiOutput, data)
+                        : undefined;
                     callTaskIdx += 1;
                     return put(EthCallActions.create({ ...ethCall, returnValue: multicallReturnValue }));
                 });
@@ -276,10 +265,10 @@ const CONTRACT_SEND_ERROR = `${ContractActions.SEND}/ERROR`;
 const CONTRACT_SEND_DONE = `${ContractActions.SEND}/DONE`;
 interface ContractSendChannelMessage {
     type:
-    | typeof CONTRACT_SEND_HASH
-    | typeof CONTRACT_SEND_RECEIPT
-    | typeof CONTRACT_SEND_CONFIRMATION
-    | typeof CONTRACT_SEND_ERROR;
+        | typeof CONTRACT_SEND_HASH
+        | typeof CONTRACT_SEND_RECEIPT
+        | typeof CONTRACT_SEND_CONFIRMATION
+        | typeof CONTRACT_SEND_ERROR;
     error?: any;
     hash?: string;
     receipt?: TransactionReceipt;
@@ -306,25 +295,19 @@ function contractSendChannel(tx: PromiEvent<TransactionReceipt>): EventChannel<C
                 emitter(END);
             });
         // The subscriber must return an unsubscribe function
-        return () => { }; //eslint-disable-line @typescript-eslint/no-empty-function
+        return () => {}; //eslint-disable-line @typescript-eslint/no-empty-function
     });
 }
 
 function* contractSend(action: ContractActions.SendAction) {
     const { payload } = action;
     const networkId = payload.networkId;
-    const network: Network = yield select(NetworkSelector.selectSingle, networkId);
-    if (!network)
-        throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
     const id = contractId(payload);
-    const web3 = network.web3;
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
     const web3Contract = contract.web3SenderContract!;
 
-    const from = payload.options?.from ?? web3.eth.defaultAccount;
-    if (!from)
-        throw new Error('contractSend: Missing from address. Make sure to set options.from or web3.eth.defaultAccount');
-    const gasPrice = payload.options?.gasPrice ?? 0;
+    const from = payload.from;
+    const gasPrice = payload.gasPrice ?? 0;
 
     let tx: any;
     if (!payload.args || payload.args.length == 0) {
@@ -332,7 +315,7 @@ function* contractSend(action: ContractActions.SendAction) {
     } else {
         tx = web3Contract.methods[payload.method](...payload.args);
     }
-    const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
+    const gas = payload.gas ?? (yield call(tx.estimateGas, { from }));
     const txPromiEvent: PromiEvent<TransactionReceipt> = tx.send({ from, gas, gasPrice });
 
     const channel: TakeableChannel<ContractSendChannelMessage> = yield call(contractSendChannel, txPromiEvent);

@@ -12,7 +12,7 @@ export const create = actionCreator<typeof CREATE, EthCall>(CREATE);
 export const remove = actionCreator<typeof REMOVE, EthCallId>(REMOVE);
 
 export interface FetchActionInput extends NetworkId {
-    from?: string; //default to web3.defaultAccount | ZERO_ADDRESS
+    from?: string; //default to ZERO_ADDRESS
     to: string;
     defaultBlock?: string; //default to latest
     data: string;

@@ -1,4 +1,3 @@
-import { SendOptions } from 'web3-eth-contract';
 import { actionCreator } from '../utils';
 import {
     ContractCallSync,
@@ -67,7 +66,10 @@ export const callSynced = actionCreator<typeof CALL_SYNCED, CallSyncedActionInpu
 export interface SendActionInput extends ContractIdDeconstructed {
     method: string;
     args?: any[];
-    options?: SendOptions;
+    from: string;
+    gasPrice?: string;
+    gas?: string;
+    value?: string;
 }
 export const send = actionCreator<typeof SEND, SendActionInput>(SEND);
 

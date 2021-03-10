@@ -4,7 +4,7 @@ import BlockNumber from './abis/BlockNumber.json';
 
 import { createStore } from '../store';
 import { Network, Block, Transaction, Contract } from '../index';
-import { addressList } from './utils';
+import { addressList, assertDeepEqual } from './utils';
 
 const networkId = '1337';
 const web3 = new Web3('http://locahost:8545');
@@ -65,7 +65,7 @@ describe('Network', () => {
             const selected1 = Network.selectSingle(store.getState(), network.networkId);
 
             assert.notEqual(selected1, network, 'unequal reference');
-            assert.deepEqual(selected1, network, 'equal deep values');
+            assertDeepEqual(selected1, network, ['web3', 'web3Sender', 'multicallContract'], 'equal deep values');
         });
     });
 
@@ -73,22 +73,30 @@ describe('Network', () => {
         it('Network.selectMany(state)', async () => {
             store.dispatch(Network.create(network));
             const expected = network;
+            //console.debug(store.getState().web3Redux['Network'].itemsById[network.networkId])
 
             //State
-            assert.deepEqual(
+            assertDeepEqual(
                 store.getState().web3Redux['Network'].itemsById[network.networkId],
                 expected,
+                ['web3', 'web3Sender', 'multicallContract'],
                 'state.web3Redux.Network.itemsById',
             );
 
             //Network.selectMany
-            assert.deepEqual(
+            assertDeepEqual(
                 Network.selectMany(store.getState(), [network.networkId]),
                 [expected],
+                ['web3', 'web3Sender', 'multicallContract'],
                 'Network.selectMany([networkId])',
             );
 
-            assert.deepEqual(Network.selectMany(store.getState()), [expected], 'Network.selectMany()');
+            assertDeepEqual(
+                Network.selectMany(store.getState()),
+                [expected],
+                ['web3', 'web3Sender', 'multicallContract'],
+                'Network.selectMany()',
+            );
         });
 
         it('Network.selectManyBlocks(state)', async () => {
