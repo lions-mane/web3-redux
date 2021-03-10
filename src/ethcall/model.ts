@@ -1,6 +1,7 @@
 import { Model as ORMModel } from 'redux-orm';
 import Web3 from 'web3';
 import { NetworkId } from '../network/model';
+import { ZERO_ADDRESS } from '../utils';
 
 /**
  * EthCall object. Used to index web3.eth.call().
@@ -10,7 +11,7 @@ import { NetworkId } from '../network/model';
  */
 export interface EthCall extends NetworkId {
     id: string;
-    from?: string;
+    from: string; //defaults to ZERO_ADDRESS
     to: string;
     defaultBlock: string;
     data: string;
@@ -42,7 +43,7 @@ class Model extends ORMModel {
 export function validatedEthCall(ethCall: PartialEthCall): EthCall {
     const { networkId, from, to, defaultBlock, data, gas } = ethCall;
     const block = defaultBlock ? `${defaultBlock}` : 'latest';
-    const fromCheckSum = from ? Web3.utils.toChecksumAddress(from) : undefined;
+    const fromCheckSum = Web3.utils.toChecksumAddress(from ?? ZERO_ADDRESS);
     const toCheckSum = Web3.utils.toChecksumAddress(to);
     const gasHex = gas ? Web3.utils.toHex(gas) : undefined;
     const id = `${networkId}-${fromCheckSum}-${toCheckSum}-${block}-${data}-${gasHex}`;

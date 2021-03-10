@@ -135,16 +135,12 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
     const batch = new web3.eth.BatchRequest();
 
     //TODO: Multicall
-    //TODO: Investigate save eth call by setting default to block limit as opposed to estimate
+    //TODO: Investigate save eth_estimagegas  by setting default to block limit as opposed to estimate
     //TODO: Investigate potential issue if gas not specified
     //TODO: Investigate potential issue max batch size
     const preCallTasks = requests.map(f => {
         const contract = contractsByAddress[f.address];
         const web3Contract = contract.web3Contract!;
-
-        //Defaults
-        const from: string = f.from ?? ZERO_ADDRESS;
-        const defaultBlock = f.defaultBlock ?? 'latest';
 
         let tx: any;
         if (!f.args || f.args.length == 0) {
@@ -156,9 +152,7 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
         const data = tx.encodeABI();
         const ethCall = validatedEthCall({
             networkId: network.networkId,
-            from,
             to: f.address,
-            defaultBlock,
             data,
             gas: f.gas,
         });
@@ -167,7 +161,7 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
         const putEthCallTask = put(EthCallActions.create(ethCall));
 
         //Update contract call key if not stored
-        const key = callArgsHash({ from, defaultBlock, args: f.args });
+        const key = callArgsHash({ from: ethCall.from, defaultBlock: ethCall.defaultBlock, args: f.args });
         const contractCallSync = contract.methods[f.method][key];
         if (!contractCallSync) {
             contract.methods[f.method][key] = { ethCallId: ethCall.id };
@@ -187,11 +181,13 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
     //All update contract
     yield all(contracts.map(c => put(ContractActions.create(c))));
 
+    //If not Multicall, or from/defaultBlock specified
     const regularCallTasks = preCallTasks.filter(
-        t => !multicallContract || t.ethCall.from || t.ethCall.defaultBlock != 'latest',
+        t => !multicallContract || t.ethCall.from != ZERO_ADDRESS || t.ethCall.defaultBlock != 'latest',
     );
+    //Batch at smart-contract level with Multicall
     const multiCallTasks = preCallTasks.filter(
-        t => !(!multicallContract || t.ethCall.from || t.ethCall.defaultBlock != 'latest'),
+        t => !(!multicallContract || t.ethCall.from != ZERO_ADDRESS || t.ethCall.defaultBlock != 'latest'),
     );
 
     const regularCalls = regularCallTasks.map(t => {
@@ -208,14 +204,15 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
         return batchFetchTask;
     });
 
+    //See https://github.com/makerdao/multicall/blob/master/src/Multicall.sol
     const multicallCallsInput = multiCallTasks.map(t => {
-        return { address: t.ethCall.to, callData: t.ethCall.data };
+        return { target: t.ethCall.to, callData: t.ethCall.data };
     });
     if (!!multicallContract && multicallCallsInput.length > 0) {
         const tx = multicallContract.methods.aggregate(multicallCallsInput);
         const batchFetchTask = new Promise((resolve, reject) => {
             batch.add(
-                tx.call.request((error: any, result: any) => {
+                tx.call.request({ from: ZERO_ADDRESS }, (error: any, result: any) => {
                     if (error) reject(error);
                     resolve(result);
                 }),
@@ -242,12 +239,23 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
                 const putActions = returnData.map(data => {
                     const task = preCallTasks[callTaskIdx];
                     const ethCall = task.ethCall;
-                    //TODO: Format based on __length
+                    //TODO: Format based on __length__
                     const multicallReturnValue = task.methodAbiOutput
                         ? web3.eth.abi.decodeParameters(task.methodAbiOutput, data)
                         : undefined;
+                    if (!multicallReturnValue || multicallReturnValue.__length__ == 0) return Promise.resolve(); //No value
+
+                    let formatedValue: any;
+                    if (multicallReturnValue.__length__ == 1) {
+                        formatedValue = multicallReturnValue['0'];
+                    } else if (multicallReturnValue.__length__ > 1) {
+                        formatedValue = [];
+                        for (let i = 0; i < multicallReturnValue.__length__; i++) {
+                            formatedValue.push(multicallReturnValue[i]);
+                        }
+                    }
                     callTaskIdx += 1;
-                    return put(EthCallActions.create({ ...ethCall, returnValue: multicallReturnValue }));
+                    return put(EthCallActions.create({ ...ethCall, returnValue: formatedValue }));
                 });
 
                 return all(putActions);

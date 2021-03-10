@@ -76,8 +76,9 @@ describe('block.sagas', () => {
     */
 
     it('store.dispatch(Block.fetch({returnTransactionObjects:false}))', async () => {
-        await mineBlock(web3);
         const ethGetBlockByNumberInitial = ethGetBlockByNumber;
+
+        await mineBlock(web3);
         store.dispatch(Block.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: false }));
 
         const latestBlock = await web3.eth.getBlock('latest');

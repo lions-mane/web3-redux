@@ -81,11 +81,28 @@ export function ganacheLogger(): LogEmitter {
 
         try {
             const rpcMessage = JSON.parse(message);
-            if (!!rpcMessage.jsonrpc) {
-                emitter.emit('rpc', rpcMessage);
-            }
-            if (!!rpcMessage.method) {
-                emitter.emit(rpcMessage.method, rpcMessage);
+            if (Array.isArray(rpcMessage)) {
+                //Ignore rpc response log
+                if (rpcMessage[0].method) {
+                    emitter.emit('rpc_batch', rpcMessage);
+                    //Batched rpc call
+                    rpcMessage.forEach(m => {
+                        if (!!m.jsonrpc) {
+                            emitter.emit('rpc', rpcMessage);
+                        }
+                        if (!!m.method) {
+                            emitter.emit(m.method, rpcMessage);
+                        }
+                    });
+                }
+            } else {
+                //Ignore rpc response log
+                if (!!rpcMessage.jsonrpc) {
+                    emitter.emit('rpc', rpcMessage);
+                }
+                if (!!rpcMessage.method) {
+                    emitter.emit(rpcMessage.method, rpcMessage);
+                }
             }
         } catch {}
     };

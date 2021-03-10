@@ -22,6 +22,8 @@ describe('contract.sagas', () => {
     let web3Contract: Web3Contract;
     let testContractId: string;
     let rpcLogger: ReturnType<typeof ganacheLogger>;
+    let ethCall = 0;
+    let rpcBatch = 0;
 
     before(async () => {
         const networkIdInt = parseInt(networkId);
@@ -35,6 +37,11 @@ describe('contract.sagas', () => {
         //@ts-ignore
         web3 = new Web3(provider);
         accounts = await web3.eth.getAccounts();
+
+        const ethCallIncr = () => (ethCall += 1);
+        const rpcBatchIncr = () => (rpcBatch += 1);
+        rpcLogger.addListener('eth_call', ethCallIncr);
+        rpcLogger.addListener('rpc_batch', rpcBatchIncr);
     });
 
     beforeEach(async () => {
@@ -58,6 +65,9 @@ describe('contract.sagas', () => {
     });
 
     it('store.dispatch(ContractSagas.call())', async () => {
+        const ethCallInitial = ethCall;
+        const rpcBatchInitial = rpcBatch;
+
         const tx2 = await web3Contract.methods.setValue(42);
         const gas2 = await tx2.estimateGas();
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
@@ -83,9 +93,14 @@ describe('contract.sagas', () => {
 
         assert.equal(value, 42, 'getValue');
         assert.strictEqual(value, '42', 'getValue');
+        assert.equal(rpcBatch - rpcBatchInitial, 0, 'rpc_batch rpc calls != expected');
+        assert.equal(ethCall - ethCallInitial, 1, 'eth_call rpc calls != expected');
     });
 
     it('store.dispatch(Contract.callBatched())', async () => {
+        const ethCallInitial = ethCall;
+        const rpcBatchInitial = rpcBatch;
+
         const tx2 = await web3Contract.methods.setValue(42);
         await tx2.send({ from: accounts[0], gas: await tx2.estimateGas() });
         await sleep(100);
@@ -100,6 +115,7 @@ describe('contract.sagas', () => {
             address: web3Contract.options.address,
             method: 'blockNumber',
         };
+
         store.dispatch(Contract.callBatched({ networkId, requests: [ethCall1, ethCall2] }));
         await sleep(100);
 
@@ -110,9 +126,16 @@ describe('contract.sagas', () => {
 
         assert.equal(getValue, 42, 'getValue');
         assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
+
+        assert.equal(rpcBatch - rpcBatchInitial, 1, 'rpc_batch rpc calls != expected');
+        //While a batched rpc request, still logs 2 separate eth_call operations
+        assert.equal(ethCall - ethCallInitial, 2, 'eth_call rpc calls != expected');
     });
 
     it('store.dispatch(Contract.callBatched(multicall:true))', async () => {
+        const ethCallInitial = ethCall;
+        const rpcBatchInitial = rpcBatch;
+
         const tx2 = await web3Contract.methods.setValue(42);
         await tx2.send({ from: accounts[0], gas: await tx2.estimateGas() });
         await sleep(100);
@@ -145,6 +168,10 @@ describe('contract.sagas', () => {
 
         assert.equal(getValue, 42, 'getValue');
         assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
+
+        assert.equal(rpcBatch - rpcBatchInitial, 1, 'rpc_batch rpc calls != expected');
+        //Batching with multicall logs only 1 eth_call operations
+        assert.equal(ethCall - ethCallInitial, 1, 'eth_call rpc calls != expected');
     });
 
     it('store.dispatch(ContractSagas.callSynced({sync:false}))', async () => {
