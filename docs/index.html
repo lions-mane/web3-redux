@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@lions-mane/web3-redux - v0.1.0-beta.3</title>
+	<title>@lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.3</a>
+					<a href="index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.4</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -69,12 +69,25 @@
 			</nav>
 		</div>
 		<div class="col-7 offset-3 col-content">
-			<h1>@lions-mane/web3-redux - v0.1.0-beta.3</h1>
+			<h1>@lions-mane/web3-redux - v0.1.0-beta.4</h1>
 			<div class="tsd-panel tsd-typography">
 				<a href="#web3-redux" id="web3-redux" style="color: inherit; text-decoration: none;">
 					<h1>Web3 Redux</h1>
 				</a>
 				<p>Web3 Redux Library.</p>
+				<a href="#roadmap" id="roadmap" style="color: inherit; text-decoration: none;">
+					<h2>Roadmap</h2>
+				</a>
+				<ul>
+					<li>  [ ] Accounts: balance, nonce</li>
+					<li>  [ ] Track latestBlock in store</li>
+					<li>  [ ] ContractEvent: Separate entity in store to avoid Contract mutations</li>
+					<li>  [x] ContractCall: Use regular web3 contract call as opposed to encoding/decoding (allows more flexibility)</li>
+					<li>  [x] Usage with Metamask example: Use metamask as wallet provider + custom rpc</li>
+					<li>  [ ] Network add without id, fetch chainId with request</li>
+					<li>  [x] Batched Multicall.js <a href="https://github.com/makerdao/multicall">https://github.com/makerdao/multicall</a></li>
+					<li>  [ ] Error handling and test error handling</li>
+				</ul>
 				<a href="#table-of-contents" id="table-of-contents" style="color: inherit; text-decoration: none;">
 					<h2>Table of Contents</h2>
 				</a>
@@ -138,6 +151,16 @@
 				</a>
 				<p>To start web3-redux, you can either use the helper <code>WEB3_REDUX/INITIALIZE</code> action or manually add networks and block subscriptions.
 				While a block subscription is optional, it is in most cases necessary to enable syncing the latest on-chain data for your smart contracts.</p>
+				<a href="#usage-with-metamask" id="usage-with-metamask" style="color: inherit; text-decoration: none;">
+					<h4>Usage with metamask</h4>
+				</a>
+				<p>See <a href="#manual">Manual Network Initialization</a> for more detail.
+				Metamask can cause issues as the injected Web3 instance is mutable and changes as users change networks. To mitigate this, Networks can be initialized with 2 web3 instances, one for read-only calls (eg. Infura) and one for wallet signed send transactions (Metamask). This way, subcriptions and call syncs can continue to work even if a user changes networks.</p>
+				<p>Override the optional <code>web3Sender</code> parameter when initializing the Network and set it to the injected Web3 instance. The regular read-only web3 instance should </p>
+				<pre><code class="language-typescript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">web3Sender</span><span style="color: #000000"> = </span><span style="color: #001080">window</span><span style="color: #000000">.</span><span style="color: #001080">web3</span><span style="color: #000000">; </span><span style="color: #008000">//Metamask wallet, used for send transactions</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">web3ReadOnly</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Web3</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;ws://localhost:8545&#039;</span><span style="color: #000000">); </span><span style="color: #008000">//Used for calls/subscriptions</span>
+<span style="color: #001080">store</span><span style="color: #000000">.</span><span style="color: #795E26">dispatch</span><span style="color: #000000">(</span><span style="color: #001080">Network</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">({ </span><span style="color: #001080">networkId:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;1&#039;</span><span style="color: #000000">, </span><span style="color: #001080">web3:</span><span style="color: #000000"> </span><span style="color: #001080">web3ReadOnly</span><span style="color: #000000">, </span><span style="color: #001080">web3Sender</span><span style="color: #000000">}));</span>
+</code></pre>
 				<a href="#automatic" id="automatic" style="color: inherit; text-decoration: none;">
 					<h4>Automatic</h4>
 				</a>
@@ -313,7 +336,6 @@
 <span style="color: #000000">        };</span>
 <span style="color: #000000">    };</span>
 <span style="color: #000000">}</span>
-
 </code></pre>
 				<a href="#advanced" id="advanced" style="color: inherit; text-decoration: none;">
 					<h2>Advanced</h2>

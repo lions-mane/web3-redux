@@ -134,10 +134,8 @@ function* contractCallBatched(action: ContractActions.CallBatchedAction) {
 
     const batch = new web3.eth.BatchRequest();
 
-    //TODO: Multicall
-    //TODO: Investigate save eth_estimagegas  by setting default to block limit as opposed to estimate
-    //TODO: Investigate potential issue if gas not specified
-    //TODO: Investigate potential issue max batch size
+    //TODO: Investigate potential issue batch gas expense too large
+    //TODO: Investigate potential issue batch data size too large
     const preCallTasks = requests.map(f => {
         const contract = contractsByAddress[f.address];
         const web3Contract = contract.web3Contract!;

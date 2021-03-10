@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Model | @lions-mane/web3-redux - v0.1.0-beta.4</title>
+	<title>Network | @lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules/ethcall_model.html">ethcall/model</a>
+					<a href="../modules/network_model.html">network/model</a>
 				</li>
 				<li>
-					<a href="ethcall_model.model.html">Model</a>
+					<a href="network_model.network.html">Network</a>
 				</li>
 			</ul>
 		</div>
@@ -75,17 +75,27 @@
 			</nav>
 		</div>
 		<div class="col-7 offset-3 col-content">
-			<h1>Class Model</h1>
+			<h1>Interface Network</h1>
+			<section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography tsd-comment-shorttext">
+					<div class="lead">
+						<p>EVM Network object.</p>
+					</div>
+					</div><div class="tsd-comment tsd-typography tsd-comment-tags">
+					<dl class="tsd-comment-tags"><dt>see</dt>
+						<dd><p><a href="https://chainid.network//" class="external">https://chainid.network//</a> for a list of popular EVM Networks.</p>
+						</dd><dt>param</dt>
+						<dd><p>A network id.</p>
+						</dd><dt>param</dt>
+						<dd><p>A web3 object.</p>
+						</dd><dt>param</dt>
+						<dd><p>A web3 object used for send transactions.</p>
+					</dd></dl>
+			</div></section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">ORMModel</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">Model</span>
-							</li>
-						</ul>
+						<span class="target">Network</span>
 					</li>
 				</ul>
 			</section>
@@ -93,83 +103,80 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="ethcall_model.model.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="ethcall_model.model.html#fields" class="tsd-kind-icon">fields</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="ethcall_model.model.html#modelname" class="tsd-kind-icon">model<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="ethcall_model.model.html#options" class="tsd-kind-icon">options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="network_model.network.html#gaslimit" class="tsd-kind-icon">gas<wbr>Limit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="network_model.network.html#multicalladdress" class="tsd-kind-icon">multicall<wbr>Address</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="network_model.network.html#multicallcontract" class="tsd-kind-icon">multicall<wbr>Contract</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="network_model.network.html#networkid" class="tsd-kind-icon">network<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="network_model.network.html#web3" class="tsd-kind-icon">web3</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="network_model.network.html#web3sender" class="tsd-kind-icon">web3<wbr>Sender</a></li>
 							</ul>
 						</section>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Model<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ethcall_model.model.html" class="tsd-signature-type">Model</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="ethcall_model.model.html" class="tsd-signature-type">Model</a></h4>
-						</li>
-					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="fields" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> fields</h3>
-					<div class="tsd-signature tsd-kind-icon">fields<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = ...</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="gaslimit" class="tsd-anchor"></a>
+					<h3>gas<wbr>Limit</h3>
+					<div class="tsd-signature tsd-kind-icon">gas<wbr>Limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/ethcall/model.ts:40</li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="modelname" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> model<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">model<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;EthCall&#x27;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/ethcall/model.ts:38</li>
+							<li>Defined in src/network/model.ts:28</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="options" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> options</h3>
-					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = ...</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="multicalladdress" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> multicall<wbr>Address</h3>
+					<div class="tsd-signature tsd-kind-icon">multicall<wbr>Address<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/ethcall/model.ts:34</li>
+							<li>Defined in src/network/model.ts:26</li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>id<wbr>Attribute<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="multicallcontract" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> multicall<wbr>Contract</h3>
+					<div class="tsd-signature tsd-kind-icon">multicall<wbr>Contract<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Contract</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/network/model.ts:27</li>
 						</ul>
-					</div>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="networkid" class="tsd-anchor"></a>
+					<h3>network<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">network<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/network/model.ts:23</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="web3" class="tsd-anchor"></a>
+					<h3>web3</h3>
+					<div class="tsd-signature tsd-kind-icon">web3<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">default</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/network/model.ts:24</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="web3sender" class="tsd-anchor"></a>
+					<h3>web3<wbr>Sender</h3>
+					<div class="tsd-signature tsd-kind-icon">web3<wbr>Sender<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">default</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/network/model.ts:25</li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 			<!--{&quot;options&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;tsconfig&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;entryPoints&quot;:[&quot;src&quot;],&quot;exclude&quot;:[],&quot;externalPattern&quot;:[&quot;**/node_modules/**&quot;],&quot;excludeExternals&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludeInternal&quot;:false,&quot;excludePrivate&quot;:false,&quot;excludeProtected&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;watch&quot;:false,&quot;preserveWatchOutput&quot;:false,&quot;emit&quot;:false,&quot;out&quot;:&quot;docs&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;./node_modules/typedoc-neo-theme/bin/default&quot;,&quot;highlightTheme&quot;:&quot;light-plus&quot;,&quot;name&quot;:&quot;&quot;,&quot;includeVersion&quot;:true,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;showConfig&quot;:false,&quot;plugin&quot;:[&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;logLevel&quot;:1,&quot;listInvalidSymbolLinks&quot;:false,&quot;outline&quot;:[{&quot;Web3Redux&quot;:{&quot;actions&quot;:&quot;actions&quot;,&quot;sagas&quot;:&quot;saga&quot;,&quot;store&quot;:&quot;store&quot;,&quot;orm&quot;:&quot;orm&quot;},&quot;Block&quot;:{&quot;model&quot;:&quot;block_model&quot;,&quot;actions&quot;:&quot;block_actions&quot;,&quot;selector&quot;:&quot;block_selector&quot;,&quot;reducer&quot;:&quot;block_reducer&quot;,&quot;sagas&quot;:&quot;block_sagas&quot;},&quot;Transaction&quot;:{&quot;model&quot;:&quot;transaction_model&quot;,&quot;actions&quot;:&quot;transaction_actions&quot;,&quot;selector&quot;:&quot;transaction_selector&quot;,&quot;reducer&quot;:&quot;transaction_reducer&quot;,&quot;sagas&quot;:&quot;transaction_sagas&quot;},&quot;Network&quot;:{&quot;model&quot;:&quot;network_model&quot;,&quot;actions&quot;:&quot;network_actions&quot;,&quot;selector&quot;:&quot;network_selector&quot;,&quot;reducer&quot;:&quot;network_reducer&quot;},&quot;Contract&quot;:{&quot;model&quot;:&quot;contract_model&quot;,&quot;actions&quot;:&quot;contract_actions&quot;,&quot;selector&quot;:&quot;contract_selector&quot;,&quot;reducer&quot;:&quot;contract_reducer&quot;,&quot;sagas&quot;:&quot;contract_sagas&quot;}}]}-->
@@ -177,38 +184,41 @@
 		<div class="col-2 col-menu secondary-menu">
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-module root">
+						<a href="../classes/network_model.model.html" class="tsd-kind-icon">Model</a>
+					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class tsd-parent-kind-module root">
-						<a href="ethcall_model.model.html" class="tsd-kind-icon">Model</a>
+					<li class="current tsd-kind-interface tsd-parent-kind-module root">
+						<a href="network_model.network.html" class="tsd-kind-icon">Network</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="ethcall_model.model.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="network_model.network.html#gaslimit" class="tsd-kind-icon">gas<wbr>Limit</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="ethcall_model.model.html#fields" class="tsd-kind-icon">fields</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="network_model.network.html#multicalladdress" class="tsd-kind-icon">multicall<wbr>Address</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="ethcall_model.model.html#modelname" class="tsd-kind-icon">model<wbr>Name</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="network_model.network.html#multicallcontract" class="tsd-kind-icon">multicall<wbr>Contract</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="ethcall_model.model.html#options" class="tsd-kind-icon">options</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="network_model.network.html#networkid" class="tsd-kind-icon">network<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="network_model.network.html#web3" class="tsd-kind-icon">web3</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="network_model.network.html#web3sender" class="tsd-kind-icon">web3<wbr>Sender</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="../interfaces/ethcall_model.ethcall.html" class="tsd-kind-icon">Eth<wbr>Call</a>
+						<a href="network_model.networkid.html" class="tsd-kind-icon">Network<wbr>Id</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="../interfaces/ethcall_model.partialethcall.html" class="tsd-kind-icon">Partial<wbr>Eth<wbr>Call</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/ethcall_model.html#ethcallid" class="tsd-kind-icon">Eth<wbr>Call<wbr>Id</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/ethcall_model.html#validatedethcall" class="tsd-kind-icon">validated<wbr>Eth<wbr>Call</a>
+						<a href="network_model.networkpartial.html" class="tsd-kind-icon">Network<wbr>Partial</a>
 					</li>
 				</ul>
 			</nav>

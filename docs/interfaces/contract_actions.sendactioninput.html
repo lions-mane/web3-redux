@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>SendActionInput | @lions-mane/web3-redux - v0.1.0-beta.3</title>
+	<title>SendActionInput | @lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.3</a>
+					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.4</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -97,9 +97,12 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.sendactioninput.html#address" class="tsd-kind-icon">address</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.sendactioninput.html#args" class="tsd-kind-icon">args</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.sendactioninput.html#from" class="tsd-kind-icon">from</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.sendactioninput.html#gas" class="tsd-kind-icon">gas</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.sendactioninput.html#gasprice" class="tsd-kind-icon">gas<wbr>Price</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.sendactioninput.html#method" class="tsd-kind-icon">method</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.sendactioninput.html#networkid" class="tsd-kind-icon">network<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.sendactioninput.html#options" class="tsd-kind-icon">options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.sendactioninput.html#value" class="tsd-kind-icon">value</a></li>
 							</ul>
 						</section>
 					</div>
@@ -114,7 +117,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="contract_model.contractiddeconstructed.html">ContractIdDeconstructed</a>.<a href="contract_model.contractiddeconstructed.html#address">address</a></p>
 						<ul>
-							<li>Defined in src/contract/model.ts:125</li>
+							<li>Defined in src/contract/model.ts:128</li>
 						</ul>
 					</aside>
 				</section>
@@ -124,7 +127,37 @@
 					<div class="tsd-signature tsd-kind-icon">args<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:45</li>
+							<li>Defined in src/contract/actions.ts:68</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="from" class="tsd-anchor"></a>
+					<h3>from</h3>
+					<div class="tsd-signature tsd-kind-icon">from<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/contract/actions.ts:69</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="gas" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> gas</h3>
+					<div class="tsd-signature tsd-kind-icon">gas<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/contract/actions.ts:71</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="gasprice" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> gas<wbr>Price</h3>
+					<div class="tsd-signature tsd-kind-icon">gas<wbr>Price<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/contract/actions.ts:70</li>
 						</ul>
 					</aside>
 				</section>
@@ -134,7 +167,7 @@
 					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:44</li>
+							<li>Defined in src/contract/actions.ts:67</li>
 						</ul>
 					</aside>
 				</section>
@@ -145,17 +178,17 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="contract_model.contractiddeconstructed.html">ContractIdDeconstructed</a>.<a href="contract_model.contractiddeconstructed.html#networkid">networkId</a></p>
 						<ul>
-							<li>Defined in src/network/model.ts:10</li>
+							<li>Defined in src/network/model.ts:11</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="options" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> options</h3>
-					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">SendOptions</span></div>
+					<a name="value" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> value</h3>
+					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:46</li>
+							<li>Defined in src/contract/actions.ts:72</li>
 						</ul>
 					</aside>
 				</section>
@@ -165,18 +198,6 @@
 		<div class="col-2 col-menu secondary-menu">
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_actions.callactioninput.html" class="tsd-kind-icon">Call<wbr>Action<wbr>Input</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_actions.callsyncedactioninput.html" class="tsd-kind-icon">Call<wbr>Synced<wbr>Action<wbr>Input</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_actions.eventsubscribeactioninput.html" class="tsd-kind-icon">Event<wbr>Subscribe<wbr>Action<wbr>Input</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_actions.eventunsubscribeactioninput.html" class="tsd-kind-icon">Event<wbr>Unsubscribe<wbr>Action<wbr>Input</a>
-					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module root">
@@ -189,123 +210,27 @@
 								<a href="contract_actions.sendactioninput.html#args" class="tsd-kind-icon">args</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="contract_actions.sendactioninput.html#from" class="tsd-kind-icon">from</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="contract_actions.sendactioninput.html#gas" class="tsd-kind-icon">gas</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="contract_actions.sendactioninput.html#gasprice" class="tsd-kind-icon">gas<wbr>Price</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="contract_actions.sendactioninput.html#method" class="tsd-kind-icon">method</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="contract_actions.sendactioninput.html#networkid" class="tsd-kind-icon">network<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="contract_actions.sendactioninput.html#options" class="tsd-kind-icon">options</a>
+								<a href="contract_actions.sendactioninput.html#value" class="tsd-kind-icon">value</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#action" class="tsd-kind-icon">Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#callaction" class="tsd-kind-icon">Call<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#callsyncedaction" class="tsd-kind-icon">Call<wbr>Synced<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#createaction" class="tsd-kind-icon">Create<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#eventsubscribeaction" class="tsd-kind-icon">Event<wbr>Subscribe<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#eventunsubscribeaction" class="tsd-kind-icon">Event<wbr>Unsubscribe<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#reduceraction" class="tsd-kind-icon">Reducer<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#removeaction" class="tsd-kind-icon">Remove<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#sagaaction" class="tsd-kind-icon">Saga<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#sendaction" class="tsd-kind-icon">Send<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#call" class="tsd-kind-icon">CALL</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#call_synced" class="tsd-kind-icon">CALL_<wbr>SYNCED</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#create" class="tsd-kind-icon">CREATE</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#event_subscribe" class="tsd-kind-icon">EVENT_<wbr>SUBSCRIBE</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#event_unsubscribe" class="tsd-kind-icon">EVENT_<wbr>UNSUBSCRIBE</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#remove" class="tsd-kind-icon">REMOVE</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#send" class="tsd-kind-icon">SEND</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#update" class="tsd-kind-icon">UPDATE</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#call-1" class="tsd-kind-icon">call</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#callsynced" class="tsd-kind-icon">call<wbr>Synced</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#create-1" class="tsd-kind-icon">create</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#eventsubscribe" class="tsd-kind-icon">event<wbr>Subscribe</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#eventunsubscribe" class="tsd-kind-icon">event<wbr>Unsubscribe</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#isaction" class="tsd-kind-icon">is<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#iscallaction" class="tsd-kind-icon">is<wbr>Call<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#iscallsyncedaction" class="tsd-kind-icon">is<wbr>Call<wbr>Synced<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#iscreateaction" class="tsd-kind-icon">is<wbr>Create<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#iseventsubscribeaction" class="tsd-kind-icon">is<wbr>Event<wbr>Subscribe<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#iseventunsubscribeaction" class="tsd-kind-icon">is<wbr>Event<wbr>Unsubscribe<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#isreduceraction" class="tsd-kind-icon">is<wbr>Reducer<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#isremoveaction" class="tsd-kind-icon">is<wbr>Remove<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#issagaaction" class="tsd-kind-icon">is<wbr>Saga<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#issendaction" class="tsd-kind-icon">is<wbr>Send<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#remove-1" class="tsd-kind-icon">remove</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/contract_actions.html#send-1" class="tsd-kind-icon">send</a>
-					</li>
 				</ul>
 			</nav>
 		</div>

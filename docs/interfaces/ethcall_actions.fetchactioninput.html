@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>CallSyncedActionInput | @lions-mane/web3-redux - v0.1.0-beta.4</title>
+	<title>FetchActionInput | @lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules/contract_actions.html">contract/actions</a>
+					<a href="../modules/ethcall_actions.html">ethcall/actions</a>
 				</li>
 				<li>
-					<a href="contract_actions.callsyncedactioninput.html">CallSyncedActionInput</a>
+					<a href="ethcall_actions.fetchactioninput.html">FetchActionInput</a>
 				</li>
 			</ul>
 		</div>
@@ -75,15 +75,15 @@
 			</nav>
 		</div>
 		<div class="col-7 offset-3 col-content">
-			<h1>Interface CallSyncedActionInput</h1>
+			<h1>Interface FetchActionInput</h1>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="contract_actions.callactioninput.html" class="tsd-signature-type">CallActionInput</a>
+						<a href="network_model.networkid.html" class="tsd-signature-type">NetworkId</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">CallSyncedActionInput</span>
+								<span class="target">FetchActionInput</span>
 							</li>
 						</ul>
 					</li>
@@ -95,14 +95,12 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.callsyncedactioninput.html#address" class="tsd-kind-icon">address</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.callsyncedactioninput.html#args" class="tsd-kind-icon">args</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.callsyncedactioninput.html#defaultblock" class="tsd-kind-icon">default<wbr>Block</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.callsyncedactioninput.html#from" class="tsd-kind-icon">from</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.callsyncedactioninput.html#gas" class="tsd-kind-icon">gas</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.callsyncedactioninput.html#method" class="tsd-kind-icon">method</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="contract_actions.callsyncedactioninput.html#networkid" class="tsd-kind-icon">network<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.callsyncedactioninput.html#sync" class="tsd-kind-icon">sync</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall_actions.fetchactioninput.html#data" class="tsd-kind-icon">data</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall_actions.fetchactioninput.html#defaultblock" class="tsd-kind-icon">default<wbr>Block</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall_actions.fetchactioninput.html#from" class="tsd-kind-icon">from</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall_actions.fetchactioninput.html#gas" class="tsd-kind-icon">gas</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="ethcall_actions.fetchactioninput.html#networkid" class="tsd-kind-icon">network<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall_actions.fetchactioninput.html#to" class="tsd-kind-icon">to</a></li>
 							</ul>
 						</section>
 					</div>
@@ -110,69 +108,43 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="address" class="tsd-anchor"></a>
-					<h3>address</h3>
-					<div class="tsd-signature tsd-kind-icon">address<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="data" class="tsd-anchor"></a>
+					<h3>data</h3>
+					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="contract_actions.callactioninput.html">CallActionInput</a>.<a href="contract_actions.callactioninput.html#address">address</a></p>
 						<ul>
-							<li>Defined in src/contract/model.ts:128</li>
+							<li>Defined in src/ethcall/actions.ts:18</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="args" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> args</h3>
-					<div class="tsd-signature tsd-kind-icon">args<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="contract_actions.callactioninput.html">CallActionInput</a>.<a href="contract_actions.callactioninput.html#args">args</a></p>
-						<ul>
-							<li>Defined in src/contract/actions.ts:30</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="defaultblock" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> default<wbr>Block</h3>
-					<div class="tsd-signature tsd-kind-icon">default<wbr>Block<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Block<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="contract_actions.callactioninput.html">CallActionInput</a>.<a href="contract_actions.callactioninput.html#defaultblock">defaultBlock</a></p>
 						<ul>
-							<li>Defined in src/contract/actions.ts:32</li>
+							<li>Defined in src/ethcall/actions.ts:17</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="from" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> from</h3>
 					<div class="tsd-signature tsd-kind-icon">from<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="contract_actions.callactioninput.html">CallActionInput</a>.<a href="contract_actions.callactioninput.html#from">from</a></p>
 						<ul>
-							<li>Defined in src/contract/actions.ts:31</li>
+							<li>Defined in src/ethcall/actions.ts:15</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="gas" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> gas</h3>
 					<div class="tsd-signature tsd-kind-icon">gas<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="contract_actions.callactioninput.html">CallActionInput</a>.<a href="contract_actions.callactioninput.html#gas">gas</a></p>
 						<ul>
-							<li>Defined in src/contract/actions.ts:33</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="method" class="tsd-anchor"></a>
-					<h3>method</h3>
-					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="contract_actions.callactioninput.html">CallActionInput</a>.<a href="contract_actions.callactioninput.html#method">method</a></p>
-						<ul>
-							<li>Defined in src/contract/actions.ts:29</li>
+							<li>Defined in src/ethcall/actions.ts:19</li>
 						</ul>
 					</aside>
 				</section>
@@ -181,19 +153,19 @@
 					<h3>network<wbr>Id</h3>
 					<div class="tsd-signature tsd-kind-icon">network<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="contract_actions.callactioninput.html">CallActionInput</a>.<a href="contract_actions.callactioninput.html#networkid">networkId</a></p>
+						<p>Inherited from <a href="network_model.networkid.html">NetworkId</a>.<a href="network_model.networkid.html#networkid">networkId</a></p>
 						<ul>
 							<li>Defined in src/network/model.ts:11</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="sync" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> sync</h3>
-					<div class="tsd-signature tsd-kind-icon">sync<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="contract_model.contractcallblocksync.html" class="tsd-signature-type">ContractCallBlockSync</a><span class="tsd-signature-symbol"> | </span><a href="contract_model.contractcalltransactionsync.html" class="tsd-signature-type">ContractCallTransactionSync</a></div>
+					<a name="to" class="tsd-anchor"></a>
+					<h3>to</h3>
+					<div class="tsd-signature tsd-kind-icon">to<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:62</li>
+							<li>Defined in src/ethcall/actions.ts:16</li>
 						</ul>
 					</aside>
 				</section>
@@ -206,36 +178,84 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module root">
-						<a href="contract_actions.callsyncedactioninput.html" class="tsd-kind-icon">Call<wbr>Synced<wbr>Action<wbr>Input</a>
+						<a href="ethcall_actions.fetchactioninput.html" class="tsd-kind-icon">Fetch<wbr>Action<wbr>Input</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="contract_actions.callsyncedactioninput.html#address" class="tsd-kind-icon">address</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="contract_actions.callsyncedactioninput.html#args" class="tsd-kind-icon">args</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="contract_actions.callsyncedactioninput.html#defaultblock" class="tsd-kind-icon">default<wbr>Block</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="contract_actions.callsyncedactioninput.html#from" class="tsd-kind-icon">from</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="contract_actions.callsyncedactioninput.html#gas" class="tsd-kind-icon">gas</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="contract_actions.callsyncedactioninput.html#method" class="tsd-kind-icon">method</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-								<a href="contract_actions.callsyncedactioninput.html#networkid" class="tsd-kind-icon">network<wbr>Id</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="ethcall_actions.fetchactioninput.html#data" class="tsd-kind-icon">data</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="contract_actions.callsyncedactioninput.html#sync" class="tsd-kind-icon">sync</a>
+								<a href="ethcall_actions.fetchactioninput.html#defaultblock" class="tsd-kind-icon">default<wbr>Block</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="ethcall_actions.fetchactioninput.html#from" class="tsd-kind-icon">from</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="ethcall_actions.fetchactioninput.html#gas" class="tsd-kind-icon">gas</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="ethcall_actions.fetchactioninput.html#networkid" class="tsd-kind-icon">network<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="ethcall_actions.fetchactioninput.html#to" class="tsd-kind-icon">to</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#action" class="tsd-kind-icon">Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#createaction" class="tsd-kind-icon">Create<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#fetchaction" class="tsd-kind-icon">Fetch<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#reduceraction" class="tsd-kind-icon">Reducer<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#removeaction" class="tsd-kind-icon">Remove<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#sagaaction" class="tsd-kind-icon">Saga<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#create" class="tsd-kind-icon">CREATE</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#fetch" class="tsd-kind-icon">FETCH</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#remove" class="tsd-kind-icon">REMOVE</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#create-1" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#fetch-1" class="tsd-kind-icon">fetch</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#isaction" class="tsd-kind-icon">is<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#iscreateaction" class="tsd-kind-icon">is<wbr>Create<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#isfetchaction" class="tsd-kind-icon">is<wbr>Fetch<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#isreduceraction" class="tsd-kind-icon">is<wbr>Reducer<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#isremoveaction" class="tsd-kind-icon">is<wbr>Remove<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#issagaaction" class="tsd-kind-icon">is<wbr>Saga<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/ethcall_actions.html#remove-1" class="tsd-kind-icon">remove</a>
+					</li>
 				</ul>
 			</nav>
 		</div>

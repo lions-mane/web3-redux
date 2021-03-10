@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Model | @lions-mane/web3-redux - v0.1.0-beta.4</title>
+	<title>CallBatchedActionInput | @lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules/ethcall_model.html">ethcall/model</a>
+					<a href="../modules/contract_actions.html">contract/actions</a>
 				</li>
 				<li>
-					<a href="ethcall_model.model.html">Model</a>
+					<a href="contract_actions.callbatchedactioninput.html">CallBatchedActionInput</a>
 				</li>
 			</ul>
 		</div>
@@ -75,17 +75,12 @@
 			</nav>
 		</div>
 		<div class="col-7 offset-3 col-content">
-			<h1>Class Model</h1>
+			<h1>Interface CallBatchedActionInput</h1>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="tsd-signature-type">ORMModel</span>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">Model</span>
-							</li>
-						</ul>
+						<span class="target">CallBatchedActionInput</span>
 					</li>
 				</ul>
 			</section>
@@ -93,83 +88,36 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Constructors</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="ethcall_model.model.html#constructor" class="tsd-kind-icon">constructor</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="ethcall_model.model.html#fields" class="tsd-kind-icon">fields</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="ethcall_model.model.html#modelname" class="tsd-kind-icon">model<wbr>Name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="ethcall_model.model.html#options" class="tsd-kind-icon">options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.callbatchedactioninput.html#networkid" class="tsd-kind-icon">network<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="contract_actions.callbatchedactioninput.html#requests" class="tsd-kind-icon">requests</a></li>
 							</ul>
 						</section>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
-					<a name="constructor" class="tsd-anchor"></a>
-					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Model<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ethcall_model.model.html" class="tsd-signature-type">Model</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-returns-title">Returns <a href="ethcall_model.model.html" class="tsd-signature-type">Model</a></h4>
-						</li>
-					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="fields" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> fields</h3>
-					<div class="tsd-signature tsd-kind-icon">fields<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = ...</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="networkid" class="tsd-anchor"></a>
+					<h3>network<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">network<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/ethcall/model.ts:40</li>
-						</ul>
-					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="modelname" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> model<wbr>Name</h3>
-					<div class="tsd-signature tsd-kind-icon">model<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;EthCall&#x27;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/ethcall/model.ts:38</li>
+							<li>Defined in src/contract/actions.ts:38</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
-					<a name="options" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> options</h3>
-					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = ...</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="requests" class="tsd-anchor"></a>
+					<h3>requests</h3>
+					<div class="tsd-signature tsd-kind-icon">requests<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/ethcall/model.ts:34</li>
+							<li>Defined in src/contract/actions.ts:39</li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>id<wbr>Attribute<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-						</ul>
-					</div>
 				</section>
 			</section>
 			<!--{&quot;options&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;tsconfig&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;entryPoints&quot;:[&quot;src&quot;],&quot;exclude&quot;:[],&quot;externalPattern&quot;:[&quot;**/node_modules/**&quot;],&quot;excludeExternals&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludeInternal&quot;:false,&quot;excludePrivate&quot;:false,&quot;excludeProtected&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;watch&quot;:false,&quot;preserveWatchOutput&quot;:false,&quot;emit&quot;:false,&quot;out&quot;:&quot;docs&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;./node_modules/typedoc-neo-theme/bin/default&quot;,&quot;highlightTheme&quot;:&quot;light-plus&quot;,&quot;name&quot;:&quot;&quot;,&quot;includeVersion&quot;:true,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;showConfig&quot;:false,&quot;plugin&quot;:[&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;logLevel&quot;:1,&quot;listInvalidSymbolLinks&quot;:false,&quot;outline&quot;:[{&quot;Web3Redux&quot;:{&quot;actions&quot;:&quot;actions&quot;,&quot;sagas&quot;:&quot;saga&quot;,&quot;store&quot;:&quot;store&quot;,&quot;orm&quot;:&quot;orm&quot;},&quot;Block&quot;:{&quot;model&quot;:&quot;block_model&quot;,&quot;actions&quot;:&quot;block_actions&quot;,&quot;selector&quot;:&quot;block_selector&quot;,&quot;reducer&quot;:&quot;block_reducer&quot;,&quot;sagas&quot;:&quot;block_sagas&quot;},&quot;Transaction&quot;:{&quot;model&quot;:&quot;transaction_model&quot;,&quot;actions&quot;:&quot;transaction_actions&quot;,&quot;selector&quot;:&quot;transaction_selector&quot;,&quot;reducer&quot;:&quot;transaction_reducer&quot;,&quot;sagas&quot;:&quot;transaction_sagas&quot;},&quot;Network&quot;:{&quot;model&quot;:&quot;network_model&quot;,&quot;actions&quot;:&quot;network_actions&quot;,&quot;selector&quot;:&quot;network_selector&quot;,&quot;reducer&quot;:&quot;network_reducer&quot;},&quot;Contract&quot;:{&quot;model&quot;:&quot;contract_model&quot;,&quot;actions&quot;:&quot;contract_actions&quot;,&quot;selector&quot;:&quot;contract_selector&quot;,&quot;reducer&quot;:&quot;contract_reducer&quot;,&quot;sagas&quot;:&quot;contract_sagas&quot;}}]}-->
@@ -179,37 +127,19 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-class tsd-parent-kind-module root">
-						<a href="ethcall_model.model.html" class="tsd-kind-icon">Model</a>
+					<li class="current tsd-kind-interface tsd-parent-kind-module root">
+						<a href="contract_actions.callbatchedactioninput.html" class="tsd-kind-icon">Call<wbr>Batched<wbr>Action<wbr>Input</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="ethcall_model.model.html#constructor" class="tsd-kind-icon">constructor</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="contract_actions.callbatchedactioninput.html#networkid" class="tsd-kind-icon">network<wbr>Id</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="ethcall_model.model.html#fields" class="tsd-kind-icon">fields</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="ethcall_model.model.html#modelname" class="tsd-kind-icon">model<wbr>Name</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
-								<a href="ethcall_model.model.html#options" class="tsd-kind-icon">options</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="contract_actions.callbatchedactioninput.html#requests" class="tsd-kind-icon">requests</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="../interfaces/ethcall_model.ethcall.html" class="tsd-kind-icon">Eth<wbr>Call</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="../interfaces/ethcall_model.partialethcall.html" class="tsd-kind-icon">Partial<wbr>Eth<wbr>Call</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/ethcall_model.html#ethcallid" class="tsd-kind-icon">Eth<wbr>Call<wbr>Id</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/ethcall_model.html#validatedethcall" class="tsd-kind-icon">validated<wbr>Eth<wbr>Call</a>
-					</li>
 				</ul>
 			</nav>
 		</div>
