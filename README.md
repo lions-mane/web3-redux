@@ -14,7 +14,7 @@ Web3 Redux Library.
 -   [ ] Loading component/helper for initialization
 -   [ ] Error handling and test error handling
 -   [ ] Smoother Metamask Integration, Add Network RPC request
--   [ ] Contract.send() rpc optimization (currently each send incurs a heavy penalty for 21 blocks making duplicate/unecessary getBlockByNumber and fetchReceipt calls)
+-   [ ] Contract.send() rpc optimization (currently each send incurs a heavy penalty for 21 blocks making duplicate/unecessary getBlockByNumber and fetchReceipt calls). See https://web3js.readthedocs.io/en/v1.3.4/web3-eth.html?highlight=21%20blocks#transactionconfirmationblocks
 
 ## Table of Contents
 
