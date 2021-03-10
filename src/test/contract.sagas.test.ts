@@ -86,7 +86,7 @@ describe('contract.sagas', () => {
                 method: 'getValue',
             }),
         );
-        await sleep(100);
+        await sleep(150);
 
         //Selector
         const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
@@ -103,7 +103,7 @@ describe('contract.sagas', () => {
 
         const tx2 = await web3Contract.methods.setValue(42);
         await tx2.send({ from: accounts[0], gas: await tx2.estimateGas() });
-        await sleep(100);
+        await sleep(150);
 
         const expectedBlockNumber = await web3.eth.getBlockNumber();
 
@@ -117,7 +117,7 @@ describe('contract.sagas', () => {
         };
 
         store.dispatch(Contract.callBatched({ networkId, requests: [ethCall1, ethCall2] }));
-        await sleep(100);
+        await sleep(150);
 
         //Selector
         const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
@@ -138,7 +138,7 @@ describe('contract.sagas', () => {
 
         const tx2 = await web3Contract.methods.setValue(42);
         await tx2.send({ from: accounts[0], gas: await tx2.estimateGas() });
-        await sleep(100);
+        await sleep(150);
 
         const tx3 = new web3.eth.Contract(Multicall.abi as AbiItem[]).deploy({
             data: Multicall.bytecode,
@@ -146,7 +146,7 @@ describe('contract.sagas', () => {
         const gas3 = await tx3.estimateGas();
         const multiCallContract = await tx3.send({ from: accounts[0], gas: gas3, gasPrice: '10000' });
         store.dispatch(Network.create({ networkId, web3, multicallAddress: multiCallContract.options.address }));
-        await sleep(100);
+        await sleep(150);
 
         const expectedBlockNumber = await web3.eth.getBlockNumber();
 
@@ -159,7 +159,7 @@ describe('contract.sagas', () => {
             method: 'blockNumber',
         };
         store.dispatch(Contract.callBatched({ networkId, requests: [ethCall1, ethCall2] }));
-        await sleep(100);
+        await sleep(150);
 
         //Selector
         const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
@@ -187,7 +187,7 @@ describe('contract.sagas', () => {
                 sync: false,
             }),
         );
-        await sleep(100);
+        await sleep(150);
 
         //Selector
         const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
@@ -207,7 +207,7 @@ describe('contract.sagas', () => {
                 sync: CALL_BLOCK_SYNC,
             }),
         );
-        await sleep(100);
+        await sleep(150);
 
         const blockNumber1 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
 
@@ -232,7 +232,7 @@ describe('contract.sagas', () => {
                 sync: CALL_TRANSACTION_SYNC,
             }),
         );
-        await sleep(100);
+        await sleep(150);
 
         const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value1, 42);
@@ -250,7 +250,7 @@ describe('contract.sagas', () => {
         );
 
         //Updated from transaction sync
-        await sleep(100);
+        await sleep(150);
         const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value2, 666);
     });
@@ -270,7 +270,7 @@ describe('contract.sagas', () => {
                 sync: CALL_TRANSACTION_SYNC,
             }),
         );
-        await sleep(100);
+        await sleep(150);
 
         const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value1, 42);
@@ -281,7 +281,7 @@ describe('contract.sagas', () => {
         await tx3.send({ from: accounts[0], gas: gas3, gasPrice: '10000' });
 
         //Updated from transaction sync
-        await sleep(100);
+        await sleep(150);
         const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value2, 666);
     });
@@ -297,7 +297,7 @@ describe('contract.sagas', () => {
             }),
         );
 
-        await sleep(100);
+        await sleep(150);
 
         const value = await web3Contract.methods.getValue().call();
         assert.equal(value, 42, 'setValue() did not work!');

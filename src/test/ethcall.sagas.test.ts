@@ -49,7 +49,7 @@ describe('ethcall.sagas', () => {
             EthCall.fetch(ethCall1), //getValue() 4byte selector
         );
 
-        await sleep(100);
+        await sleep(150);
 
         const tx3 = await contract.methods.getValue();
         const expected = await tx3.call({ from: accounts[0], gas: await tx3.estimateGas() });
