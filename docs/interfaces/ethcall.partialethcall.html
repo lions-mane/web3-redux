@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>PartialEthCall | @lions-mane/web3-redux - v0.1.0-beta.3</title>
+	<title>PartialEthCall | @lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.3</a>
+					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.4</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -99,7 +99,6 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall.partialethcall.html#defaultblock" class="tsd-kind-icon">default<wbr>Block</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall.partialethcall.html#from" class="tsd-kind-icon">from</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall.partialethcall.html#gas" class="tsd-kind-icon">gas</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall.partialethcall.html#gasprice" class="tsd-kind-icon">gas<wbr>Price</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="ethcall.partialethcall.html#networkid" class="tsd-kind-icon">network<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall.partialethcall.html#returnvalue" class="tsd-kind-icon">return<wbr>Value</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="ethcall.partialethcall.html#to" class="tsd-kind-icon">to</a></li>
@@ -132,8 +131,8 @@
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="from" class="tsd-anchor"></a>
-					<h3>from</h3>
-					<div class="tsd-signature tsd-kind-icon">from<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> from</h3>
+					<div class="tsd-signature tsd-kind-icon">from<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in src/ethcall/model.ts:23</li>
@@ -150,16 +149,6 @@
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="gasprice" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> gas<wbr>Price</h3>
-					<div class="tsd-signature tsd-kind-icon">gas<wbr>Price<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/ethcall/model.ts:28</li>
-						</ul>
-					</aside>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="networkid" class="tsd-anchor"></a>
 					<h3>network<wbr>Id</h3>
@@ -167,17 +156,17 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="network_model.networkid.html">NetworkId</a>.<a href="network_model.networkid.html#networkid">networkId</a></p>
 						<ul>
-							<li>Defined in src/network/model.ts:10</li>
+							<li>Defined in src/network/model.ts:11</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="returnvalue" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> return<wbr>Value</h3>
-					<div class="tsd-signature tsd-kind-icon">return<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<div class="tsd-signature tsd-kind-icon">return<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/ethcall/model.ts:29</li>
+							<li>Defined in src/ethcall/model.ts:28</li>
 						</ul>
 					</aside>
 				</section>
@@ -204,7 +193,7 @@
 						<a href="ethcall.ethcall-1.html" class="tsd-kind-icon">Eth<wbr>Call</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="ethcall.ethcallfetchinput.html" class="tsd-kind-icon">Eth<wbr>Call<wbr>Fetch<wbr>Input</a>
+						<a href="ethcall.fetchactioninput.html" class="tsd-kind-icon">Fetch<wbr>Action<wbr>Input</a>
 					</li>
 				</ul>
 				<ul class="current">
@@ -222,9 +211,6 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="ethcall.partialethcall.html#gas" class="tsd-kind-icon">gas</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="ethcall.partialethcall.html#gasprice" class="tsd-kind-icon">gas<wbr>Price</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 								<a href="ethcall.partialethcall.html#networkid" class="tsd-kind-icon">network<wbr>Id</a>

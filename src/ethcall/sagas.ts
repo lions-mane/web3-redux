@@ -6,7 +6,7 @@ import { ZERO_ADDRESS } from '../utils';
 import { Network } from '../network/model';
 import * as NetworkSelector from '../network/selector';
 
-function* fetch(action: EthCallActions.FetchAction) {
+function* fetchSaga(action: EthCallActions.FetchAction) {
     const { payload } = action;
     const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
@@ -15,17 +15,17 @@ function* fetch(action: EthCallActions.FetchAction) {
         );
     const web3 = network.web3;
 
-    const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+    const from: string = payload.from ?? ZERO_ADDRESS;
     const validated = validatedEthCall({ ...payload, from });
     yield put(EthCallActions.create(validated));
 
-    const gas = validated.gas ?? (yield call(web3.eth.estimateGas, validated)); //default gas
+    const gas = validated.gas ?? (yield call(web3.eth.estimateGas, { ...validated })); //default gas
 
     //@ts-ignore
-    const returnValue = yield call(web3.eth.call, { ...validated, gas });
+    const returnValue = yield call(web3.eth.call, { ...validated, gas }, validated.defaultBlock);
     yield put(EthCallActions.create({ ...validated, returnValue }));
 }
 
 export function* saga() {
-    yield all([takeEvery(EthCallActions.FETCH, fetch)]);
+    yield all([takeEvery(EthCallActions.FETCH, fetchSaga)]);
 }

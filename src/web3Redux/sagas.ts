@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import * as NetworkActions from '../network/actions';
 import * as BlockActions from '../block/actions';
 import { SubscribeActionInput } from '../block/actions';
-import { Network } from '../network/model';
+import { NetworkPartial } from '../network/model';
 import { InitializeAction, INITIALIZE } from './actions';
 
 function* initialize(action: InitializeAction) {
@@ -19,7 +19,7 @@ function* initialize(action: InitializeAction) {
         blockSubscribe = true; //default
     }
 
-    const networks: Network[] = action.payload.networks ?? [];
+    const networks: NetworkPartial[] = action.payload.networks ?? [];
 
     if (!action.payload.networks) {
         const localRpc = process.env.LOCAL_RPC ?? process.env.REACT_APP_LOCAL_RPC ?? process.env.NEXT_PUBLIC_LOCAL_RPC;

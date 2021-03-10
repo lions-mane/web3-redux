@@ -1,11 +1,11 @@
 import { assert } from 'chai';
 import Web3 from 'web3';
 import ganache from 'ganache-core';
-import BlockNumber from '../abis/BlockNumber.json';
+import BlockNumber from './abis/BlockNumber.json';
 
 import { createStore } from '../store';
 import { Network, EthCall } from '../index';
-import { sleep, sleepForPort } from '../utils';
+import { sleep } from './utils';
 
 const networkId = '1337';
 
@@ -16,16 +16,12 @@ describe('ethcall.sagas', () => {
 
     before(async () => {
         const networkIdInt = parseInt(networkId);
-        const server = ganache.server({
-            port: 0,
+        const provider = ganache.provider({
             networkId: networkIdInt,
-            blockTime: 1,
         });
-        const port = await sleepForPort(server, 1000);
-        const rpc = `ws://localhost:${port}`;
-        web3 = new Web3(rpc);
+        //@ts-ignore
+        web3 = new Web3(provider);
         accounts = await web3.eth.getAccounts();
-        web3.eth.defaultAccount = accounts[0];
     });
 
     beforeEach(async () => {
@@ -45,7 +41,7 @@ describe('ethcall.sagas', () => {
 
         const ethCall1 = EthCall.validatedEthCall({
             networkId,
-            from: web3.eth.defaultAccount!,
+            from: accounts[0],
             to: contract.options.address,
             data: '0x20965255',
         });
@@ -53,7 +49,7 @@ describe('ethcall.sagas', () => {
             EthCall.fetch(ethCall1), //getValue() 4byte selector
         );
 
-        await sleep(100);
+        await sleep(150);
 
         const tx3 = await contract.methods.getValue();
         const expected = await tx3.call({ from: accounts[0], gas: await tx3.estimateGas() });

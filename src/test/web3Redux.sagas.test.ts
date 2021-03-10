@@ -2,10 +2,12 @@ import { assert } from 'chai';
 import ganache from 'ganache-core';
 import { createStore } from '../store';
 import { Network, Web3Redux, Block, Transaction } from '../index';
-import { sleep, sleepForPort } from '../utils';
+import { sleepForPort } from './utils';
 import Web3 from 'web3';
 
 describe('Web3Redux', () => {
+    let server1: ganache.Server;
+    let server2: ganache.Server;
     let store: ReturnType<typeof createStore>;
     let accounts1: string[];
     let accounts2: string[];
@@ -13,15 +15,15 @@ describe('Web3Redux', () => {
     let web3Network2: Web3;
 
     before(async () => {
-        const server1 = ganache.server({
+        server1 = ganache.server({
             port: 0,
-            networkId: 1337,
+            networkId: 1,
             blockTime: 1,
         });
         const port1 = await sleepForPort(server1, 1000);
         const rpc1 = `ws://localhost:${port1}`;
 
-        const server2 = ganache.server({
+        server2 = ganache.server({
             port: 0,
             networkId: 1337,
             blockTime: 1,
@@ -37,6 +39,11 @@ describe('Web3Redux', () => {
         //Warning: For testing purposes only
         process.env['LOCAL_RPC'] = rpc1;
         process.env['MAINNET_RPC'] = rpc2;
+    });
+
+    after(() => {
+        server1.close();
+        server2.close();
     });
 
     beforeEach(() => {
@@ -56,15 +63,13 @@ describe('Web3Redux', () => {
         //Network.select
         assert.equal(Network.selectMany(store.getState()).length, 2, 'Network.select().length');
 
-        web3Network1.eth.sendTransaction({ from: accounts1[0], to: accounts1[1], value: '1' });
-        web3Network2.eth.sendTransaction({ from: accounts2[0], to: accounts2[1], value: '1' });
-
-        await sleep(5000);
+        await web3Network1.eth.sendTransaction({ from: accounts1[0], to: accounts1[1], value: '1' });
+        await web3Network2.eth.sendTransaction({ from: accounts2[0], to: accounts2[1], value: '1' });
 
         //Block.select
         assert.isAtLeast(Block.selectMany(store.getState()).length, 2, 'synced block headers');
 
         //Transaction.select
-        assert.isAtLeast(Transaction.selectMany(store.getState()).length, 2, 'synced block transactions');
+        assert.equal(Transaction.selectMany(store.getState()).length, 2, 'synced block transactions');
     });
 });

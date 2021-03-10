@@ -2,6 +2,20 @@
 
 Web3 Redux Library.
 
+## Roadmap
+
+-   [ ] Accounts: balance, nonce
+-   [ ] Track latestBlock number in store
+-   [ ] ContractEvent: Separate entity in store to avoid Contract mutations
+-   [x] ContractCall: Use regular web3 contract call as opposed to encoding/decoding (allows more flexibility)
+-   [x] Usage with Metamask example: Use metamask as wallet provider + custom rpc
+-   [ ] Network add without id, fetch chainId with request
+-   [x] Batched Multicall.js https://github.com/makerdao/multicall
+-   [ ] Loading component/helper for initialization
+-   [ ] Error handling and test error handling
+-   [ ] Smoother Metamask Integration, Add Network RPC request
+-   [ ] Contract.send() rpc optimization (currently each send incurs a heavy penalty for 21 blocks making duplicate/unecessary getBlockByNumber and fetchReceipt calls)
+
 ## Table of Contents
 
 -   [Installing](#installing)
@@ -56,6 +70,19 @@ export default store;
 
 To start web3-redux, you can either use the helper `WEB3_REDUX/INITIALIZE` action or manually add networks and block subscriptions.
 While a block subscription is optional, it is in most cases necessary to enable syncing the latest on-chain data for your smart contracts.
+
+#### Usage with metamask
+
+See [Manual Network Initialization](#manual) for more detail.
+Metamask can cause issues as the injected Web3 instance is mutable and changes as users change networks. To mitigate this, Networks can be initialized with 2 web3 instances, one for read-only calls (eg. Infura) and one for wallet signed send transactions (Metamask). This way, subcriptions and call syncs can continue to work even if a user changes networks.
+
+Override the optional `web3Sender` parameter when initializing the Network and set it to the injected Web3 instance. The regular read-only web3 instance should
+
+```typescript
+const web3Sender = window.web3; //Metamask wallet, used for send transactions
+const web3ReadOnly = new Web3('ws://localhost:8545'); //Used for calls/subscriptions
+store.dispatch(Network.create({ networkId: '1', web3: web3ReadOnly, web3Sender }));
+```
 
 #### Automatic
 

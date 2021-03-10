@@ -1,6 +1,6 @@
 {
     "name": "@lions-mane/web3-redux",
-    "version": "0.1.0-beta.3",
+    "version": "0.1.0-beta.4",
     "private": false,
     "repository": {
         "type": "git",
@@ -46,8 +46,8 @@
         "@types/chai": "^4.2.14",
         "@types/mocha": "^8.2.0",
         "@types/node": "^12.19.16",
-        "@typescript-eslint/eslint-plugin": "^2.34.0",
-        "@typescript-eslint/parser": "^2.34.0",
+        "@typescript-eslint/eslint-plugin": "^4.17.0",
+        "@typescript-eslint/parser": "^4.17.0",
         "chai": "^4.3.0",
         "cross-env": "^7.0.3",
         "dotenv": "^8.2.0",
@@ -73,6 +73,7 @@
     },
     "files": [
         "lib",
+        "!lib/test",
         "!lib/**/*.test.*"
     ],
     "main": "lib/index.js",

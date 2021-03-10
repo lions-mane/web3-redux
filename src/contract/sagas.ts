@@ -29,18 +29,11 @@ import { ZERO_ADDRESS } from '../utils';
 
 function* contractCallSynced(action: ContractActions.CallSyncedAction) {
     const { payload } = action;
-    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
-    if (!network)
-        throw new Error(
-            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
-        );
-    const web3 = network.web3;
-
     const id = contractId(payload);
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
 
     //Defaults
-    const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+    const from: string = payload.from ?? ZERO_ADDRESS;
     const defaultBlock = payload.defaultBlock ?? 'latest';
 
     let sync: ContractCallSync | false;
@@ -80,21 +73,12 @@ function* contractCallSynced(action: ContractActions.CallSyncedAction) {
 
 function* contractCall(action: ContractActions.CallAction) {
     const { payload } = action;
-    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
-    if (!network)
-        throw new Error(
-            `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
-        );
-    const web3 = network.web3;
-
     const id = contractId(payload);
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
 
     //Defaults
-    const from: string = payload.from ?? web3.eth.defaultAccount ?? ZERO_ADDRESS;
+    const from: string = payload.from ?? ZERO_ADDRESS;
     const defaultBlock = payload.defaultBlock ?? 'latest';
-    const gas = payload.gas;
-    const gasPrice = payload.gasPrice ?? 0;
 
     const web3Contract = contract.web3Contract!;
     let tx: any;
@@ -106,26 +90,178 @@ function* contractCall(action: ContractActions.CallAction) {
     const data = tx.encodeABI();
 
     const ethCall = validatedEthCall({
-        networkId: network.networkId,
+        networkId: payload.networkId,
         from,
         to: contract.address,
         defaultBlock,
         data,
-        gas,
-        gasPrice,
+        gas: payload.gas,
     });
-    yield put(EthCallActions.fetch(ethCall));
+
+    //Create base call
+    yield put(EthCallActions.create(ethCall));
 
     //Update contract call key if not stored
     const key = callArgsHash({ from, defaultBlock, args: payload.args });
     const contractCallSync = contract.methods[payload.method][key];
     if (!contractCallSync) {
         contract.methods[payload.method][key] = { ethCallId: ethCall.id };
-        yield put(ContractActions.create({ ...contract }));
+        yield put(ContractActions.create(contract));
     } else if (contractCallSync.ethCallId != ethCall.id) {
         contract.methods[payload.method][key].ethCallId = ethCall.id;
-        yield put(ContractActions.create({ ...contract }));
+        yield put(ContractActions.create(contract));
     }
+
+    const gas = ethCall.gas ?? (yield call(tx.estimateGas, { ...ethCall })); //default gas
+    const returnValue = yield call(tx.call, { ...ethCall, gas }, ethCall.defaultBlock);
+    yield put(EthCallActions.create({ ...ethCall, returnValue }));
+}
+
+function* contractCallBatched(action: ContractActions.CallBatchedAction) {
+    const { payload } = action;
+    const { networkId, requests } = payload;
+
+    const network: Network = yield select(NetworkSelector.selectSingle, networkId);
+    if (!network)
+        throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
+    const web3 = network.web3;
+    const multicallContract = network.multicallContract;
+
+    const contractIds = Array.from(new Set(requests.map(f => contractId({ address: f.address, networkId }))));
+    const contracts: Contract[] = yield select(ContractSelector.selectMany, contractIds);
+    const contractsByAddress: { [key: string]: Contract } = {};
+    contracts.forEach(c => (contractsByAddress[c.address] = c));
+
+    const batch = new web3.eth.BatchRequest();
+
+    //TODO: Investigate potential issue batch gas expense too large
+    //TODO: Investigate potential issue batch data size too large
+    const preCallTasks = requests.map(f => {
+        const contract = contractsByAddress[f.address];
+        const web3Contract = contract.web3Contract!;
+
+        let tx: any;
+        if (!f.args || f.args.length == 0) {
+            tx = web3Contract.methods[f.method]();
+        } else {
+            tx = web3Contract.methods[f.method](...f.args);
+        }
+
+        const data = tx.encodeABI();
+        const ethCall = validatedEthCall({
+            networkId: network.networkId,
+            to: f.address,
+            data,
+            gas: f.gas,
+        });
+
+        //Create base call
+        const putEthCallTask = put(EthCallActions.create(ethCall));
+
+        //Update contract call key if not stored
+        const key = callArgsHash({ from: ethCall.from, defaultBlock: ethCall.defaultBlock, args: f.args });
+        const contractCallSync = contract.methods[f.method][key];
+        if (!contractCallSync) {
+            contract.methods[f.method][key] = { ethCallId: ethCall.id };
+        } else if (contractCallSync.ethCallId != ethCall.id) {
+            contract.methods[f.method][key].ethCallId = ethCall.id;
+        }
+
+        //Output decoder for multicall
+        const methodAbi = contract.abi.find(m => m.name === f.method)!;
+        const methodAbiOutput = methodAbi.outputs;
+
+        return { tx, ethCall, putEthCallTask, methodAbiOutput };
+    });
+
+    //All update eth call
+    yield all(preCallTasks.map(x => x.putEthCallTask));
+    //All update contract
+    yield all(contracts.map(c => put(ContractActions.create(c))));
+
+    //If not Multicall, or from/defaultBlock specified
+    const regularCallTasks = preCallTasks.filter(
+        t => !multicallContract || t.ethCall.from != ZERO_ADDRESS || t.ethCall.defaultBlock != 'latest',
+    );
+    //Batch at smart-contract level with Multicall
+    const multiCallTasks = preCallTasks.filter(
+        t => !(!multicallContract || t.ethCall.from != ZERO_ADDRESS || t.ethCall.defaultBlock != 'latest'),
+    );
+
+    const regularCalls = regularCallTasks.map(t => {
+        //@ts-ignore
+        const batchFetchTask = new Promise((resolve, reject) => {
+            batch.add(
+                t.tx.call.request({ from: t.ethCall.from }, (error: any, result: any) => {
+                    if (error) reject(error);
+                    resolve(result);
+                }),
+            );
+        });
+
+        return batchFetchTask;
+    });
+
+    //See https://github.com/makerdao/multicall/blob/master/src/Multicall.sol
+    const multicallCallsInput = multiCallTasks.map(t => {
+        return { target: t.ethCall.to, callData: t.ethCall.data };
+    });
+    if (!!multicallContract && multicallCallsInput.length > 0) {
+        const tx = multicallContract.methods.aggregate(multicallCallsInput);
+        const batchFetchTask = new Promise((resolve, reject) => {
+            batch.add(
+                tx.call.request({ from: ZERO_ADDRESS }, (error: any, result: any) => {
+                    if (error) reject(error);
+                    resolve(result);
+                }),
+            );
+        });
+        regularCalls.push(batchFetchTask);
+    }
+
+    //All return call result
+    const batchCallTasks = all(regularCalls);
+    batch.execute();
+
+    const batchResults: any[] = yield batchCallTasks;
+    //Track call task
+    let callTaskIdx = 0;
+    const updateEthCallTasks = all(
+        batchResults.map(returnValue => {
+            if (callTaskIdx < regularCallTasks.length) {
+                const ethCall = preCallTasks[callTaskIdx].ethCall;
+                callTaskIdx += 1;
+                return put(EthCallActions.create({ ...ethCall, returnValue }));
+            } else {
+                const [, returnData]: [any, string[]] = returnValue;
+                const putActions = returnData.map(data => {
+                    const task = preCallTasks[callTaskIdx];
+                    const ethCall = task.ethCall;
+                    //TODO: Format based on __length__
+                    const multicallReturnValue = task.methodAbiOutput
+                        ? web3.eth.abi.decodeParameters(task.methodAbiOutput, data)
+                        : undefined;
+                    if (!multicallReturnValue || multicallReturnValue.__length__ == 0) return Promise.resolve(); //No value
+
+                    let formatedValue: any;
+                    if (multicallReturnValue.__length__ == 1) {
+                        formatedValue = multicallReturnValue['0'];
+                    } else if (multicallReturnValue.__length__ > 1) {
+                        formatedValue = [];
+                        for (let i = 0; i < multicallReturnValue.__length__; i++) {
+                            formatedValue.push(multicallReturnValue[i]);
+                        }
+                    }
+                    callTaskIdx += 1;
+                    return put(EthCallActions.create({ ...ethCall, returnValue: formatedValue }));
+                });
+
+                return all(putActions);
+            }
+        }),
+    );
+
+    yield updateEthCallTasks;
 }
 
 const CONTRACT_SEND_HASH = `${ContractActions.SEND}/HASH`;
@@ -172,18 +308,12 @@ function contractSendChannel(tx: PromiEvent<TransactionReceipt>): EventChannel<C
 function* contractSend(action: ContractActions.SendAction) {
     const { payload } = action;
     const networkId = payload.networkId;
-    const network: Network = yield select(NetworkSelector.selectSingle, networkId);
-    if (!network)
-        throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
     const id = contractId(payload);
-    const web3 = network.web3;
     const contract: Contract = yield select(ContractSelector.selectSingle, id);
-    const web3Contract = contract.web3Contract!;
+    const web3Contract = contract.web3SenderContract!;
 
-    const from = payload.options?.from ?? web3.eth.defaultAccount;
-    if (!from)
-        throw new Error('contractSend: Missing from address. Make sure to set options.from or web3.eth.defaultAccount');
-    const gasPrice = payload.options?.gasPrice ?? 0;
+    const from = payload.from;
+    const gasPrice = payload.gasPrice ?? 0;
 
     let tx: any;
     if (!payload.args || payload.args.length == 0) {
@@ -191,7 +321,7 @@ function* contractSend(action: ContractActions.SendAction) {
     } else {
         tx = web3Contract.methods[payload.method](...payload.args);
     }
-    const gas = payload.options?.gas ?? (yield call(tx.estimateGas, { from }));
+    const gas = payload.gas ?? (yield call(tx.estimateGas, { from }));
     const txPromiEvent: PromiEvent<TransactionReceipt> = tx.send({ from, gas, gasPrice });
 
     const channel: TakeableChannel<ContractSendChannelMessage> = yield call(contractSendChannel, txPromiEvent);
@@ -343,6 +473,7 @@ function* eventSubscribeLoop() {
 export function* saga() {
     yield all([
         takeEvery(ContractActions.CALL, contractCall),
+        takeEvery(ContractActions.CALL_BATCHED, contractCallBatched),
         takeEvery(ContractActions.CALL_SYNCED, contractCallSynced),
         takeEvery(ContractActions.SEND, contractSend),
         eventSubscribeLoop(),

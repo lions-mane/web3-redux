@@ -118,21 +118,23 @@ describe('block.actions', () => {
     describe('selectors:many', () => {
         it('Block.selectMany(state)', async () => {
             const block1 = { networkId, number: 1 };
-            const block1Id = Block.blockId(block1);
+            const validated1 = Block.validatedBlock(block1);
             store.dispatch(Block.create(block1));
-            const expected = { ...block1, id: block1Id };
 
             //State
-            const expectedState = { [expected.id!]: expected };
             assert.deepEqual(
-                store.getState().web3Redux['Block'].itemsById,
-                expectedState,
+                store.getState().web3Redux['Block'].itemsById[validated1.id!],
+                validated1,
                 'state.web3Redux.Block.itemsById',
             );
 
             //Block.selectMany
-            assert.deepEqual(Block.selectMany(store.getState(), [expected.id!]), [expected], 'Block.select([id])');
-            assert.deepEqual(Block.selectMany(store.getState()), [expected], 'Block.select()');
+            assert.deepEqual(
+                Block.selectMany(store.getState(), [validated1.id!]),
+                [validated1],
+                'Block.selectMany([id])',
+            );
+            assert.deepEqual(Block.selectMany(store.getState()), [validated1], 'Block.selectMany()');
         });
 
         it('Block.selectManyTransactions', async () => {

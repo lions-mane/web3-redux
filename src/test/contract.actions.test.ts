@@ -2,8 +2,8 @@ import Web3 from 'web3';
 import { assert } from 'chai';
 import { createStore } from '../store';
 import { Network, Contract, EthCall } from '../index';
-import { assertDeepEqual } from '../utils';
-import BlockNumber from '../abis/BlockNumber.json';
+import { addressList, assertDeepEqual } from './utils';
+import BlockNumber from './abis/BlockNumber.json';
 
 const networkId = '1337';
 const web3 = new Web3('http://locahost:8545');
@@ -12,33 +12,11 @@ const network = {
     web3,
 };
 
-const methods = BlockNumber.abi
-    .filter(item => item.type == 'function')
-    .map(item => item.name!)
-    .reduce((acc, m) => {
-        return { ...acc, [m]: {} };
-    }, {});
-const events = BlockNumber.abi
-    .filter(item => item.type == 'event')
-    .map(item => item.name!)
-    .reduce((acc, m) => {
-        return { ...acc, [m]: {} };
-    }, {});
-
 const contract = {
     networkId,
     address: '0x0000000000000000000000000000000000000001',
     abi: BlockNumber.abi as any,
 };
-
-const addressList = [
-    '0x0000000000000000000000000000000000000001',
-    '0x0000000000000000000000000000000000000002',
-    '0x0000000000000000000000000000000000000003',
-    '0x0000000000000000000000000000000000000004',
-    '0x0000000000000000000000000000000000000005',
-    '0x0000000000000000000000000000000000000006',
-];
 
 describe('contract.actions', () => {
     let store: ReturnType<typeof createStore>;
@@ -65,7 +43,7 @@ describe('contract.actions', () => {
 
             store.dispatch(Contract.create({ ...contract }));
 
-            const contractId = `${contract.networkId}-${contract.address}`;
+            const contractId = Contract.contractId(contract);
             const selected2 = Contract.selectContractCall(store.getState(), contractId, 'xyz');
             assert.equal(selected2, undefined, 'method undefined');
 
@@ -89,8 +67,8 @@ describe('contract.actions', () => {
 
             assert.notEqual(selected1, expected1, 'unequal reference');
             assert.deepEqual(
-                { ...selected1!, web3Contract: undefined },
-                { ...expected1, web3Contract: undefined },
+                { ...selected1!, web3Contract: undefined, web3SenderContract: undefined },
+                { ...expected1, web3Contract: undefined, web3SenderContract: undefined },
                 'equal deep values',
             );
 
@@ -129,7 +107,7 @@ describe('contract.actions', () => {
             store.dispatch(
                 EthCall.create({
                     ...ethCall1,
-                    returnValue: '0x000000000000000000000000000000000000000000000000000000000000002a',
+                    returnValue: '42',
                 }),
             );
 
@@ -141,31 +119,38 @@ describe('contract.actions', () => {
         });
     });
 
-    it('Contract.create', async () => {
-        store.dispatch(Contract.create({ ...contract }));
-        const expected = { ...contract, methods, events, id: `${contract.networkId}-${contract.address}` };
+    describe('selectors:many', () => {
+        it('Contract.selectMany(state)', async () => {
+            const validated1 = Contract.validatedContract(contract);
+            store.dispatch(Contract.create(contract));
 
-        //State
-        assertDeepEqual(
-            store.getState().web3Redux['Contract'].itemsById[expected.id!],
-            expected,
-            ['web3Contract'],
-            'state.web3Redux.Contract.itemsById',
-        );
+            //State
+            assertDeepEqual(
+                store.getState().web3Redux['Contract'].itemsById[validated1.id!],
+                validated1,
+                ['web3Contract', 'web3SenderContract'],
+                'state.web3Redux.Contract.itemsById',
+            );
 
-        //Contract.select
-        assertDeepEqual(
-            Contract.selectSingle(store.getState(), expected.id!),
-            expected,
-            ['web3Contract'],
-            'Contract.select(id)',
-        );
-        assertDeepEqual(
-            Contract.selectMany(store.getState(), [expected.id!]),
-            [expected],
-            ['web3Contract'],
-            'Contract.select([id])',
-        );
-        assertDeepEqual(Contract.selectMany(store.getState()), [expected], ['web3Contract'], 'Contract.select()');
+            //Contract.select
+            assertDeepEqual(
+                Contract.selectSingle(store.getState(), validated1.id!),
+                validated1,
+                ['web3Contract', 'web3SenderContract'],
+                'Contract.select(id)',
+            );
+            assertDeepEqual(
+                Contract.selectMany(store.getState(), [validated1.id!]),
+                [validated1],
+                ['web3Contract', 'web3SenderContract'],
+                'Contract.select([id])',
+            );
+            assertDeepEqual(
+                Contract.selectMany(store.getState()),
+                [validated1],
+                ['web3Contract', 'web3SenderContract'],
+                'Contract.select()',
+            );
+        });
     });
 });

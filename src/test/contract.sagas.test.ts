@@ -4,13 +4,14 @@ import { Contract as Web3Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import ganache from 'ganache-core';
 
-import BlockNumber from '../abis/BlockNumber.json';
+import BlockNumber from './abis/BlockNumber.json';
+import Multicall from '../abis/Multicall.json';
 
 import { createStore } from '../store';
 import { Block, Contract, Network, Transaction } from '../index';
-import { sleep, sleepForPort } from '../utils';
 import { TransactionReceipt } from 'web3-core';
-import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, eventId } from '../contract/model';
+import { CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, contractId, eventId } from '../contract/model';
+import { mineBlock, sleep, ganacheLogger } from './utils';
 
 const networkId = '1337';
 
@@ -19,19 +20,28 @@ describe('contract.sagas', () => {
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
     let web3Contract: Web3Contract;
+    let testContractId: string;
+    let rpcLogger: ReturnType<typeof ganacheLogger>;
+    let ethCall = 0;
+    let rpcBatch = 0;
 
     before(async () => {
         const networkIdInt = parseInt(networkId);
-        const server = ganache.server({
-            port: 0,
+        rpcLogger = ganacheLogger();
+
+        const provider = ganache.provider({
             networkId: networkIdInt,
-            blockTime: 1,
+            logger: rpcLogger,
+            verbose: true,
         });
-        const port = await sleepForPort(server, 1000);
-        const rpc = `ws://localhost:${port}`;
-        web3 = new Web3(rpc);
+        //@ts-ignore
+        web3 = new Web3(provider);
         accounts = await web3.eth.getAccounts();
-        web3.eth.defaultAccount = accounts[0];
+
+        const ethCallIncr = () => (ethCall += 1);
+        const rpcBatchIncr = () => (rpcBatch += 1);
+        rpcLogger.addListener('eth_call', ethCallIncr);
+        rpcLogger.addListener('rpc_batch', rpcBatchIncr);
     });
 
     beforeEach(async () => {
@@ -43,9 +53,21 @@ describe('contract.sagas', () => {
         });
         const gas = await tx.estimateGas();
         web3Contract = await tx.send({ from: accounts[0], gas, gasPrice: '10000' });
+        testContractId = contractId({ networkId, address: web3Contract.options.address });
+
+        store.dispatch(
+            Contract.create({
+                networkId,
+                address: web3Contract.options.address,
+                abi: BlockNumber.abi as AbiItem[],
+            }),
+        );
     });
 
-    it('store.dispatch(ContractSagas.callSynced({sync:false}))', async () => {
+    it('store.dispatch(ContractSagas.call())', async () => {
+        const ethCallInitial = ethCall;
+        const rpcBatchInitial = rpcBatch;
+
         const tx2 = await web3Contract.methods.setValue(42);
         const gas2 = await tx2.estimateGas();
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
@@ -58,6 +80,106 @@ describe('contract.sagas', () => {
             }),
         );
         store.dispatch(
+            Contract.call({
+                networkId,
+                address: web3Contract.options.address,
+                method: 'getValue',
+            }),
+        );
+        await sleep(150);
+
+        //Selector
+        const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
+
+        assert.equal(value, 42, 'getValue');
+        assert.strictEqual(value, '42', 'getValue');
+        assert.equal(rpcBatch - rpcBatchInitial, 0, 'rpc_batch rpc calls != expected');
+        assert.equal(ethCall - ethCallInitial, 1, 'eth_call rpc calls != expected');
+    });
+
+    it('store.dispatch(Contract.callBatched())', async () => {
+        const ethCallInitial = ethCall;
+        const rpcBatchInitial = rpcBatch;
+
+        const tx2 = await web3Contract.methods.setValue(42);
+        await tx2.send({ from: accounts[0], gas: await tx2.estimateGas() });
+        await sleep(150);
+
+        const expectedBlockNumber = await web3.eth.getBlockNumber();
+
+        const ethCall1 = {
+            address: web3Contract.options.address,
+            method: 'getValue',
+        };
+        const ethCall2 = {
+            address: web3Contract.options.address,
+            method: 'blockNumber',
+        };
+
+        store.dispatch(Contract.callBatched({ networkId, requests: [ethCall1, ethCall2] }));
+        await sleep(150);
+
+        //Selector
+        const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
+
+        const blockNumber = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
+
+        assert.equal(getValue, 42, 'getValue');
+        assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
+
+        assert.equal(rpcBatch - rpcBatchInitial, 1, 'rpc_batch rpc calls != expected');
+        //While a batched rpc request, still logs 2 separate eth_call operations
+        assert.equal(ethCall - ethCallInitial, 2, 'eth_call rpc calls != expected');
+    });
+
+    it('store.dispatch(Contract.callBatched(multicall:true))', async () => {
+        const ethCallInitial = ethCall;
+        const rpcBatchInitial = rpcBatch;
+
+        const tx2 = await web3Contract.methods.setValue(42);
+        await tx2.send({ from: accounts[0], gas: await tx2.estimateGas() });
+        await sleep(150);
+
+        const tx3 = new web3.eth.Contract(Multicall.abi as AbiItem[]).deploy({
+            data: Multicall.bytecode,
+        });
+        const gas3 = await tx3.estimateGas();
+        const multiCallContract = await tx3.send({ from: accounts[0], gas: gas3, gasPrice: '10000' });
+        store.dispatch(Network.create({ networkId, web3, multicallAddress: multiCallContract.options.address }));
+        await sleep(150);
+
+        const expectedBlockNumber = await web3.eth.getBlockNumber();
+
+        const ethCall1 = {
+            address: web3Contract.options.address,
+            method: 'getValue',
+        };
+        const ethCall2 = {
+            address: web3Contract.options.address,
+            method: 'blockNumber',
+        };
+        store.dispatch(Contract.callBatched({ networkId, requests: [ethCall1, ethCall2] }));
+        await sleep(150);
+
+        //Selector
+        const getValue = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
+
+        const blockNumber = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
+
+        assert.equal(getValue, 42, 'getValue');
+        assert.equal(blockNumber, expectedBlockNumber, 'blockNumber');
+
+        assert.equal(rpcBatch - rpcBatchInitial, 1, 'rpc_batch rpc calls != expected');
+        //Batching with multicall logs only 1 eth_call operations
+        assert.equal(ethCall - ethCallInitial, 1, 'eth_call rpc calls != expected');
+    });
+
+    it('store.dispatch(ContractSagas.callSynced({sync:false}))', async () => {
+        const tx2 = await web3Contract.methods.setValue(42);
+        const gas2 = await tx2.estimateGas();
+        await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
+
+        store.dispatch(
             Contract.callSynced({
                 networkId,
                 address: web3Contract.options.address,
@@ -65,14 +187,10 @@ describe('contract.sagas', () => {
                 sync: false,
             }),
         );
-        await sleep(100);
-
-        const contractId = `${networkId}-${web3Contract.options.address}`;
+        await sleep(150);
 
         //Selector
-        const value = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
 
         assert.equal(value, 42, 'getValue');
         assert.strictEqual(value, '42', 'getValue');
@@ -82,13 +200,6 @@ describe('contract.sagas', () => {
         //Block subsciption used for updates
         store.dispatch(Block.subscribe({ networkId, returnTransactionObjects: false }));
         store.dispatch(
-            Contract.create({
-                networkId,
-                address: web3Contract.options.address,
-                abi: BlockNumber.abi as AbiItem[],
-            }),
-        );
-        store.dispatch(
             Contract.callSynced({
                 networkId,
                 address: web3Contract.options.address,
@@ -96,19 +207,16 @@ describe('contract.sagas', () => {
                 sync: CALL_BLOCK_SYNC,
             }),
         );
-        await sleep(2000);
+        await sleep(150);
 
-        const contractId = `${networkId}-${web3Contract.options.address}`;
+        const blockNumber1 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
 
-        const blockNumber1 = Contract.selectContractCall(store.getState(), contractId, 'blockNumber', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
-        await sleep(2000);
-        const blockNumber2 = Contract.selectContractCall(store.getState(), contractId, 'blockNumber', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        //Increment block
+        await mineBlock(web3);
 
-        assert.isAtLeast(parseInt(blockNumber2), parseInt(blockNumber1) + 1);
+        const blockNumber2 = Contract.selectContractCall(store.getState(), testContractId, 'blockNumber');
+
+        assert.equal(parseInt(blockNumber2), parseInt(blockNumber1) + 1);
     });
 
     it('store.dispatch(ContractSagas.callSynced({sync:CALL_TRANSACTION_SYNC})) - Transaction.fetch', async () => {
@@ -117,13 +225,6 @@ describe('contract.sagas', () => {
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
         store.dispatch(
-            Contract.create({
-                networkId,
-                address: web3Contract.options.address,
-                abi: BlockNumber.abi as AbiItem[],
-            }),
-        );
-        store.dispatch(
             Contract.callSynced({
                 networkId,
                 address: web3Contract.options.address,
@@ -131,13 +232,9 @@ describe('contract.sagas', () => {
                 sync: CALL_TRANSACTION_SYNC,
             }),
         );
-        await sleep(2000);
+        await sleep(150);
 
-        const contractId = `${networkId}-${web3Contract.options.address}`;
-
-        const value1 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value1, 42);
 
         //Send transaction to contract, triggering a refresh
@@ -153,10 +250,8 @@ describe('contract.sagas', () => {
         );
 
         //Updated from transaction sync
-        await sleep(2000);
-        const value2 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        await sleep(150);
+        const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value2, 666);
     });
 
@@ -168,13 +263,6 @@ describe('contract.sagas', () => {
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
         store.dispatch(
-            Contract.create({
-                networkId,
-                address: web3Contract.options.address,
-                abi: BlockNumber.abi as AbiItem[],
-            }),
-        );
-        store.dispatch(
             Contract.callSynced({
                 networkId,
                 address: web3Contract.options.address,
@@ -182,13 +270,9 @@ describe('contract.sagas', () => {
                 sync: CALL_TRANSACTION_SYNC,
             }),
         );
-        await sleep(2000);
+        await sleep(150);
 
-        const contractId = `${networkId}-${web3Contract.options.address}`;
-
-        const value1 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        const value1 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value1, 42);
 
         //Send transaction to contract, triggering a refresh
@@ -197,46 +281,29 @@ describe('contract.sagas', () => {
         await tx3.send({ from: accounts[0], gas: gas3, gasPrice: '10000' });
 
         //Updated from transaction sync
-        await sleep(2000);
-        const value2 = Contract.selectContractCall(store.getState(), contractId, 'getValue', {
-            from: web3.eth.defaultAccount ?? undefined,
-        });
+        await sleep(150);
+        const value2 = Contract.selectContractCall(store.getState(), testContractId, 'getValue');
         assert.equal(value2, 666);
     });
 
     it('store.dispatch(ContractSagas.send())', async () => {
         store.dispatch(
-            Contract.create({
-                networkId,
-                address: web3Contract.options.address,
-                abi: BlockNumber.abi as AbiItem[],
-            }),
-        );
-
-        store.dispatch(
             Contract.send({
                 networkId,
+                from: accounts[0],
                 address: web3Contract.options.address,
                 method: 'setValue',
                 args: [42],
             }),
         );
 
-        await sleep(2000);
+        await sleep(150);
 
         const value = await web3Contract.methods.getValue().call();
         assert.equal(value, 42, 'setValue() did not work!');
     });
 
     it('store.dispatch(ContractSagas.eventSubscribe())', async (): Promise<void> => {
-        store.dispatch(
-            Contract.create({
-                networkId,
-                address: web3Contract.options.address,
-                abi: BlockNumber.abi as AbiItem[],
-            }),
-        );
-
         const expectedEvents: any = {};
         web3Contract.events['NewValue']().on('data', (event: any) => {
             expectedEvents[eventId(event)] = event;
@@ -253,7 +320,7 @@ describe('contract.sagas', () => {
         const gas2 = await tx2.estimateGas();
         await tx2.send({ from: accounts[0], gas: gas2, gasPrice: '10000' });
 
-        const contractSel = Contract.selectSingle(store.getState(), `${networkId}-${web3Contract.options.address}`);
+        const contractSel = Contract.selectSingle(store.getState(), testContractId);
 
         assert.deepEqual(contractSel!.events!.NewValue, expectedEvents);
     });

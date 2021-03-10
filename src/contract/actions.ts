@@ -1,4 +1,3 @@
-import { SendOptions } from 'web3-eth-contract';
 import { actionCreator } from '../utils';
 import {
     ContractCallSync,
@@ -16,6 +15,7 @@ export const UPDATE = `${name}/UPDATE`;
 export const REMOVE = `${name}/DELETE`;
 
 export const CALL = `${name}/CALL`;
+export const CALL_BATCHED = `${name}/CALL_BATCHED`;
 export const CALL_SYNCED = `${name}/CALL_SYNCED`;
 export const SEND = `${name}/SEND`;
 
@@ -31,9 +31,32 @@ export interface CallActionInput extends ContractIdDeconstructed {
     from?: string;
     defaultBlock?: number | string;
     gas?: string;
-    gasPrice?: string;
 }
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
+
+export interface CallBatchedActionInput {
+    networkId: string;
+    requests: {
+        address: string;
+        method: string;
+        args?: any[];
+        from?: string;
+        defaultBlock?: number | string;
+        gas?: string;
+    }[];
+}
+/**
+ * Optimally batched call requests.
+ * Requests are grouped by network and batched with web3.BatchRequest().
+ * @see {@link https://web3js.readthedocs.io/en/v1.2.0/web3-eth.html#batchrequest}
+ *
+ * Calls will be batched busing Multicall if:
+ *  - network has a Multicall contract
+ *  - from == undefined
+ *  - defaultBlock == 'latest' || defaultBlock == undefined
+ * @see {@link https://github.com/makerdao/multicall}
+ */
+export const callBatched = actionCreator<typeof CALL_BATCHED, CallBatchedActionInput>(CALL_BATCHED);
 
 export interface CallSyncedActionInput extends CallActionInput {
     sync?: ContractCallSync | boolean | typeof CALL_BLOCK_SYNC | typeof CALL_TRANSACTION_SYNC;
@@ -43,7 +66,10 @@ export const callSynced = actionCreator<typeof CALL_SYNCED, CallSyncedActionInpu
 export interface SendActionInput extends ContractIdDeconstructed {
     method: string;
     args?: any[];
-    options?: SendOptions;
+    from: string;
+    gasPrice?: string;
+    gas?: string;
+    value?: string;
 }
 export const send = actionCreator<typeof SEND, SendActionInput>(SEND);
 
@@ -74,6 +100,11 @@ export function isCallAction(action: { type: string }): action is CallAction {
     return action.type === CALL;
 }
 
+export type CallBatchedAction = ReturnType<typeof callBatched>;
+export function isCallBatchedAction(action: { type: string }): action is CallBatchedAction {
+    return action.type === CALL_BATCHED;
+}
+
 export type CallSyncedAction = ReturnType<typeof callSynced>;
 export function isCallSyncedAction(action: { type: string }): action is CallSyncedAction {
     return action.type === CALL_SYNCED;
@@ -99,9 +130,9 @@ export function isReducerAction(action: { type: string }): action is ReducerActi
     return isCreateAction(action) || isRemoveAction(action);
 }
 
-export type SagaAction = CallAction | SendAction;
+export type SagaAction = CallAction | CallBatchedAction | CallSyncedAction | SendAction;
 export function isSagaAction(action: { type: string }): action is SagaAction {
-    return isCallAction(action) || isSendAction(action);
+    return isCallAction(action) || isCallBatchedAction(action) || isCallSyncedAction(action) || isSendAction(action);
 }
 
 export type Action = ReducerAction | SagaAction;

@@ -1,6 +1,6 @@
-import { attr, Model as ORMModel } from 'redux-orm';
+import { attr, fk, Model as ORMModel } from 'redux-orm';
 import { NetworkId } from '../network/model';
-import { Transaction } from '../transaction/model';
+import { Transaction, validatedTransaction } from '../transaction/model';
 import { isStrings } from '../utils';
 
 /**
@@ -110,6 +110,7 @@ export class Model extends ORMModel {
 
     static fields = {
         number: attr(),
+        networkId: fk({ to: 'Network', as: 'network', relatedName: 'blocks' }),
     };
 }
 
@@ -118,8 +119,16 @@ export function blockId({ number, networkId }: BlockId) {
 }
 
 export function validatedBlock(block: Block): Block {
-    return {
-        ...block,
-        id: blockId(block),
-    };
+    if (isBlockTransactionObject(block)) {
+        return {
+            ...block,
+            transactions: block.transactions.map(t => validatedTransaction({ ...t, networkId: block.networkId })),
+            id: blockId(block),
+        };
+    } else {
+        return {
+            ...block,
+            id: blockId(block),
+        };
+    }
 }
