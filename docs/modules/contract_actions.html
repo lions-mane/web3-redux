@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>contract/actions | @lions-mane/web3-redux - v0.1.0-beta.1</title>
+	<title>contract/actions | @lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.1</a>
+					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.4</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -80,7 +80,8 @@
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/contract_actions.callactioninput.html" class="tsd-kind-icon">Call<wbr>Action<wbr>Input</a></li>
-								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/contract_actions.createactioninput.html" class="tsd-kind-icon">Create<wbr>Action<wbr>Input</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/contract_actions.callbatchedactioninput.html" class="tsd-kind-icon">Call<wbr>Batched<wbr>Action<wbr>Input</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/contract_actions.callsyncedactioninput.html" class="tsd-kind-icon">Call<wbr>Synced<wbr>Action<wbr>Input</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/contract_actions.eventsubscribeactioninput.html" class="tsd-kind-icon">Event<wbr>Subscribe<wbr>Action<wbr>Input</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/contract_actions.eventunsubscribeactioninput.html" class="tsd-kind-icon">Event<wbr>Unsubscribe<wbr>Action<wbr>Input</a></li>
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/contract_actions.sendactioninput.html" class="tsd-kind-icon">Send<wbr>Action<wbr>Input</a></li>
@@ -91,6 +92,8 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#action" class="tsd-kind-icon">Action</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#callaction" class="tsd-kind-icon">Call<wbr>Action</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#callbatchedaction" class="tsd-kind-icon">Call<wbr>Batched<wbr>Action</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#callsyncedaction" class="tsd-kind-icon">Call<wbr>Synced<wbr>Action</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#createaction" class="tsd-kind-icon">Create<wbr>Action</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#eventsubscribeaction" class="tsd-kind-icon">Event<wbr>Subscribe<wbr>Action</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#eventunsubscribeaction" class="tsd-kind-icon">Event<wbr>Unsubscribe<wbr>Action</a></li>
@@ -98,13 +101,14 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#removeaction" class="tsd-kind-icon">Remove<wbr>Action</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#sagaaction" class="tsd-kind-icon">Saga<wbr>Action</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#sendaction" class="tsd-kind-icon">Send<wbr>Action</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="contract_actions.html#updateaction" class="tsd-kind-icon">Update<wbr>Action</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Variables</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_actions.html#call" class="tsd-kind-icon">CALL</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_actions.html#call_batched" class="tsd-kind-icon">CALL_<wbr>BATCHED</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_actions.html#call_synced" class="tsd-kind-icon">CALL_<wbr>SYNCED</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_actions.html#create" class="tsd-kind-icon">CREATE</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_actions.html#event_subscribe" class="tsd-kind-icon">EVENT_<wbr>SUBSCRIBE</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="contract_actions.html#event_unsubscribe" class="tsd-kind-icon">EVENT_<wbr>UNSUBSCRIBE</a></li>
@@ -117,11 +121,15 @@
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#call-1" class="tsd-kind-icon">call</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#callbatched" class="tsd-kind-icon">call<wbr>Batched</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#callsynced" class="tsd-kind-icon">call<wbr>Synced</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#create-1" class="tsd-kind-icon">create</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#eventsubscribe" class="tsd-kind-icon">event<wbr>Subscribe</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#eventunsubscribe" class="tsd-kind-icon">event<wbr>Unsubscribe</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#isaction" class="tsd-kind-icon">is<wbr>Action</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#iscallaction" class="tsd-kind-icon">is<wbr>Call<wbr>Action</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#iscallbatchedaction" class="tsd-kind-icon">is<wbr>Call<wbr>Batched<wbr>Action</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#iscallsyncedaction" class="tsd-kind-icon">is<wbr>Call<wbr>Synced<wbr>Action</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#iscreateaction" class="tsd-kind-icon">is<wbr>Create<wbr>Action</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#iseventsubscribeaction" class="tsd-kind-icon">is<wbr>Event<wbr>Subscribe<wbr>Action</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#iseventunsubscribeaction" class="tsd-kind-icon">is<wbr>Event<wbr>Unsubscribe<wbr>Action</a></li>
@@ -129,10 +137,8 @@
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#isremoveaction" class="tsd-kind-icon">is<wbr>Remove<wbr>Action</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#issagaaction" class="tsd-kind-icon">is<wbr>Saga<wbr>Action</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#issendaction" class="tsd-kind-icon">is<wbr>Send<wbr>Action</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#isupdateaction" class="tsd-kind-icon">is<wbr>Update<wbr>Action</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#remove-1" class="tsd-kind-icon">remove</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#send-1" class="tsd-kind-icon">send</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-module"><a href="contract_actions.html#update-1" class="tsd-kind-icon">update</a></li>
 							</ul>
 						</section>
 					</div>
@@ -146,7 +152,7 @@
 					<div class="tsd-signature tsd-kind-icon">Action<span class="tsd-signature-symbol">:</span> <a href="contract_actions.html#reduceraction" class="tsd-signature-type">ReducerAction</a><span class="tsd-signature-symbol"> | </span><a href="contract_actions.html#sagaaction" class="tsd-signature-type">SagaAction</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:108</li>
+							<li>Defined in src/contract/actions.ts:138</li>
 						</ul>
 					</aside>
 				</section>
@@ -156,7 +162,27 @@
 					<div class="tsd-signature tsd-kind-icon">Call<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof call</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:78</li>
+							<li>Defined in src/contract/actions.ts:98</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="callbatchedaction" class="tsd-anchor"></a>
+					<h3>Call<wbr>Batched<wbr>Action</h3>
+					<div class="tsd-signature tsd-kind-icon">Call<wbr>Batched<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof callBatched</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/contract/actions.ts:103</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="callsyncedaction" class="tsd-anchor"></a>
+					<h3>Call<wbr>Synced<wbr>Action</h3>
+					<div class="tsd-signature tsd-kind-icon">Call<wbr>Synced<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof callSynced</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/contract/actions.ts:108</li>
 						</ul>
 					</aside>
 				</section>
@@ -166,7 +192,7 @@
 					<div class="tsd-signature tsd-kind-icon">Create<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof create</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:65</li>
+							<li>Defined in src/contract/actions.ts:88</li>
 						</ul>
 					</aside>
 				</section>
@@ -176,7 +202,7 @@
 					<div class="tsd-signature tsd-kind-icon">Event<wbr>Subscribe<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof eventSubscribe</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:88</li>
+							<li>Defined in src/contract/actions.ts:118</li>
 						</ul>
 					</aside>
 				</section>
@@ -186,17 +212,17 @@
 					<div class="tsd-signature tsd-kind-icon">Event<wbr>Unsubscribe<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof eventUnsubscribe</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:93</li>
+							<li>Defined in src/contract/actions.ts:123</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="reduceraction" class="tsd-anchor"></a>
 					<h3>Reducer<wbr>Action</h3>
-					<div class="tsd-signature tsd-kind-icon">Reducer<wbr>Action<span class="tsd-signature-symbol">:</span> <a href="contract_actions.html#createaction" class="tsd-signature-type">CreateAction</a><span class="tsd-signature-symbol"> | </span><a href="contract_actions.html#updateaction" class="tsd-signature-type">UpdateAction</a><span class="tsd-signature-symbol"> | </span><a href="contract_actions.html#removeaction" class="tsd-signature-type">RemoveAction</a></div>
+					<div class="tsd-signature tsd-kind-icon">Reducer<wbr>Action<span class="tsd-signature-symbol">:</span> <a href="contract_actions.html#createaction" class="tsd-signature-type">CreateAction</a><span class="tsd-signature-symbol"> | </span><a href="contract_actions.html#removeaction" class="tsd-signature-type">RemoveAction</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:98</li>
+							<li>Defined in src/contract/actions.ts:128</li>
 						</ul>
 					</aside>
 				</section>
@@ -206,17 +232,17 @@
 					<div class="tsd-signature tsd-kind-icon">Remove<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof remove</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:74</li>
+							<li>Defined in src/contract/actions.ts:93</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="sagaaction" class="tsd-anchor"></a>
 					<h3>Saga<wbr>Action</h3>
-					<div class="tsd-signature tsd-kind-icon">Saga<wbr>Action<span class="tsd-signature-symbol">:</span> <a href="contract_actions.html#callaction" class="tsd-signature-type">CallAction</a><span class="tsd-signature-symbol"> | </span><a href="contract_actions.html#sendaction" class="tsd-signature-type">SendAction</a></div>
+					<div class="tsd-signature tsd-kind-icon">Saga<wbr>Action<span class="tsd-signature-symbol">:</span> <a href="contract_actions.html#callaction" class="tsd-signature-type">CallAction</a><span class="tsd-signature-symbol"> | </span><a href="contract_actions.html#callbatchedaction" class="tsd-signature-type">CallBatchedAction</a><span class="tsd-signature-symbol"> | </span><a href="contract_actions.html#callsyncedaction" class="tsd-signature-type">CallSyncedAction</a><span class="tsd-signature-symbol"> | </span><a href="contract_actions.html#sendaction" class="tsd-signature-type">SendAction</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:103</li>
+							<li>Defined in src/contract/actions.ts:133</li>
 						</ul>
 					</aside>
 				</section>
@@ -226,17 +252,7 @@
 					<div class="tsd-signature tsd-kind-icon">Send<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof send</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:83</li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="updateaction" class="tsd-anchor"></a>
-					<h3>Update<wbr>Action</h3>
-					<div class="tsd-signature tsd-kind-icon">Update<wbr>Action<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReturnType</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">typeof update</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in src/contract/actions.ts:69</li>
+							<li>Defined in src/contract/actions.ts:113</li>
 						</ul>
 					</aside>
 				</section>
@@ -249,7 +265,27 @@
 					<div class="tsd-signature tsd-kind-icon">CALL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:13</li>
+							<li>Defined in src/contract/actions.ts:17</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="call_batched" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> CALL_<wbr>BATCHED</h3>
+					<div class="tsd-signature tsd-kind-icon">CALL_<wbr>BATCHED<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/contract/actions.ts:18</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="call_synced" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> CALL_<wbr>SYNCED</h3>
+					<div class="tsd-signature tsd-kind-icon">CALL_<wbr>SYNCED<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/contract/actions.ts:19</li>
 						</ul>
 					</aside>
 				</section>
@@ -259,7 +295,7 @@
 					<div class="tsd-signature tsd-kind-icon">CREATE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:9</li>
+							<li>Defined in src/contract/actions.ts:13</li>
 						</ul>
 					</aside>
 				</section>
@@ -269,7 +305,7 @@
 					<div class="tsd-signature tsd-kind-icon">EVENT_<wbr>SUBSCRIBE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:16</li>
+							<li>Defined in src/contract/actions.ts:22</li>
 						</ul>
 					</aside>
 				</section>
@@ -279,7 +315,7 @@
 					<div class="tsd-signature tsd-kind-icon">EVENT_<wbr>UNSUBSCRIBE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:17</li>
+							<li>Defined in src/contract/actions.ts:23</li>
 						</ul>
 					</aside>
 				</section>
@@ -289,7 +325,7 @@
 					<div class="tsd-signature tsd-kind-icon">REMOVE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:11</li>
+							<li>Defined in src/contract/actions.ts:15</li>
 						</ul>
 					</aside>
 				</section>
@@ -299,7 +335,7 @@
 					<div class="tsd-signature tsd-kind-icon">SEND<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:14</li>
+							<li>Defined in src/contract/actions.ts:20</li>
 						</ul>
 					</aside>
 				</section>
@@ -309,7 +345,7 @@
 					<div class="tsd-signature tsd-kind-icon">UPDATE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/contract/actions.ts:10</li>
+							<li>Defined in src/contract/actions.ts:14</li>
 						</ul>
 					</aside>
 				</section>
@@ -326,7 +362,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:44</li>
+									<li>Defined in src/contract/actions.ts:35</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -348,28 +384,108 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="create-1" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> create</h3>
+					<a name="callbatched" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> call<wbr>Batched</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_actions.createactioninput.html" class="tsd-signature-type">CreateActionInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+						<li class="tsd-signature tsd-kind-icon">call<wbr>Batched<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_actions.callbatchedactioninput.html" class="tsd-signature-type">CallBatchedActionInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:33</li>
+									<li>Defined in src/contract/actions.ts:59</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography tsd-comment-shorttext">
+								<div class="lead">
+									<p>Optimally batched call requests.
+									Requests are grouped by network and batched with web3.BatchRequest().</p>
+								</div>
+								</div><div class="tsd-comment tsd-typography tsd-comment-tags">
+								<dl class="tsd-comment-tags"><dt>see</dt>
+									<dd><p><a href="https://web3js.readthedocs.io/en/v1.2.0/web3-eth.html#batchrequest" class="external">https://web3js.readthedocs.io/en/v1.2.0/web3-eth.html#batchrequest</a></p>
+										<p>Calls will be batched busing Multicall if:</p>
+										<ul>
+											<li>network has a Multicall contract</li>
+											<li>from == undefined</li>
+											<li>defaultBlock == &#39;latest&#39; || defaultBlock == undefined</li>
+										</ul>
+									</dd><dt>see</dt>
+									<dd><p><a href="https://github.com/makerdao/multicall" class="external">https://github.com/makerdao/multicall</a></p>
+								</dd></dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>payload: <a href="../interfaces/contract_actions.createactioninput.html" class="tsd-signature-type">CreateActionInput</a></h5>
+									<h5>payload: <a href="../interfaces/contract_actions.callbatchedactioninput.html" class="tsd-signature-type">CallBatchedActionInput</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
 							<ul class="tsd-parameters">
 								<li class="tsd-parameter">
-									<h5>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_actions.createactioninput.html" class="tsd-signature-type">CreateActionInput</a></h5>
+									<h5>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_actions.callbatchedactioninput.html" class="tsd-signature-type">CallBatchedActionInput</a></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="callsynced" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> call<wbr>Synced</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">call<wbr>Synced<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_actions.callsyncedactioninput.html" class="tsd-signature-type">CallSyncedActionInput</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/contract/actions.ts:64</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>payload: <a href="../interfaces/contract_actions.callsyncedactioninput.html" class="tsd-signature-type">CallSyncedActionInput</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter">
+									<h5>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_actions.callsyncedactioninput.html" class="tsd-signature-type">CallSyncedActionInput</a></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="create-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> create</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_model.contractpartial.html" class="tsd-signature-type">ContractPartial</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/contract/actions.ts:25</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>payload: <a href="../interfaces/contract_model.contractpartial.html" class="tsd-signature-type">ContractPartial</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter">
+									<h5>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_model.contractpartial.html" class="tsd-signature-type">ContractPartial</a></h5>
 								</li>
 								<li class="tsd-parameter">
 									<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
@@ -388,7 +504,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:58</li>
+									<li>Defined in src/contract/actions.ts:81</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -419,7 +535,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:63</li>
+									<li>Defined in src/contract/actions.ts:86</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -450,7 +566,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:109</li>
+									<li>Defined in src/contract/actions.ts:139</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -478,7 +594,63 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:79</li>
+									<li>Defined in src/contract/actions.ts:99</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>action: <span class="tsd-signature-type">object</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">action</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="iscallbatchedaction" class="tsd-anchor"></a>
+					<h3>is<wbr>Call<wbr>Batched<wbr>Action</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Call<wbr>Batched<wbr>Action<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">action</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/contract/actions.ts:104</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>action: <span class="tsd-signature-type">object</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">action</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="iscallsyncedaction" class="tsd-anchor"></a>
+					<h3>is<wbr>Call<wbr>Synced<wbr>Action</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Call<wbr>Synced<wbr>Action<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">action</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/contract/actions.ts:109</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -506,7 +678,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:66</li>
+									<li>Defined in src/contract/actions.ts:89</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -534,7 +706,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:89</li>
+									<li>Defined in src/contract/actions.ts:119</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -562,7 +734,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:94</li>
+									<li>Defined in src/contract/actions.ts:124</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -590,7 +762,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:99</li>
+									<li>Defined in src/contract/actions.ts:129</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -618,7 +790,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:75</li>
+									<li>Defined in src/contract/actions.ts:94</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -646,7 +818,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:104</li>
+									<li>Defined in src/contract/actions.ts:134</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -674,35 +846,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:84</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>action: <span class="tsd-signature-type">object</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter">
-											<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">action</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="isupdateaction" class="tsd-anchor"></a>
-					<h3>is<wbr>Update<wbr>Action</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">is<wbr>Update<wbr>Action<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">action</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/contract/actions.ts:70</li>
+									<li>Defined in src/contract/actions.ts:114</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -724,25 +868,25 @@
 					<a name="remove-1" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> remove</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_model.contractid.html" class="tsd-signature-type">ContractId</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="contract_model.html#contractid" class="tsd-signature-type">ContractId</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:35</li>
+									<li>Defined in src/contract/actions.ts:26</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>payload: <a href="../interfaces/contract_model.contractid.html" class="tsd-signature-type">ContractId</a></h5>
+									<h5>payload: <a href="contract_model.html#contractid" class="tsd-signature-type">ContractId</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
 							<ul class="tsd-parameters">
 								<li class="tsd-parameter">
-									<h5>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_model.contractid.html" class="tsd-signature-type">ContractId</a></h5>
+									<h5>payload<span class="tsd-signature-symbol">: </span><a href="contract_model.html#contractid" class="tsd-signature-type">ContractId</a></h5>
 								</li>
 								<li class="tsd-parameter">
 									<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
@@ -761,7 +905,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/contract/actions.ts:51</li>
+									<li>Defined in src/contract/actions.ts:74</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -782,37 +926,6 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
-					<a name="update-1" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> update</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
-						<li class="tsd-signature tsd-kind-icon">update<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_model.contract.html" class="tsd-signature-type">Contract</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/contract/actions.ts:34</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>payload: <a href="../interfaces/contract_model.contract.html" class="tsd-signature-type">Contract</a></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter">
-									<h5>payload<span class="tsd-signature-symbol">: </span><a href="../interfaces/contract_model.contract.html" class="tsd-signature-type">Contract</a></h5>
-								</li>
-								<li class="tsd-parameter">
-									<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</section>
 			</section>
 			<!--{&quot;options&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;tsconfig&quot;:&quot;/home/leo/Documents/projects/leovigna/tracer/workspace/web3-redux&quot;,&quot;entryPoints&quot;:[&quot;src&quot;],&quot;exclude&quot;:[],&quot;externalPattern&quot;:[&quot;**/node_modules/**&quot;],&quot;excludeExternals&quot;:false,&quot;excludeNotDocumented&quot;:false,&quot;excludeInternal&quot;:false,&quot;excludePrivate&quot;:false,&quot;excludeProtected&quot;:false,&quot;disableSources&quot;:false,&quot;includes&quot;:&quot;&quot;,&quot;media&quot;:&quot;&quot;,&quot;watch&quot;:false,&quot;preserveWatchOutput&quot;:false,&quot;emit&quot;:false,&quot;out&quot;:&quot;docs&quot;,&quot;json&quot;:&quot;&quot;,&quot;theme&quot;:&quot;./node_modules/typedoc-neo-theme/bin/default&quot;,&quot;highlightTheme&quot;:&quot;light-plus&quot;,&quot;name&quot;:&quot;&quot;,&quot;includeVersion&quot;:true,&quot;excludeTags&quot;:[],&quot;readme&quot;:&quot;&quot;,&quot;defaultCategory&quot;:&quot;Other&quot;,&quot;categoryOrder&quot;:[],&quot;categorizeByGroup&quot;:true,&quot;gitRevision&quot;:&quot;&quot;,&quot;gitRemote&quot;:&quot;origin&quot;,&quot;gaID&quot;:&quot;&quot;,&quot;gaSite&quot;:&quot;auto&quot;,&quot;hideGenerator&quot;:false,&quot;toc&quot;:[],&quot;disableOutputCheck&quot;:false,&quot;help&quot;:false,&quot;version&quot;:false,&quot;showConfig&quot;:false,&quot;plugin&quot;:[&quot;typedoc-neo-theme&quot;],&quot;logger&quot;:&quot;console&quot;,&quot;logLevel&quot;:1,&quot;listInvalidSymbolLinks&quot;:false,&quot;outline&quot;:[{&quot;Web3Redux&quot;:{&quot;actions&quot;:&quot;actions&quot;,&quot;sagas&quot;:&quot;saga&quot;,&quot;store&quot;:&quot;store&quot;,&quot;orm&quot;:&quot;orm&quot;},&quot;Block&quot;:{&quot;model&quot;:&quot;block_model&quot;,&quot;actions&quot;:&quot;block_actions&quot;,&quot;selector&quot;:&quot;block_selector&quot;,&quot;reducer&quot;:&quot;block_reducer&quot;,&quot;sagas&quot;:&quot;block_sagas&quot;},&quot;Transaction&quot;:{&quot;model&quot;:&quot;transaction_model&quot;,&quot;actions&quot;:&quot;transaction_actions&quot;,&quot;selector&quot;:&quot;transaction_selector&quot;,&quot;reducer&quot;:&quot;transaction_reducer&quot;,&quot;sagas&quot;:&quot;transaction_sagas&quot;},&quot;Network&quot;:{&quot;model&quot;:&quot;network_model&quot;,&quot;actions&quot;:&quot;network_actions&quot;,&quot;selector&quot;:&quot;network_selector&quot;,&quot;reducer&quot;:&quot;network_reducer&quot;},&quot;Contract&quot;:{&quot;model&quot;:&quot;contract_model&quot;,&quot;actions&quot;:&quot;contract_actions&quot;,&quot;selector&quot;:&quot;contract_selector&quot;,&quot;reducer&quot;:&quot;contract_reducer&quot;,&quot;sagas&quot;:&quot;contract_sagas&quot;}}]}-->
 		</div>
@@ -823,7 +936,10 @@
 						<a href="../interfaces/contract_actions.callactioninput.html" class="tsd-kind-icon">Call<wbr>Action<wbr>Input</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module root">
-						<a href="../interfaces/contract_actions.createactioninput.html" class="tsd-kind-icon">Create<wbr>Action<wbr>Input</a>
+						<a href="../interfaces/contract_actions.callbatchedactioninput.html" class="tsd-kind-icon">Call<wbr>Batched<wbr>Action<wbr>Input</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module root">
+						<a href="../interfaces/contract_actions.callsyncedactioninput.html" class="tsd-kind-icon">Call<wbr>Synced<wbr>Action<wbr>Input</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module root">
 						<a href="../interfaces/contract_actions.eventsubscribeactioninput.html" class="tsd-kind-icon">Event<wbr>Subscribe<wbr>Action<wbr>Input</a>
@@ -839,6 +955,12 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
 						<a href="contract_actions.html#callaction" class="tsd-kind-icon">Call<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="contract_actions.html#callbatchedaction" class="tsd-kind-icon">Call<wbr>Batched<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="contract_actions.html#callsyncedaction" class="tsd-kind-icon">Call<wbr>Synced<wbr>Action</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
 						<a href="contract_actions.html#createaction" class="tsd-kind-icon">Create<wbr>Action</a>
@@ -861,11 +983,14 @@
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
 						<a href="contract_actions.html#sendaction" class="tsd-kind-icon">Send<wbr>Action</a>
 					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="contract_actions.html#updateaction" class="tsd-kind-icon">Update<wbr>Action</a>
-					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module root">
 						<a href="contract_actions.html#call" class="tsd-kind-icon">CALL</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module root">
+						<a href="contract_actions.html#call_batched" class="tsd-kind-icon">CALL_<wbr>BATCHED</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module root">
+						<a href="contract_actions.html#call_synced" class="tsd-kind-icon">CALL_<wbr>SYNCED</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module root">
 						<a href="contract_actions.html#create" class="tsd-kind-icon">CREATE</a>
@@ -889,6 +1014,12 @@
 						<a href="contract_actions.html#call-1" class="tsd-kind-icon">call</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="contract_actions.html#callbatched" class="tsd-kind-icon">call<wbr>Batched</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="contract_actions.html#callsynced" class="tsd-kind-icon">call<wbr>Synced</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
 						<a href="contract_actions.html#create-1" class="tsd-kind-icon">create</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
@@ -902,6 +1033,12 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
 						<a href="contract_actions.html#iscallaction" class="tsd-kind-icon">is<wbr>Call<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="contract_actions.html#iscallbatchedaction" class="tsd-kind-icon">is<wbr>Call<wbr>Batched<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="contract_actions.html#iscallsyncedaction" class="tsd-kind-icon">is<wbr>Call<wbr>Synced<wbr>Action</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
 						<a href="contract_actions.html#iscreateaction" class="tsd-kind-icon">is<wbr>Create<wbr>Action</a>
@@ -925,16 +1062,10 @@
 						<a href="contract_actions.html#issendaction" class="tsd-kind-icon">is<wbr>Send<wbr>Action</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="contract_actions.html#isupdateaction" class="tsd-kind-icon">is<wbr>Update<wbr>Action</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
 						<a href="contract_actions.html#remove-1" class="tsd-kind-icon">remove</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
 						<a href="contract_actions.html#send-1" class="tsd-kind-icon">send</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="contract_actions.html#update-1" class="tsd-kind-icon">update</a>
 					</li>
 				</ul>
 			</nav>

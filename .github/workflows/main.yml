@@ -11,14 +11,6 @@ jobs:
   run-tests:
     name: Run Tests
     runs-on: ubuntu-latest
-    # Dummy env for tests
-    env:
-      LOCAL_RPC: ws://localhost:8545
-      MAINNET_RPC: ws://localhost:8545
-      ROPSTEN_RPC: ws://localhost:8545
-      KOVAN_RPC: ws://localhost:8545
-      RINKEBY_RPC: ws://localhost:8545
-      GOERLI_RPC: ws://localhost:8545
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1

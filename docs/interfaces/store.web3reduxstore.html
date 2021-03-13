@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Web3ReduxStore | @lions-mane/web3-redux - v0.1.0-beta.1</title>
+	<title>Web3ReduxStore | @lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.1</a>
+					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.4</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -92,6 +92,8 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="store.web3reduxstore.html#block" class="tsd-kind-icon">Block</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="store.web3reduxstore.html#contract" class="tsd-kind-icon">Contract</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="store.web3reduxstore.html#ethcall" class="tsd-kind-icon">Eth<wbr>Call</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="store.web3reduxstore.html#network" class="tsd-kind-icon">Network</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="store.web3reduxstore.html#transaction" class="tsd-kind-icon">Transaction</a></li>
 							</ul>
 						</section>
@@ -106,7 +108,7 @@
 					<div class="tsd-signature tsd-kind-icon">Block<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/store.ts:12</li>
+							<li>Defined in src/store.ts:19</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -129,7 +131,7 @@
 					<div class="tsd-signature tsd-kind-icon">Contract<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/store.ts:22</li>
+							<li>Defined in src/store.ts:29</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -147,12 +149,58 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="ethcall" class="tsd-anchor"></a>
+					<h3>Eth<wbr>Call</h3>
+					<div class="tsd-signature tsd-kind-icon">Eth<wbr>Call<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/store.ts:34</li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>items<wbr>ById<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-index-signature">
+										<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="ethcall_model.ethcall.html" class="tsd-signature-type">EthCall</a></h5>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="network" class="tsd-anchor"></a>
+					<h3>Network</h3>
+					<div class="tsd-signature tsd-kind-icon">Network<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/store.ts:14</li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>items<wbr>ById<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-index-signature">
+										<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="network_model.network.html" class="tsd-signature-type">Network</a></h5>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="transaction" class="tsd-anchor"></a>
 					<h3>Transaction</h3>
 					<div class="tsd-signature tsd-kind-icon">Transaction<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/store.ts:17</li>
+							<li>Defined in src/store.ts:24</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -185,6 +233,12 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="store.web3reduxstore.html#contract" class="tsd-kind-icon">Contract</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="store.web3reduxstore.html#ethcall" class="tsd-kind-icon">Eth<wbr>Call</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="store.web3reduxstore.html#network" class="tsd-kind-icon">Network</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
 								<a href="store.web3reduxstore.html#transaction" class="tsd-kind-icon">Transaction</a>

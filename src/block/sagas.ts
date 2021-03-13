@@ -2,20 +2,28 @@ import { put, call, takeEvery, take, all, cancel, fork, select } from 'redux-sag
 import { END, eventChannel, EventChannel, TakeableChannel } from 'redux-saga';
 import Web3 from 'web3';
 
-import { Block, BlockHeader, BlockTransaction } from './model';
+import {
+    Block,
+    BlockHeader,
+    blockId,
+    BlockTransaction,
+    isBlockTransactionObject,
+    isBlockTransactionString,
+} from './model';
 import { Network } from '../network/model';
 import { isContractCallBlockSync, Contract } from '../contract/model';
+import { transactionId } from '../transaction/model';
 
 import * as BlockActions from './actions';
 import * as ContractActions from '../contract/actions';
+import * as TransactionActions from '../transaction/actions';
 
 import * as NetworkSelector from '../network/selector';
 import * as ContractSelector from '../contract/selector';
 
-export function* fetch(action: BlockActions.FetchAction) {
+function* fetch(action: BlockActions.FetchAction) {
     const { payload } = action;
-    //@ts-ignore
-    const network: Network = yield select(NetworkSelector.select, payload.networkId);
+    const network: Network = yield select(NetworkSelector.selectSingle, payload.networkId);
     if (!network)
         throw new Error(
             `Could not find Network with id ${payload.networkId}. Make sure to dispatch a Network/CREATE action.`,
@@ -24,9 +32,27 @@ export function* fetch(action: BlockActions.FetchAction) {
     const block: BlockTransaction = yield call(
         web3.eth.getBlock,
         payload.blockHashOrBlockNumber,
-        payload.returnTransactionObjects ?? false,
+        payload.returnTransactionObjects ?? true,
     );
     yield put(BlockActions.create({ ...block, networkId: payload.networkId }));
+}
+
+function* fetchLoop() {
+    const cache: { [key: string]: boolean } = {};
+
+    const actionPattern = (action: { type: string }) => {
+        if (!BlockActions.isFetchAction(action)) return false;
+        if (action.payload.blockHashOrBlockNumber === 'latest') return true;
+        if (action.payload.blockHashOrBlockNumber === 'pending') return true;
+        if (action.payload.blockHashOrBlockNumber === 'earliest') return true;
+
+        const actionId = `${action.payload.networkId}-${action.payload.blockHashOrBlockNumber}`;
+        if (cache[actionId]) return false;
+        cache[actionId] = true;
+        return true;
+    };
+
+    yield takeEvery(actionPattern, fetch);
 }
 
 const SUBSCRIBE_CONNECTED = `${BlockActions.SUBSCRIBE}/CONNECTED`;
@@ -64,41 +90,9 @@ function subscribeChannel(web3: Web3): EventChannel<ChannelMessage> {
     });
 }
 
-function* handleBlockUpdate(block: Block) {
-    const contracts: Contract[] = yield select(ContractSelector.select);
-    const putContractCall: any[] = [];
-    contracts
-        .filter(contract => contract.networkId === block.networkId)
-        .map(contract => {
-            Object.entries(contract.methods ?? {}).map(([methodName, method]) => {
-                Object.values(method).map(contractCall => {
-                    if (
-                        !!contractCall.sync &&
-                        isContractCallBlockSync(contractCall.sync) &&
-                        contractCall.sync.filter(block)
-                    ) {
-                        putContractCall.push(
-                            put(
-                                ContractActions.call({
-                                    address: contract.address,
-                                    networkId: contract.networkId,
-                                    method: methodName,
-                                    ...contractCall,
-                                }),
-                            ),
-                        );
-                    }
-                });
-            });
-        });
-
-    yield all(putContractCall);
-}
-
 function* subscribe(action: BlockActions.SubscribeAction) {
     const networkId = action.payload.networkId;
-    //@ts-ignore
-    const network: Network = yield select(NetworkSelector.select, networkId);
+    const network: Network = yield select(NetworkSelector.selectSingle, networkId);
 
     if (!network)
         throw new Error(`Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`);
@@ -114,9 +108,7 @@ function* subscribe(action: BlockActions.SubscribeAction) {
                 if (type === SUBSCRIBE_DATA) {
                     const newBlock = { ...block!, networkId };
                     yield put(BlockActions.create(newBlock));
-                    //@ts-ignore
-                    yield fork(handleBlockUpdate, newBlock);
-                    if (action.payload.returnTransactionObjects) {
+                    if (action.payload.returnTransactionObjects ?? true) {
                         yield fork(
                             fetch,
                             BlockActions.fetch({
@@ -130,9 +122,7 @@ function* subscribe(action: BlockActions.SubscribeAction) {
                     yield put({ type: SUBSCRIBE_ERROR, error });
                 } else if (type === SUBSCRIBE_CHANGED) {
                     const newBlock = { ...block!, networkId };
-                    yield put(BlockActions.update(newBlock));
-                    //@ts-ignore
-                    yield fork(handleBlockUpdate, newBlock);
+                    yield put(BlockActions.create(newBlock));
                     if (action.payload.returnTransactionObjects) {
                         yield fork(
                             fetch,
@@ -186,6 +176,84 @@ function* subscribeLoop() {
     yield all([subscribeLoopStart(), subscribeLoopEnd()]);
 }
 
+function* createBlockTransactions(block: Block) {
+    if (isBlockTransactionString(block)) {
+        const transactions = block.transactions;
+        const actions = transactions.map((hash: string) => {
+            return put(
+                TransactionActions.create({
+                    hash,
+                    networkId: block.networkId,
+                    blockNumber: block.number,
+                    blockId: block.id!,
+                    id: transactionId({ hash, networkId: block.networkId }),
+                }),
+            );
+        });
+        yield all(actions);
+    } else if (isBlockTransactionObject(block)) {
+        const transactions = block.transactions;
+        const actions = transactions.map(tx => {
+            return put(
+                TransactionActions.create({
+                    ...tx,
+                    networkId: block.networkId,
+                    blockId: block.id!,
+                    id: transactionId({ hash: tx.hash, networkId: block.networkId }),
+                }),
+            );
+        });
+        yield all(actions);
+    }
+}
+
+function* contractCallBlockSync(block: Block) {
+    const contracts: Contract[] = yield select(ContractSelector.select);
+    const putContractCall: any[] = [];
+    contracts
+        .filter(contract => contract.networkId === block.networkId)
+        .map(contract => {
+            Object.entries(contract.methods ?? {}).map(([methodName, method]) => {
+                Object.values(method).map(contractCall => {
+                    if (
+                        !!contractCall.sync &&
+                        isContractCallBlockSync(contractCall.sync) &&
+                        contractCall.sync.filter(block)
+                    ) {
+                        putContractCall.push(
+                            put(
+                                ContractActions.call({
+                                    address: contract.address,
+                                    networkId: contract.networkId,
+                                    method: methodName,
+                                    ...contractCall,
+                                }),
+                            ),
+                        );
+                    }
+                });
+            });
+        });
+
+    yield all(putContractCall);
+}
+
+function* onCreateLoop() {
+    const cache: { [key: string]: string | undefined } = {};
+    while (true) {
+        const action: BlockActions.CreateAction = yield take(BlockActions.CREATE);
+        const block = action.payload;
+        const id = blockId(block);
+        if (cache[id] != block.hash) {
+            //Call block sync on first create or block hash update (new block)
+            cache[id] = block.hash;
+            yield all([createBlockTransactions(block), contractCallBlockSync(block)]);
+        } else {
+            yield createBlockTransactions(block);
+        }
+    }
+}
+
 export function* saga() {
-    yield all([takeEvery(BlockActions.FETCH, fetch), subscribeLoop()]);
+    yield all([fetchLoop(), subscribeLoop(), onCreateLoop()]);
 }

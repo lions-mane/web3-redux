@@ -1,8 +1,12 @@
-import { CallOptions, SendOptions } from 'web3-eth-contract';
-import { AbiItem } from 'web3-utils';
-import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
 import { actionCreator } from '../utils';
-import { ContractCallSync, Contract, ContractId, CALL_BLOCK_SYNC, CALL_TRANSACTION_SYNC, ContractCall } from './model';
+import {
+    ContractCallSync,
+    ContractId,
+    CALL_BLOCK_SYNC,
+    CALL_TRANSACTION_SYNC,
+    ContractPartial,
+    ContractIdDeconstructed,
+} from './model';
 
 const name = 'Contract';
 
@@ -11,53 +15,72 @@ export const UPDATE = `${name}/UPDATE`;
 export const REMOVE = `${name}/DELETE`;
 
 export const CALL = `${name}/CALL`;
+export const CALL_BATCHED = `${name}/CALL_BATCHED`;
+export const CALL_SYNCED = `${name}/CALL_SYNCED`;
 export const SEND = `${name}/SEND`;
 
 export const EVENT_SUBSCRIBE = `${name}/EVENT_SUBSCRIBE`;
 export const EVENT_UNSUBSCRIBE = `${name}/EVENT_UNSUBSCRIBE`;
 
-export interface CreateActionInput extends ContractId {
-    abi: AbiItem[];
-    methods?: {
-        [callerFunctionName: string]: {
-            [argsHash: string]: ContractCall;
-        };
-    };
-    events?: {
-        [eventName: string]: {
-            [eventId: string]: EventData;
-        };
-    };
-    web3Contract?: Web3Contract;
-}
-export const create = actionCreator<typeof CREATE, CreateActionInput>(CREATE);
-export const update = actionCreator<typeof UPDATE, Contract>(UPDATE);
+export const create = actionCreator<typeof CREATE, ContractPartial>(CREATE);
 export const remove = actionCreator<typeof REMOVE, ContractId>(REMOVE);
 
-export interface CallActionInput extends ContractId {
+export interface CallActionInput extends ContractIdDeconstructed {
     method: string;
     args?: any[];
-    options?: CallOptions;
+    from?: string;
     defaultBlock?: number | string;
-    sync?: ContractCallSync | boolean | typeof CALL_BLOCK_SYNC | typeof CALL_TRANSACTION_SYNC;
+    gas?: string;
 }
 export const call = actionCreator<typeof CALL, CallActionInput>(CALL);
 
-export interface SendActionInput extends ContractId {
+export interface CallBatchedActionInput {
+    networkId: string;
+    requests: {
+        address: string;
+        method: string;
+        args?: any[];
+        from?: string;
+        defaultBlock?: number | string;
+        gas?: string;
+    }[];
+}
+/**
+ * Optimally batched call requests.
+ * Requests are grouped by network and batched with web3.BatchRequest().
+ * @see {@link https://web3js.readthedocs.io/en/v1.2.0/web3-eth.html#batchrequest}
+ *
+ * Calls will be batched busing Multicall if:
+ *  - network has a Multicall contract
+ *  - from == undefined
+ *  - defaultBlock == 'latest' || defaultBlock == undefined
+ * @see {@link https://github.com/makerdao/multicall}
+ */
+export const callBatched = actionCreator<typeof CALL_BATCHED, CallBatchedActionInput>(CALL_BATCHED);
+
+export interface CallSyncedActionInput extends CallActionInput {
+    sync?: ContractCallSync | boolean | typeof CALL_BLOCK_SYNC | typeof CALL_TRANSACTION_SYNC;
+}
+export const callSynced = actionCreator<typeof CALL_SYNCED, CallSyncedActionInput>(CALL_SYNCED);
+
+export interface SendActionInput extends ContractIdDeconstructed {
     method: string;
     args?: any[];
-    options?: SendOptions;
+    from: string;
+    gasPrice?: string;
+    gas?: string;
+    value?: string;
 }
 export const send = actionCreator<typeof SEND, SendActionInput>(SEND);
 
-export interface EventSubscribeActionInput extends ContractId {
+export interface EventSubscribeActionInput extends ContractIdDeconstructed {
     eventName: string;
     filter?: { [key: string]: any };
     fromBlock?: number | string;
 }
 export const eventSubscribe = actionCreator<typeof EVENT_SUBSCRIBE, EventSubscribeActionInput>(EVENT_SUBSCRIBE);
 
-export interface EventUnsubscribeActionInput extends ContractId {
+export interface EventUnsubscribeActionInput extends ContractIdDeconstructed {
     eventName: string;
 }
 export const eventUnsubscribe = actionCreator<typeof EVENT_UNSUBSCRIBE, EventUnsubscribeActionInput>(EVENT_UNSUBSCRIBE);
@@ -66,18 +89,25 @@ export type CreateAction = ReturnType<typeof create>;
 export function isCreateAction(action: { type: string }): action is CreateAction {
     return action.type === CREATE;
 }
-export type UpdateAction = ReturnType<typeof update>;
-export function isUpdateAction(action: { type: string }): action is UpdateAction {
-    return action.type === UPDATE;
-}
 
 export type RemoveAction = ReturnType<typeof remove>;
 export function isRemoveAction(action: { type: string }): action is RemoveAction {
     return action.type === REMOVE;
 }
+
 export type CallAction = ReturnType<typeof call>;
 export function isCallAction(action: { type: string }): action is CallAction {
     return action.type === CALL;
+}
+
+export type CallBatchedAction = ReturnType<typeof callBatched>;
+export function isCallBatchedAction(action: { type: string }): action is CallBatchedAction {
+    return action.type === CALL_BATCHED;
+}
+
+export type CallSyncedAction = ReturnType<typeof callSynced>;
+export function isCallSyncedAction(action: { type: string }): action is CallSyncedAction {
+    return action.type === CALL_SYNCED;
 }
 
 export type SendAction = ReturnType<typeof send>;
@@ -95,14 +125,14 @@ export function isEventUnsubscribeAction(action: { type: string }): action is Ev
     return action.type === EVENT_UNSUBSCRIBE;
 }
 
-export type ReducerAction = CreateAction | UpdateAction | RemoveAction;
+export type ReducerAction = CreateAction | RemoveAction;
 export function isReducerAction(action: { type: string }): action is ReducerAction {
-    return isCreateAction(action) || isUpdateAction(action) || isRemoveAction(action);
+    return isCreateAction(action) || isRemoveAction(action);
 }
 
-export type SagaAction = CallAction | SendAction;
+export type SagaAction = CallAction | CallBatchedAction | CallSyncedAction | SendAction;
 export function isSagaAction(action: { type: string }): action is SagaAction {
-    return isCallAction(action) || isSendAction(action);
+    return isCallAction(action) || isCallBatchedAction(action) || isCallSyncedAction(action) || isSendAction(action);
 }
 
 export type Action = ReducerAction | SagaAction;

@@ -1,4 +1,5 @@
-import { attr, Model as ORMModel } from 'redux-orm';
+import { attr, fk, Model as ORMModel } from 'redux-orm';
+import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import { Contract as Web3Contract, EventData } from 'web3-eth-contract';
 
@@ -53,7 +54,7 @@ export const defaultTransactionSyncForContract: (address: string) => ContractCal
     };
 };
 
-export type ContractCallSync = ContractCallBlockSync | ContractCallTransactionSync;
+export type ContractCallSync = ContractCallBlockSync | ContractCallTransactionSync | false;
 
 /**
  * Contract call object. Stores a cached contract call.
@@ -67,7 +68,7 @@ export interface ContractCall {
     value: any;
     defaultBlock: string | number;
     args?: any[];
-    sync?: ContractCallSync;
+    sync: ContractCallSync | false;
 }
 
 /**
@@ -80,6 +81,7 @@ export interface ContractCall {
  * @param methods - Contract call store. Call data is stored at [methodName][`(${...args}).call(${defaultBlock},${from})`]
  * @param events - Contract event subscription store
  * @param web3Contract - Web3 Contract instance
+ * @param web3SenderContract - Web3 Contract instance used for send transactions.
  */
 export interface Contract extends NetworkId {
     id: string;
@@ -87,7 +89,7 @@ export interface Contract extends NetworkId {
     abi: AbiItem[];
     methods: {
         [callerFunctionName: string]: {
-            [argsHash: string]: ContractCall;
+            [argsHash: string]: { ethCallId?: string; sync?: ContractCallSync };
         };
     };
     events: {
@@ -95,7 +97,25 @@ export interface Contract extends NetworkId {
             [eventId: string]: EventData;
         };
     };
-    web3Contract: Web3Contract;
+    web3Contract?: Web3Contract;
+    web3SenderContract?: Web3Contract;
+}
+
+export interface ContractPartial extends NetworkId {
+    address: string;
+    abi: AbiItem[];
+    methods?: {
+        [callerFunctionName: string]: {
+            [argsHash: string]: { ethCallId?: string; sync?: ContractCallSync };
+        };
+    };
+    events?: {
+        [eventName: string]: {
+            [eventId: string]: EventData;
+        };
+    };
+    web3Contract?: Web3Contract;
+    web3SenderContract?: Web3Contract;
 }
 
 /**
@@ -104,9 +124,11 @@ export interface Contract extends NetworkId {
  * @param networkId - A network id.
  * @param address - Contract address.
  */
-export interface ContractId extends NetworkId {
+export interface ContractIdDeconstructed extends NetworkId {
     address: string;
 }
+
+export type ContractId = ContractIdDeconstructed | string;
 
 class Model extends ORMModel {
     static options = {
@@ -117,15 +139,54 @@ class Model extends ORMModel {
 
     static fields = {
         address: attr(),
+        networkId: fk({ to: 'Network', as: 'network', relatedName: 'contracts' }),
         abi: attr(),
     };
-
-    static toId({ address, networkId }: ContractId) {
-        return `${networkId}-${address}`;
-    }
 }
 
-export function eventId(event: EventData) {
+export function validatedContract(contract: ContractPartial): Contract {
+    const { networkId, address } = contract;
+    const addressCheckSum = Web3.utils.toChecksumAddress(address);
+    const methods =
+        contract.methods ??
+        contract.abi
+            .filter(item => item.type == 'function')
+            .map(item => item.name!)
+            .reduce((acc, m) => {
+                return { ...acc, [m]: {} };
+            }, {});
+    const events =
+        contract.events ??
+        contract.abi
+            .filter(item => item.type == 'event')
+            .map(item => item.name!)
+            .reduce((acc, m) => {
+                return { ...acc, [m]: {} };
+            }, {});
+    const id = `${networkId}-${address}`;
+    return {
+        ...contract,
+        id,
+        address: addressCheckSum,
+        methods,
+        events,
+    };
+}
+
+export function contractId({ address, networkId }: ContractIdDeconstructed): string {
+    const addressCheckSum = Web3.utils.toChecksumAddress(address);
+    return `${networkId}-${addressCheckSum}`;
+}
+
+export function deconstructId(id: string): ContractIdDeconstructed {
+    const [networkId, address] = id.split('-');
+    return {
+        networkId,
+        address,
+    };
+}
+
+export function eventId(event: EventData): string {
     return `${event.transactionHash}-${event.transactionIndex}`;
 }
 

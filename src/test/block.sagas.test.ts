@@ -1,65 +1,55 @@
 import { assert } from 'chai';
-import { before } from 'mocha';
 import Web3 from 'web3';
-import dotenv from 'dotenv';
 import ganache from 'ganache-core';
 
 import { createStore } from '../store';
-import {
-    Network,
-    Block,
-    BlockHeader,
-    BlockTransaction,
-    BlockTransactionObject,
-    NetworkActions,
-    BlockActions,
-    Web3ReduxActions,
-    NetworkSelector,
-    BlockSelector,
-} from '../index';
-import { sleep, sleepForPort } from '../utils';
+import { Network, Block } from '../index';
+import { ganacheLogger, mineBlock } from './utils';
+import { validatedBlock } from '../block';
 
 const networkId = '1337';
 
 describe('block.sagas', () => {
-    let web3Default: Web3;
     let web3: Web3; //Web3 loaded from store
     let accounts: string[];
     let store: ReturnType<typeof createStore>;
+    let rpcLogger: ReturnType<typeof ganacheLogger>;
+    let ethGetBlockByNumber = 0;
+    let ethSubscribe = 0;
+    let ethUnsubscribe = 0;
 
     before(async () => {
-        dotenv.config();
         const networkIdInt = parseInt(networkId);
-        const server = ganache.server({
-            port: 0,
+        rpcLogger = ganacheLogger();
+
+        const provider = ganache.provider({
             networkId: networkIdInt,
-            blockTime: 1,
+            logger: rpcLogger,
+            verbose: true,
         });
-        const port = await sleepForPort(server, 1000);
-        const rpc = `ws://localhost:${port}`;
-        web3Default = new Web3(rpc);
-        accounts = await web3Default.eth.getAccounts();
-        web3Default.eth.defaultAccount = accounts[0];
+        //@ts-ignore
+        web3 = new Web3(provider);
+        accounts = await web3.eth.getAccounts();
+
+        const ethGetBlockByNumberIncr = () => (ethGetBlockByNumber += 1);
+        const ethSubscribeIncr = () => (ethSubscribe += 1);
+        const ethUnsubscribeIncr = () => (ethUnsubscribe += 1);
+        rpcLogger.addListener('eth_getBlockByNumber', ethGetBlockByNumberIncr);
+        rpcLogger.addListener('eth_subscribe', ethSubscribeIncr);
+        rpcLogger.addListener('eth_unsubscribe', ethUnsubscribeIncr);
     });
 
     beforeEach(async () => {
         store = createStore();
-        store.dispatch(Web3ReduxActions.initialize({ networks: [{ networkId, web3: web3Default }] }));
-        //@ts-ignore
-        const network: Network = NetworkSelector.select(store.getState(), networkId) as Network;
-        if (!network)
-            throw new Error(
-                `Could not find Network with id ${networkId}. Make sure to dispatch a Network/CREATE action.`,
-            );
-        web3 = network.web3;
+        store.dispatch(Network.create({ networkId, web3 }));
     });
 
     /*
     it('BlockSagas.fetch({returnTransactionObjects:false})', async () => {
-        const gen = BlockSagas.fetch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
+        const gen = BlockSagas.fetch(Block.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
         const block = await web3.eth.getBlock('latest');
         const expectedBlock: BlockTransactionString = { ...block, networkId, id: `${networkId}-${block.number}` };
-        const expectedPutBlockAction = put(BlockActions.create(expectedBlock));
+        const expectedPutBlockAction = put(Block.create(expectedBlock));
 
         gen.next(); //select web3 TODO: pass mock state
         gen.next(); //call web3
@@ -70,12 +60,12 @@ describe('block.sagas', () => {
 
     it('BlockSagas.fetch({returnTransactionObjects:true})', async () => {
         const gen = BlockSagas.fetch(
-            BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: true }),
+            Block.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: true }),
         );
         const block = await web3.eth.getBlock('latest', true);
         //@ts-ignore
         const expectedBlock: BlockTransactionObject = { ...block, networkId, id: `${networkId}-${block.number}` };
-        const expectedPutBlockAction = put(BlockActions.create(expectedBlock));
+        const expectedPutBlockAction = put(Block.create(expectedBlock));
 
         gen.next(); //select web3 TODO: pass mock state
         gen.next(); //call web3
@@ -85,124 +75,139 @@ describe('block.sagas', () => {
     });
     */
 
-    it('store.dispatch(BlockActions.fetch({returnTransactionObjects:false}))', async () => {
-        store.dispatch(BlockActions.fetch({ networkId, blockHashOrBlockNumber: 'latest' }));
-        const block = await web3.eth.getBlock('latest');
-        const expectedBlock: Block = { ...block, networkId, id: `${networkId}-${block.number}` };
+    it('store.dispatch(Block.fetch({returnTransactionObjects:false}))', async () => {
+        const ethGetBlockByNumberInitial = ethGetBlockByNumber;
 
-        await sleep(100);
+        await mineBlock(web3);
+        store.dispatch(Block.fetch({ networkId, blockHashOrBlockNumber: 'latest', returnTransactionObjects: false }));
 
-        const state = store.getState();
-
-        const expectedBlockSelected = [expectedBlock];
+        const latestBlock = await web3.eth.getBlock('latest');
+        const expectedBlocks: Block.BlockHeader[] = [validatedBlock({ ...latestBlock, networkId })];
         //@ts-ignore
-        delete expectedBlock.transactions;
-        const expectedBlockState = {
-            [expectedBlock.id!]: expectedBlock,
-        };
+        delete expectedBlocks[0].transactions;
 
-        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlockState, 'state.web3Redux.Block.itemsById');
-        assert.deepEqual(BlockSelector.select(state), expectedBlockSelected, 'Block.selectWithId');
-        //assert.deepEqual(BlockSelector.selectTransactions(state), expectedBlockTransactionsSelected, 'Block.selectTransactions');
+        const blocks = Block.selectMany(store.getState());
+        assert.deepEqual(blocks, expectedBlocks, 'Block.selectMany');
+        //Count rpc calls since test began
+        assert.equal(ethGetBlockByNumber - ethGetBlockByNumberInitial, 2, 'eth_getBlockByNumber rpc calls != expected');
     });
 
-    it('store.dispatch(BlockActions.subscribe())', async () => {
-        store.dispatch(BlockActions.subscribe({ networkId }));
+    it('store.dispatch(Block.subscribe({returnTransactionObjects:false}))', async () => {
+        const ethGetBlockByNumberInitial = ethGetBlockByNumber;
+        const ethSubscribeInitial = ethSubscribe;
+        //let ethUnsubscribeInitial = ethUnsubscribe;
 
-        const expectedBlocks: { [key: string]: BlockHeader } = {};
-        web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
-            const id = `${networkId}-${block.number}`;
-            expectedBlocks[id] = { ...block, networkId, id };
+        store.dispatch(Block.subscribe({ networkId, returnTransactionObjects: false }));
+
+        const expectedBlocks: Block.BlockHeader[] = [];
+        const subscription = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
+            expectedBlocks.push(validatedBlock({ ...block, networkId }));
         });
 
-        await sleep(2000);
+        await mineBlock(web3);
+        await mineBlock(web3);
+        store.dispatch(Block.unsubscribe({ networkId }));
+        subscription.unsubscribe();
+        //Block ignored
+        await mineBlock(web3);
 
-        const state = store.getState();
-        assert.deepEqual(state.web3Redux['Block'].itemsById, expectedBlocks);
+        const blocks = Block.selectMany(store.getState());
+        assert.equal(blocks.length, 2, 'blocks.length != expected');
+        assert.deepEqual(blocks, expectedBlocks);
+        assert.equal(ethSubscribe - ethSubscribeInitial, 2, 'eth_subscribe rpc calls != expected');
+        //assert.equal(ethUnsubscribe - ethUnsubscribeInitial, 2, 'eth_unsubscribe rpc calls != expected')
+        //No getBlockByNumber calls as relying on subscription
+        assert.equal(ethGetBlockByNumber - ethGetBlockByNumberInitial, 0, 'eth_getBlockByNumber rpc calls != expected');
     });
 
-    it('store.dispatch(BlockActions.subscribe({returnTransactionObjects:true})', async () => {
-        store.dispatch(BlockActions.subscribe({ networkId, returnTransactionObjects: true }));
+    it('store.dispatch(Block.subscribe({returnTransactionObjects:true})', async () => {
+        const ethGetBlockByNumberInitial = ethGetBlockByNumber;
+        const ethSubscribeInitial = ethSubscribe;
+        //let ethUnsubscribeInitial = ethUnsubscribe;
 
-        const expectedBlocksPromise: Promise<BlockTransactionObject>[] = [];
+        store.dispatch(Block.subscribe({ networkId, returnTransactionObjects: true }));
+
+        const expectedBlocksPromise: Promise<Block.BlockTransactionObject>[] = [];
         const subscription = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
             //@ts-ignore
             expectedBlocksPromise.push(web3.eth.getBlock(block.number, true));
         });
 
+        //Sending a transactions also mines a block
         await web3.eth.sendTransaction({ from: accounts[0], to: accounts[0], value: '100' });
-        await sleep(2000);
-
+        await mineBlock(web3);
+        store.dispatch(Block.unsubscribe({ networkId }));
         subscription.unsubscribe();
-        const state = store.getState();
-        const expectedBlocks = (await Promise.all(expectedBlocksPromise))
-            .map(block => {
-                const id = `${networkId}-${block.number}`;
-                block.transactions = block.transactions.map(tx => {
-                    return { ...tx, networkId, blockId: id, id: `${networkId}-${tx.hash}` };
-                });
-                block.networkId = networkId;
-                block.id = id;
-                return block;
-            })
-            .reduce((acc, block) => {
-                return { ...acc, [block.id!]: block };
-            }, {});
-        const blocks = (BlockSelector.selectBlockTransaction(state) as BlockTransaction[]).reduce((acc, block) => {
-            return { ...acc, [block.id!]: block };
-        }, {});
+        //Block ignored
+        await mineBlock(web3);
+
+        const expectedBlocks = (await Promise.all(expectedBlocksPromise)).map(b =>
+            validatedBlock({ ...b, networkId }),
+        ) as Block.BlockTransaction[];
+
+        const blocks = Block.selectManyBlockTransaction(store.getState());
+        assert.equal(blocks.length, 2, 'blocks.length != expected');
         assert.deepEqual(blocks, expectedBlocks);
+        assert.equal(ethSubscribe - ethSubscribeInitial, 2, 'eth_subscribe rpc calls != expected');
+        //assert.equal(ethUnsubscribe - ethUnsubscribeInitial, 2, 'eth_unsubscribe rpc calls != expected')
+        //No getBlockByNumber calls as relying on subscription
+        assert.equal(
+            ethGetBlockByNumber - ethGetBlockByNumberInitial,
+            Object.keys(blocks).length + Object.keys(expectedBlocks).length,
+            'eth_getBlockByNumber rpc calls != expected',
+        );
     });
 
-    it('store.dispatch(unsubscribe())', async () => {
-        store.dispatch(BlockActions.subscribe({ networkId }));
+    it('store.dispatch(Block.subscribe) - multiple networks', async () => {
+        const ethGetBlockByNumberInitial = ethGetBlockByNumber;
+        const ethSubscribeInitial = ethSubscribe;
 
-        const expectedBlocks: { [key: string]: BlockHeader } = {};
-        const subscription = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
-            const id = `${networkId}-${block.number}`;
-            expectedBlocks[id] = { ...block, networkId, id };
+        const network1 = networkId;
+        const network2 = '1338';
+        const provider2 = ganache.provider({
+            blockTime: 1,
+            networkId: 1338,
         });
+        //@ts-ignore
+        const web3Network2 = new Web3(provider2);
 
-        await sleep(2000);
-        store.dispatch(BlockActions.unsubscribe({ networkId }));
-        subscription.unsubscribe();
-        await sleep(2000);
+        store.dispatch(Network.create({ networkId: network1, web3 }));
+        store.dispatch(Network.create({ networkId: network2, web3: web3Network2 }));
+        store.dispatch(Block.subscribe({ networkId: network1, returnTransactionObjects: false }));
+        store.dispatch(Block.subscribe({ networkId: network2, returnTransactionObjects: false }));
 
-        const state = store.getState();
-        const blockState = state.web3Redux['Block'].itemsById;
-        assert.deepEqual(blockState, expectedBlocks);
-    });
-
-    it('store.dispatch(unsubscribe()) - multiple networks', async () => {
-        const network1 = `${networkId}-1`;
-        const network2 = `${networkId}-2`;
-        store.dispatch(NetworkActions.create({ networkId: network1, web3: web3Default }));
-        store.dispatch(NetworkActions.create({ networkId: network2, web3: web3Default }));
-        store.dispatch(BlockActions.subscribe({ networkId: network1 }));
-        store.dispatch(BlockActions.subscribe({ networkId: network2 }));
-
-        const expectedBlocks1: { [key: string]: BlockHeader } = {};
+        const expectedBlocks1: Block.BlockHeader[] = [];
         const subscription1 = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
-            const id = `${network1}-${block.number}`;
-            expectedBlocks1[id] = { ...block, networkId: network1, id };
+            expectedBlocks1.push(validatedBlock({ ...block, networkId: network1 }));
         });
 
-        const expectedBlocks2: { [key: string]: BlockHeader } = {};
-        const subscription2 = web3.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
-            const id = `${network2}-${block.number}`;
-            expectedBlocks2[id] = { ...block, networkId: network2, id };
+        const expectedBlocks2: Block.BlockHeader[] = [];
+        const subscription2 = web3Network2.eth.subscribe('newBlockHeaders').on('data', (block: any) => {
+            expectedBlocks2.push(validatedBlock({ ...block, networkId: network2 }));
         });
 
-        await sleep(2000);
-        store.dispatch(BlockActions.unsubscribe({ networkId: network1 }));
+        await mineBlock(web3);
+        await mineBlock(web3Network2);
+
+        store.dispatch(Block.unsubscribe({ networkId: network1 }));
         subscription1.unsubscribe();
-        let state = store.getState();
-        assert.deepEqual(state.web3Redux['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
 
-        await sleep(2000);
-        store.dispatch(BlockActions.unsubscribe({ networkId: network2 }));
+        let blocks = Block.selectMany(store.getState());
+        assert.equal(blocks.length, 2, 'blocks.length != expected');
+        assert.deepEqual(blocks, [...expectedBlocks1, ...expectedBlocks2]);
+
+        await mineBlock(web3); //Ignored as subscription closed
+        await mineBlock(web3Network2);
+
+        store.dispatch(Block.unsubscribe({ networkId: network2 }));
         subscription2.unsubscribe();
-        state = store.getState();
-        assert.deepEqual(state.web3Redux['Block'].itemsById, { ...expectedBlocks1, ...expectedBlocks2 });
+
+        blocks = Block.selectMany(store.getState());
+        assert.equal(blocks.length, 3, 'blocks.length != expected');
+        assert.deepEqual(blocks, [...expectedBlocks1, ...expectedBlocks2]);
+
+        //Rpc calls for network1 node ONLY
+        assert.equal(ethSubscribe - ethSubscribeInitial, 2, 'eth_subscribe rpc calls != expected');
+        assert.equal(ethGetBlockByNumber - ethGetBlockByNumberInitial, 0, 'eth_getBlockByNumber rpc calls != expected');
     });
 });

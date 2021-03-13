@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>InitializeActionInput | @lions-mane/web3-redux - v0.1.0-beta.1</title>
+	<title>TransactionId | @lions-mane/web3-redux - v0.1.0-beta.4</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -24,7 +24,7 @@
 					</ul>
 					<ul class="results-priority" style="display:none">
 					</ul>
-					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.1</a>
+					<a href="../index.html" class="title">@lions-mane/web3-redux - v0.1.0-beta.4</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -55,10 +55,10 @@
 		<div class="container">
 			<ul class="tsd-breadcrumb">
 				<li>
-					<a href="../modules/actions.html">actions</a>
+					<a href="../modules/transaction.html">transaction</a>
 				</li>
 				<li>
-					<a href="actions.initializeactioninput.html">InitializeActionInput</a>
+					<a href="transaction.transactionid.html">TransactionId</a>
 				</li>
 			</ul>
 		</div>
@@ -75,12 +75,28 @@
 			</nav>
 		</div>
 		<div class="col-7 offset-3 col-content">
-			<h1>Interface InitializeActionInput</h1>
+			<h1>Interface TransactionId</h1>
+			<section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography tsd-comment-shorttext">
+					<div class="lead">
+						<p>Transaction Id object.</p>
+					</div>
+					</div><div class="tsd-comment tsd-typography tsd-comment-tags">
+					<dl class="tsd-comment-tags"><dt>param</dt>
+						<dd><p>A network id.</p>
+						</dd><dt>param</dt>
+						<dd><p>32 Bytes - String: Hash of the transaction.</p>
+					</dd></dl>
+			</div></section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">InitializeActionInput</span>
+						<a href="network_model.networkid.html" class="tsd-signature-type">NetworkId</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">TransactionId</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -90,7 +106,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actions.initializeactioninput.html#networks" class="tsd-kind-icon">networks</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transaction.transactionid.html#hash" class="tsd-kind-icon">hash</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="transaction.transactionid.html#networkid" class="tsd-kind-icon">network<wbr>Id</a></li>
 							</ul>
 						</section>
 					</div>
@@ -99,12 +116,23 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="networks" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> networks</h3>
-					<div class="tsd-signature tsd-kind-icon">networks<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../modules/network_model.html#network" class="tsd-signature-type">Network</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="hash" class="tsd-anchor"></a>
+					<h3>hash</h3>
+					<div class="tsd-signature tsd-kind-icon">hash<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/actions.ts:7</li>
+							<li>Defined in src/transaction/model.ts:55</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="networkid" class="tsd-anchor"></a>
+					<h3>network<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">network<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="network_model.networkid.html">NetworkId</a>.<a href="network_model.networkid.html#networkid">networkId</a></p>
+						<ul>
+							<li>Defined in src/network/model.ts:11</li>
 						</ul>
 					</aside>
 				</section>
@@ -114,29 +142,101 @@
 		<div class="col-2 col-menu secondary-menu">
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-reference tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#model" class="tsd-kind-icon">Model</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module root">
+						<a href="transaction.transaction-1.html" class="tsd-kind-icon">Transaction</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-module root">
+						<a href="transaction.transactionblockid.html" class="tsd-kind-icon">Transaction<wbr>Block<wbr>Id</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-module root">
-						<a href="actions.initializeactioninput.html" class="tsd-kind-icon">Initialize<wbr>Action<wbr>Input</a>
+						<a href="transaction.transactionid.html" class="tsd-kind-icon">Transaction<wbr>Id</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="actions.initializeactioninput.html#networks" class="tsd-kind-icon">networks</a>
+								<a href="transaction.transactionid.html#hash" class="tsd-kind-icon">hash</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="transaction.transactionid.html#networkid" class="tsd-kind-icon">network<wbr>Id</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/actions.html#action" class="tsd-kind-icon">Action</a>
+						<a href="../modules/transaction.html#action" class="tsd-kind-icon">Action</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
-						<a href="../modules/actions.html#initializeaction" class="tsd-kind-icon">Initialize<wbr>Action</a>
+						<a href="../modules/transaction.html#createaction" class="tsd-kind-icon">Create<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#fetchaction" class="tsd-kind-icon">Fetch<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#reduceraction" class="tsd-kind-icon">Reducer<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#removeaction" class="tsd-kind-icon">Remove<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#sagaaction" class="tsd-kind-icon">Saga<wbr>Action</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-parent-kind-module root">
-						<a href="../modules/actions.html#initialize" class="tsd-kind-icon">INITIALIZE</a>
+						<a href="../modules/transaction.html#create" class="tsd-kind-icon">CREATE</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#fetch" class="tsd-kind-icon">FETCH</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#remove" class="tsd-kind-icon">REMOVE</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module root">
-						<a href="../modules/actions.html#initialize-1" class="tsd-kind-icon">initialize</a>
+						<a href="../modules/transaction.html#create-1" class="tsd-kind-icon">create</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#fetch-1" class="tsd-kind-icon">fetch</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#isaction" class="tsd-kind-icon">is<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#iscreateaction" class="tsd-kind-icon">is<wbr>Create<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#isfetchaction" class="tsd-kind-icon">is<wbr>Fetch<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#isreduceraction" class="tsd-kind-icon">is<wbr>Reducer<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#isremoveaction" class="tsd-kind-icon">is<wbr>Remove<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#issagaaction" class="tsd-kind-icon">is<wbr>Saga<wbr>Action</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#remove-1" class="tsd-kind-icon">remove</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#saga" class="tsd-kind-icon">saga</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#select" class="tsd-kind-icon">select</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#selectmany" class="tsd-kind-icon">select<wbr>Many</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#selectsingle" class="tsd-kind-icon">select<wbr>Single</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#transactionid-1" class="tsd-kind-icon">transaction<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module root">
+						<a href="../modules/transaction.html#validatedtransaction" class="tsd-kind-icon">validated<wbr>Transaction</a>
 					</li>
 				</ul>
 			</nav>

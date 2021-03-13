@@ -25,6 +25,7 @@ module.exports = {
         'no-console': 'warn',
         'no-unused-vars': 'off',
         '@typescript-eslint/ban-ts-ignore': 'off',
+        '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-unused-vars': [
             'error',
             { vars: 'all', args: 'after-used', ignoreRestSiblings: false }

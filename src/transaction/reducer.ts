@@ -1,12 +1,15 @@
-import { ReducerAction, isCreateAction, isUpdateAction, isRemoveAction } from './actions';
+import { ReducerAction, isCreateAction, isRemoveAction } from './actions';
+import { transactionId, validatedTransaction } from './model';
 
 export function reducer(sess: any, action: ReducerAction) {
     const Model = sess.Transaction;
-    const id = Model.toId(action.payload);
-    const blockId = Model.toBlockId(action.payload);
-    if (isCreateAction(action)) Model.create({ ...action.payload, id, blockId });
-    else if (isUpdateAction(action)) Model.withId(id).update({ ...action.payload, id, blockId });
-    else if (isRemoveAction(action)) Model.withId(id).delete();
+    if (isCreateAction(action)) {
+        const validated = validatedTransaction(action.payload);
+        Model.upsert({ ...validated });
+    } else if (isRemoveAction(action)) {
+        const id = transactionId(action.payload);
+        Model.withId(id).delete();
+    }
 
     return sess;
 }
